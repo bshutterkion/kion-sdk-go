@@ -1,0 +1,18 @@
+parser:
+  infer_types: true
+  allow_remote: false
+  depth_limit: 1000
+
+generator:
+  features:
+    disable:
+      - "paths/server"
+      - "webhooks/client"
+      - "webhooks/server"
+      - "ogen/unimplemented"
+      - "debug/example_tests"
+    enable:
+      - "paths/client"
+      - "ogen/otel"
+  ignore_not_implemented: ["all"]
+  convenient_errors: "auto"
