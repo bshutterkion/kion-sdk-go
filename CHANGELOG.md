@@ -7,8 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-04
+
 ### Added
 
+- **Unified release versioning across all lanes.** The repo-root `VERSION` file is
+  now the single source of truth for the SDK family's own version, stamped into every
+  lane by `scripts/set-release.sh` (`make set-release RELEASE=X.Y.Z`): `python/pyproject.toml`,
+  `kion_sdk.__version__`, `ts/package.json`, the TS wrapper `VERSION`, `go/VERSION`, and
+  the new `kion.Version` constant — plus promoting `[Unreleased]` in this file.
+  `make check-release` (enforced by the `quality:release-version` CI job) fails the
+  pipeline if any lane drifts. Note the target is `RELEASE=`, not `VERSION=`, which
+  already means the *Kion API* version in the Makefile.
+- **Kion compatibility metadata.** `kion.KionVersions`/`KionVersion()` (Go),
+  `kion_sdk.KION_VERSIONS`/`kion_version()` (Python), and `KION_VERSIONS`/`kionVersion()`
+  (TypeScript) map each generated sub-package to the Kion release it targets. These live
+  in the hand-written wrappers, outside the regenerated directories, so regeneration
+  cannot wipe them. The SDK's own version stays SemVer for the artifact: one install
+  ships every supported Kion version at once, so no single number could track Kion.
+- **Release tags on the published mirrors.** `scripts/publish-lane.sh` now tags each
+  mirror `vX.Y.Z` at publish. This is what makes Go versioning work at all — `go.mod`
+  has no version field, so `go get <module>@vX.Y.Z` resolves from tags on the repo
+  serving the module. Idempotent: an existing tag is never moved.
 - `make check-versions` + `scripts/check-versions.sh`: warns when portal has a `support-3.NN.x` branch not tracked by `SDK_VERSIONS` (a new Kion version was cut and needs `refresh-spec` + `scaffold-version`), or when `SDK_VERSIONS` lists a version whose portal branch is gone. Cheap `git ls-remote` check — no checkout, no regeneration. `refresh-and-commit` runs it as a non-fatal heads-up before regenerating.
 - **Doc-comments on generated schema types** (all versions). `fixspec` now promotes portal's descriptive schema `title`s (full sentences like "`BudgetCreate` is used to create a new project budget…") to `description` via a new `cleanDescriptiveTitles` pass; ogen emits `description` as Go doc-comments, so the generated types gain ~2,250 lines of documentation. Purely additive — no type, field, signature, or behavior change. This also readies the shared OpenAPI spec for non-Go SDK generators (e.g. Python), which name classes from `title` and would otherwise produce sentence-length class names.
 

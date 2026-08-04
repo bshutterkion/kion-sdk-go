@@ -55436,7 +55436,8 @@ type Scope struct {
 	// ID of the record in the application.
 	ID OptUint64 `json:"id"`
 	// Unique identifier for the scope.
-	Identifier OptString `json:"identifier"`
+	Identifier           OptString              `json:"identifier"`
+	LatestCriteriaRecord OptScopeCriteriaRecord `json:"latest_criteria_record"`
 	// Name of the scope in the application.
 	Name OptString `json:"name"`
 	// ID of the project associated with this scope.
@@ -55483,6 +55484,11 @@ func (s *Scope) GetID() OptUint64 {
 // GetIdentifier returns the value of Identifier.
 func (s *Scope) GetIdentifier() OptString {
 	return s.Identifier
+}
+
+// GetLatestCriteriaRecord returns the value of LatestCriteriaRecord.
+func (s *Scope) GetLatestCriteriaRecord() OptScopeCriteriaRecord {
+	return s.LatestCriteriaRecord
 }
 
 // GetName returns the value of Name.
@@ -55538,6 +55544,11 @@ func (s *Scope) SetID(val OptUint64) {
 // SetIdentifier sets the value of Identifier.
 func (s *Scope) SetIdentifier(val OptString) {
 	s.Identifier = val
+}
+
+// SetLatestCriteriaRecord sets the value of LatestCriteriaRecord.
+func (s *Scope) SetLatestCriteriaRecord(val OptScopeCriteriaRecord) {
+	s.LatestCriteriaRecord = val
 }
 
 // SetName sets the value of Name.

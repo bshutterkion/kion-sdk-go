@@ -91019,6 +91019,12 @@ func (s *Scope) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.LatestCriteriaRecord.Set {
+			e.FieldStart("latest_criteria_record")
+			s.LatestCriteriaRecord.Encode(e)
+		}
+	}
+	{
 		if s.Name.Set {
 			e.FieldStart("name")
 			s.Name.Encode(e)
@@ -91038,7 +91044,7 @@ func (s *Scope) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfScope = [11]string{
+var jsonFieldsNameOfScope = [12]string{
 	0:  "active_criteria_record",
 	1:  "alias",
 	2:  "criteria_error",
@@ -91047,9 +91053,10 @@ var jsonFieldsNameOfScope = [11]string{
 	5:  "end_datecode",
 	6:  "id",
 	7:  "identifier",
-	8:  "name",
-	9:  "project_id",
-	10: "start_datecode",
+	8:  "latest_criteria_record",
+	9:  "name",
+	10: "project_id",
+	11: "start_datecode",
 }
 
 // Decode decodes Scope from json.
@@ -91139,6 +91146,16 @@ func (s *Scope) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"identifier\"")
+			}
+		case "latest_criteria_record":
+			if err := func() error {
+				s.LatestCriteriaRecord.Reset()
+				if err := s.LatestCriteriaRecord.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"latest_criteria_record\"")
 			}
 		case "name":
 			if err := func() error {
