@@ -21515,7 +21515,7 @@ func (s *BudgetDataCreate) Encode(e *jx.Encoder) {
 func (s *BudgetDataCreate) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		e.Str(s.Amount)
+		e.Float64(s.Amount)
 	}
 	{
 		e.FieldStart("datecode")
@@ -21554,8 +21554,8 @@ func (s *BudgetDataCreate) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Amount = string(v)
+				v, err := d.Float64()
+				s.Amount = float64(v)
 				if err != nil {
 					return err
 				}
@@ -43768,7 +43768,7 @@ func (s *FundingSourceClone) Encode(e *jx.Encoder) {
 func (s *FundingSourceClone) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		e.Str(s.Amount)
+		e.Float64(s.Amount)
 	}
 	{
 		if s.Description.Set {
@@ -43824,8 +43824,8 @@ func (s *FundingSourceClone) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Amount = string(v)
+				v, err := d.Float64()
+				s.Amount = float64(v)
 				if err != nil {
 					return err
 				}
@@ -43964,7 +43964,7 @@ func (s *FundingSourceCreate) Encode(e *jx.Encoder) {
 func (s *FundingSourceCreate) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		e.Str(s.Amount)
+		e.Float64(s.Amount)
 	}
 	{
 		if s.Description.Set {
@@ -44032,8 +44032,8 @@ func (s *FundingSourceCreate) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Amount = string(v)
+				v, err := d.Float64()
+				s.Amount = float64(v)
 				if err != nil {
 					return err
 				}
@@ -88321,7 +88321,7 @@ func (s *ProjectFundingUpdate) Encode(e *jx.Encoder) {
 func (s *ProjectFundingUpdate) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		e.Str(s.Amount)
+		e.Float64(s.Amount)
 	}
 	{
 		e.FieldStart("end_datecode")
@@ -88356,8 +88356,8 @@ func (s *ProjectFundingUpdate) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Amount = string(v)
+				v, err := d.Float64()
+				s.Amount = float64(v)
 				if err != nil {
 					return err
 				}
@@ -96568,7 +96568,7 @@ func (s *SpendPlanV4Put) Encode(e *jx.Encoder) {
 func (s *SpendPlanV4Put) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		e.Str(s.Amount)
+		e.Float64(s.Amount)
 	}
 	{
 		e.FieldStart("end_datecode")
@@ -96603,8 +96603,8 @@ func (s *SpendPlanV4Put) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Amount = string(v)
+				v, err := d.Float64()
+				s.Amount = float64(v)
 				if err != nil {
 					return err
 				}

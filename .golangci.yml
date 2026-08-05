@@ -1,0 +1,23 @@
+# golangci-lint config for the Go lane.
+#
+# The point of this file is scope. The lane is ~2.46M lines, and 2,458,165 of
+# them are ogen output (`generated/*/oas_*.go`) — 99.94%. Linting machine
+# output produces nothing anyone can act on: the fix for a complaint there is
+# always "change the spec or the generator", never "edit the file", which the
+# DO-NOT-EDIT header says outright. Excluding it is what makes this job finish
+# in seconds instead of the better part of an hour.
+#
+# NOTE the exclusion targets `oas_*.go`, NOT the whole generated/ tree.
+# `go/Makefile` regenerates with `rm -f generated/$*/oas_*.go`, so everything
+# else living there — auth.go and client.go, 888 lines across the six versions —
+# is hand-maintained and must stay linted.
+version: "2"
+
+linters:
+  default: standard
+  exclusions:
+    # Belt and braces: honour the "Code generated ... DO NOT EDIT." header too,
+    # so anything newly generated is skipped even before a path is added below.
+    generated: strict
+    paths:
+      - generated/.*/oas_.*\.go$

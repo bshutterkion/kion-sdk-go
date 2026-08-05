@@ -3966,8 +3966,8 @@ type AccountServiceSpend struct {
 	// Service the spending is for.
 	Service OptString `json:"service"`
 	// The total amount spent for this service. Use of `total` is deprecated, use `spend` instead.
-	Spend OptString `json:"spend"`
-	Total OptString `json:"total"`
+	Spend OptFloat64 `json:"spend"`
+	Total OptFloat64 `json:"total"`
 }
 
 // GetAccountNumber returns the value of AccountNumber.
@@ -3986,12 +3986,12 @@ func (s *AccountServiceSpend) GetService() OptString {
 }
 
 // GetSpend returns the value of Spend.
-func (s *AccountServiceSpend) GetSpend() OptString {
+func (s *AccountServiceSpend) GetSpend() OptFloat64 {
 	return s.Spend
 }
 
 // GetTotal returns the value of Total.
-func (s *AccountServiceSpend) GetTotal() OptString {
+func (s *AccountServiceSpend) GetTotal() OptFloat64 {
 	return s.Total
 }
 
@@ -4011,12 +4011,12 @@ func (s *AccountServiceSpend) SetService(val OptString) {
 }
 
 // SetSpend sets the value of Spend.
-func (s *AccountServiceSpend) SetSpend(val OptString) {
+func (s *AccountServiceSpend) SetSpend(val OptFloat64) {
 	s.Spend = val
 }
 
 // SetTotal sets the value of Total.
-func (s *AccountServiceSpend) SetTotal(val OptString) {
+func (s *AccountServiceSpend) SetTotal(val OptFloat64) {
 	s.Total = val
 }
 
@@ -4032,8 +4032,8 @@ type AccountSpend struct {
 	// The date of the spending (YYYY-MM).
 	Datecode OptString `json:"datecode"`
 	// The amount spent. Use of `total` is deprecated, use `spend` instead.
-	Spend OptString `json:"spend"`
-	Total OptString `json:"total"`
+	Spend OptFloat64 `json:"spend"`
+	Total OptFloat64 `json:"total"`
 }
 
 // GetAccountID returns the value of AccountID.
@@ -4057,12 +4057,12 @@ func (s *AccountSpend) GetDatecode() OptString {
 }
 
 // GetSpend returns the value of Spend.
-func (s *AccountSpend) GetSpend() OptString {
+func (s *AccountSpend) GetSpend() OptFloat64 {
 	return s.Spend
 }
 
 // GetTotal returns the value of Total.
-func (s *AccountSpend) GetTotal() OptString {
+func (s *AccountSpend) GetTotal() OptFloat64 {
 	return s.Total
 }
 
@@ -4087,12 +4087,12 @@ func (s *AccountSpend) SetDatecode(val OptString) {
 }
 
 // SetSpend sets the value of Spend.
-func (s *AccountSpend) SetSpend(val OptString) {
+func (s *AccountSpend) SetSpend(val OptFloat64) {
 	s.Spend = val
 }
 
 // SetTotal sets the value of Total.
-func (s *AccountSpend) SetTotal(val OptString) {
+func (s *AccountSpend) SetTotal(val OptFloat64) {
 	s.Total = val
 }
 
@@ -4588,7 +4588,7 @@ type AllocationCreate struct {
 	// ignored.
 	AllocateAllAvailableFunds OptNilBool `json:"allocate_all_available_funds"`
 	// Amount of money being allocated from one OU to another.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// Comments about the allocation.
 	Comments OptString `json:"comments"`
 	// The ID of the OU the money will be coming from.
@@ -4605,7 +4605,7 @@ func (s *AllocationCreate) GetAllocateAllAvailableFunds() OptNilBool {
 }
 
 // GetAmount returns the value of Amount.
-func (s *AllocationCreate) GetAmount() OptString {
+func (s *AllocationCreate) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -4635,7 +4635,7 @@ func (s *AllocationCreate) SetAllocateAllAvailableFunds(val OptNilBool) {
 }
 
 // SetAmount sets the value of Amount.
-func (s *AllocationCreate) SetAmount(val OptString) {
+func (s *AllocationCreate) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -4725,31 +4725,31 @@ type ApiV1postSpendReportQueryResponseObject struct {
 	AccountLabelLessLABELKEYGreater OptString    `json:"account_label:<LABEL_KEY>"`
 	AccountName                     OptString    `json:"account_name"`
 	AccountNumber                   OptString    `json:"account_number"`
-	AttributedSpend                 OptString    `json:"attributed_spend"`
-	BilledSpend                     OptString    `json:"billed_spend"`
+	AttributedSpend                 OptFloat64   `json:"attributed_spend"`
+	BilledSpend                     OptFloat64   `json:"billed_spend"`
 	BillingSourceID                 OptNilUint64 `json:"billing_source_id"`
 	BillingSourceName               OptString    `json:"billing_source_name"`
 	CloudServiceProviderID          OptNilUint64 `json:"cloud_service_provider_id"`
 	CloudServiceProviderName        OptString    `json:"cloud_service_provider_name"`
-	ConfiguredSpend                 OptString    `json:"configured_spend"`
-	Credit                          OptString    `json:"credit"`
-	ListSpend                       OptString    `json:"list_spend"`
+	ConfiguredSpend                 OptFloat64   `json:"configured_spend"`
+	Credit                          OptFloat64   `json:"credit"`
+	ListSpend                       OptFloat64   `json:"list_spend"`
 	Month                           OptUint64    `json:"month"`
-	NetAttributedSpend              OptString    `json:"net_attributed_spend"`
-	NetBilledSpend                  OptString    `json:"net_billed_spend"`
-	NetListSpend                    OptString    `json:"net_list_spend"`
-	NetUnattributedSpend            OptString    `json:"net_unattributed_spend"`
+	NetAttributedSpend              OptFloat64   `json:"net_attributed_spend"`
+	NetBilledSpend                  OptFloat64   `json:"net_billed_spend"`
+	NetListSpend                    OptFloat64   `json:"net_list_spend"`
+	NetUnattributedSpend            OptFloat64   `json:"net_unattributed_spend"`
 	ParentOuID                      OptNilUint64 `json:"parent_ou_id"`
 	ParentOuName                    OptString    `json:"parent_ou_name"`
 	ProjectID                       OptNilUint64 `json:"project_id"`
 	ProjectLabelLessLABELKEYGreater OptString    `json:"project_label:<LABEL_KEY>"`
 	ProjectName                     OptString    `json:"project_name"`
-	Refund                          OptString    `json:"refund"`
+	Refund                          OptFloat64   `json:"refund"`
 	Resource                        OptString    `json:"resource"`
 	Service                         OptString    `json:"service"`
 	TagLessTAGKEYGreater            OptString    `json:"tag:<TAG_KEY>"`
-	UnadjustedSpend                 OptString    `json:"unadjusted_spend"`
-	UnattributedSpend               OptString    `json:"unattributed_spend"`
+	UnadjustedSpend                 OptFloat64   `json:"unadjusted_spend"`
+	UnattributedSpend               OptFloat64   `json:"unattributed_spend"`
 }
 
 // GetAccountID returns the value of AccountID.
@@ -4773,12 +4773,12 @@ func (s *ApiV1postSpendReportQueryResponseObject) GetAccountNumber() OptString {
 }
 
 // GetAttributedSpend returns the value of AttributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetAttributedSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetAttributedSpend() OptFloat64 {
 	return s.AttributedSpend
 }
 
 // GetBilledSpend returns the value of BilledSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetBilledSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetBilledSpend() OptFloat64 {
 	return s.BilledSpend
 }
 
@@ -4803,17 +4803,17 @@ func (s *ApiV1postSpendReportQueryResponseObject) GetCloudServiceProviderName() 
 }
 
 // GetConfiguredSpend returns the value of ConfiguredSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetConfiguredSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetConfiguredSpend() OptFloat64 {
 	return s.ConfiguredSpend
 }
 
 // GetCredit returns the value of Credit.
-func (s *ApiV1postSpendReportQueryResponseObject) GetCredit() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetCredit() OptFloat64 {
 	return s.Credit
 }
 
 // GetListSpend returns the value of ListSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetListSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetListSpend() OptFloat64 {
 	return s.ListSpend
 }
 
@@ -4823,22 +4823,22 @@ func (s *ApiV1postSpendReportQueryResponseObject) GetMonth() OptUint64 {
 }
 
 // GetNetAttributedSpend returns the value of NetAttributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetNetAttributedSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetNetAttributedSpend() OptFloat64 {
 	return s.NetAttributedSpend
 }
 
 // GetNetBilledSpend returns the value of NetBilledSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetNetBilledSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetNetBilledSpend() OptFloat64 {
 	return s.NetBilledSpend
 }
 
 // GetNetListSpend returns the value of NetListSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetNetListSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetNetListSpend() OptFloat64 {
 	return s.NetListSpend
 }
 
 // GetNetUnattributedSpend returns the value of NetUnattributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetNetUnattributedSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetNetUnattributedSpend() OptFloat64 {
 	return s.NetUnattributedSpend
 }
 
@@ -4868,7 +4868,7 @@ func (s *ApiV1postSpendReportQueryResponseObject) GetProjectName() OptString {
 }
 
 // GetRefund returns the value of Refund.
-func (s *ApiV1postSpendReportQueryResponseObject) GetRefund() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetRefund() OptFloat64 {
 	return s.Refund
 }
 
@@ -4888,12 +4888,12 @@ func (s *ApiV1postSpendReportQueryResponseObject) GetTagLessTAGKEYGreater() OptS
 }
 
 // GetUnadjustedSpend returns the value of UnadjustedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetUnadjustedSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetUnadjustedSpend() OptFloat64 {
 	return s.UnadjustedSpend
 }
 
 // GetUnattributedSpend returns the value of UnattributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) GetUnattributedSpend() OptString {
+func (s *ApiV1postSpendReportQueryResponseObject) GetUnattributedSpend() OptFloat64 {
 	return s.UnattributedSpend
 }
 
@@ -4918,12 +4918,12 @@ func (s *ApiV1postSpendReportQueryResponseObject) SetAccountNumber(val OptString
 }
 
 // SetAttributedSpend sets the value of AttributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetAttributedSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetAttributedSpend(val OptFloat64) {
 	s.AttributedSpend = val
 }
 
 // SetBilledSpend sets the value of BilledSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetBilledSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetBilledSpend(val OptFloat64) {
 	s.BilledSpend = val
 }
 
@@ -4948,17 +4948,17 @@ func (s *ApiV1postSpendReportQueryResponseObject) SetCloudServiceProviderName(va
 }
 
 // SetConfiguredSpend sets the value of ConfiguredSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetConfiguredSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetConfiguredSpend(val OptFloat64) {
 	s.ConfiguredSpend = val
 }
 
 // SetCredit sets the value of Credit.
-func (s *ApiV1postSpendReportQueryResponseObject) SetCredit(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetCredit(val OptFloat64) {
 	s.Credit = val
 }
 
 // SetListSpend sets the value of ListSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetListSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetListSpend(val OptFloat64) {
 	s.ListSpend = val
 }
 
@@ -4968,22 +4968,22 @@ func (s *ApiV1postSpendReportQueryResponseObject) SetMonth(val OptUint64) {
 }
 
 // SetNetAttributedSpend sets the value of NetAttributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetNetAttributedSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetNetAttributedSpend(val OptFloat64) {
 	s.NetAttributedSpend = val
 }
 
 // SetNetBilledSpend sets the value of NetBilledSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetNetBilledSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetNetBilledSpend(val OptFloat64) {
 	s.NetBilledSpend = val
 }
 
 // SetNetListSpend sets the value of NetListSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetNetListSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetNetListSpend(val OptFloat64) {
 	s.NetListSpend = val
 }
 
 // SetNetUnattributedSpend sets the value of NetUnattributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetNetUnattributedSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetNetUnattributedSpend(val OptFloat64) {
 	s.NetUnattributedSpend = val
 }
 
@@ -5013,7 +5013,7 @@ func (s *ApiV1postSpendReportQueryResponseObject) SetProjectName(val OptString) 
 }
 
 // SetRefund sets the value of Refund.
-func (s *ApiV1postSpendReportQueryResponseObject) SetRefund(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetRefund(val OptFloat64) {
 	s.Refund = val
 }
 
@@ -5033,12 +5033,12 @@ func (s *ApiV1postSpendReportQueryResponseObject) SetTagLessTAGKEYGreater(val Op
 }
 
 // SetUnadjustedSpend sets the value of UnadjustedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetUnadjustedSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetUnadjustedSpend(val OptFloat64) {
 	s.UnadjustedSpend = val
 }
 
 // SetUnattributedSpend sets the value of UnattributedSpend.
-func (s *ApiV1postSpendReportQueryResponseObject) SetUnattributedSpend(val OptString) {
+func (s *ApiV1postSpendReportQueryResponseObject) SetUnattributedSpend(val OptFloat64) {
 	s.UnattributedSpend = val
 }
 
@@ -10442,7 +10442,7 @@ func (s *BudgetCreate) SetStartDatecode(val string) {
 // Ref: #/components/schemas/BudgetData
 type BudgetData struct {
 	// Amount of the budget entry in dollars.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// Year and month for the budget data entry.
 	Datecode OptString `json:"datecode"`
 	// ID of funding source for the budget entry. This is optional.
@@ -10454,7 +10454,7 @@ type BudgetData struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *BudgetData) GetAmount() OptString {
+func (s *BudgetData) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -10479,7 +10479,7 @@ func (s *BudgetData) GetPriority() OptUint64 {
 }
 
 // SetAmount sets the value of Amount.
-func (s *BudgetData) SetAmount(val OptString) {
+func (s *BudgetData) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -10507,7 +10507,7 @@ func (s *BudgetData) SetPriority(val OptUint64) {
 // Ref: #/components/schemas/BudgetDataCreate
 type BudgetDataCreate struct {
 	// Amount of the budget entry in dollars.
-	Amount string `json:"amount"`
+	Amount float64 `json:"amount"`
 	// Year and month for the budget data entry.
 	Datecode string `json:"datecode"`
 	// ID of funding source for the budget entry. This is optional.
@@ -10517,7 +10517,7 @@ type BudgetDataCreate struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *BudgetDataCreate) GetAmount() string {
+func (s *BudgetDataCreate) GetAmount() float64 {
 	return s.Amount
 }
 
@@ -10537,7 +10537,7 @@ func (s *BudgetDataCreate) GetPriority() OptUint64 {
 }
 
 // SetAmount sets the value of Amount.
-func (s *BudgetDataCreate) SetAmount(val string) {
+func (s *BudgetDataCreate) SetAmount(val float64) {
 	s.Amount = val
 }
 
@@ -19612,22 +19612,22 @@ func (*ExternalIDsResponse) generateExternalIDsRes() {}
 // Ref: #/components/schemas/FSProjectFunding
 type FSProjectFunding struct {
 	// The amount of money available to the project from this funding source.
-	AvailableToProject OptString `json:"available_to_project"`
+	AvailableToProject OptFloat64 `json:"available_to_project"`
 	// The month this funding source stops being usable (YYYY-MM).
 	EndDatecode   OptString        `json:"end_datecode"`
 	FundingSource OptFundingSource `json:"funding_source"`
 	// The amount of money already planned for the project from this funding source.
-	PlannedForProject OptString `json:"planned_for_project"`
+	PlannedForProject OptFloat64 `json:"planned_for_project"`
 	// The amount of money remaining for the project to use from this funding source.
-	RemainingOnProject OptString `json:"remaining_on_project"`
+	RemainingOnProject OptFloat64 `json:"remaining_on_project"`
 	// The amount of money spent on the project from this funding source.
-	SpentOnProject OptString `json:"spent_on_project"`
+	SpentOnProject OptFloat64 `json:"spent_on_project"`
 	// The month this funding source starts being usable (YYYY-MM).
 	StartDatecode OptString `json:"start_datecode"`
 }
 
 // GetAvailableToProject returns the value of AvailableToProject.
-func (s *FSProjectFunding) GetAvailableToProject() OptString {
+func (s *FSProjectFunding) GetAvailableToProject() OptFloat64 {
 	return s.AvailableToProject
 }
 
@@ -19642,17 +19642,17 @@ func (s *FSProjectFunding) GetFundingSource() OptFundingSource {
 }
 
 // GetPlannedForProject returns the value of PlannedForProject.
-func (s *FSProjectFunding) GetPlannedForProject() OptString {
+func (s *FSProjectFunding) GetPlannedForProject() OptFloat64 {
 	return s.PlannedForProject
 }
 
 // GetRemainingOnProject returns the value of RemainingOnProject.
-func (s *FSProjectFunding) GetRemainingOnProject() OptString {
+func (s *FSProjectFunding) GetRemainingOnProject() OptFloat64 {
 	return s.RemainingOnProject
 }
 
 // GetSpentOnProject returns the value of SpentOnProject.
-func (s *FSProjectFunding) GetSpentOnProject() OptString {
+func (s *FSProjectFunding) GetSpentOnProject() OptFloat64 {
 	return s.SpentOnProject
 }
 
@@ -19662,7 +19662,7 @@ func (s *FSProjectFunding) GetStartDatecode() OptString {
 }
 
 // SetAvailableToProject sets the value of AvailableToProject.
-func (s *FSProjectFunding) SetAvailableToProject(val OptString) {
+func (s *FSProjectFunding) SetAvailableToProject(val OptFloat64) {
 	s.AvailableToProject = val
 }
 
@@ -19677,17 +19677,17 @@ func (s *FSProjectFunding) SetFundingSource(val OptFundingSource) {
 }
 
 // SetPlannedForProject sets the value of PlannedForProject.
-func (s *FSProjectFunding) SetPlannedForProject(val OptString) {
+func (s *FSProjectFunding) SetPlannedForProject(val OptFloat64) {
 	s.PlannedForProject = val
 }
 
 // SetRemainingOnProject sets the value of RemainingOnProject.
-func (s *FSProjectFunding) SetRemainingOnProject(val OptString) {
+func (s *FSProjectFunding) SetRemainingOnProject(val OptFloat64) {
 	s.RemainingOnProject = val
 }
 
 // SetSpentOnProject sets the value of SpentOnProject.
-func (s *FSProjectFunding) SetSpentOnProject(val OptString) {
+func (s *FSProjectFunding) SetSpentOnProject(val OptFloat64) {
 	s.SpentOnProject = val
 }
 
@@ -19702,11 +19702,11 @@ type FSProjectFundingWithTotals struct {
 	// A list of project fundings.
 	ProjectFunding OptNilFSProjectFundingArray `json:"project_funding"`
 	// The total amount of money already planned for the project's funding sources.
-	TotalPlanned OptString `json:"total_planned"`
+	TotalPlanned OptFloat64 `json:"total_planned"`
 	// The total amount of money remaining for the project to use from its funding sources.
-	TotalRemaining OptString `json:"total_remaining"`
+	TotalRemaining OptFloat64 `json:"total_remaining"`
 	// The total amount of money spent on the project from its funding sources.
-	TotalSpent OptString `json:"total_spent"`
+	TotalSpent OptFloat64 `json:"total_spent"`
 }
 
 // GetProjectFunding returns the value of ProjectFunding.
@@ -19715,17 +19715,17 @@ func (s *FSProjectFundingWithTotals) GetProjectFunding() OptNilFSProjectFundingA
 }
 
 // GetTotalPlanned returns the value of TotalPlanned.
-func (s *FSProjectFundingWithTotals) GetTotalPlanned() OptString {
+func (s *FSProjectFundingWithTotals) GetTotalPlanned() OptFloat64 {
 	return s.TotalPlanned
 }
 
 // GetTotalRemaining returns the value of TotalRemaining.
-func (s *FSProjectFundingWithTotals) GetTotalRemaining() OptString {
+func (s *FSProjectFundingWithTotals) GetTotalRemaining() OptFloat64 {
 	return s.TotalRemaining
 }
 
 // GetTotalSpent returns the value of TotalSpent.
-func (s *FSProjectFundingWithTotals) GetTotalSpent() OptString {
+func (s *FSProjectFundingWithTotals) GetTotalSpent() OptFloat64 {
 	return s.TotalSpent
 }
 
@@ -19735,17 +19735,17 @@ func (s *FSProjectFundingWithTotals) SetProjectFunding(val OptNilFSProjectFundin
 }
 
 // SetTotalPlanned sets the value of TotalPlanned.
-func (s *FSProjectFundingWithTotals) SetTotalPlanned(val OptString) {
+func (s *FSProjectFundingWithTotals) SetTotalPlanned(val OptFloat64) {
 	s.TotalPlanned = val
 }
 
 // SetTotalRemaining sets the value of TotalRemaining.
-func (s *FSProjectFundingWithTotals) SetTotalRemaining(val OptString) {
+func (s *FSProjectFundingWithTotals) SetTotalRemaining(val OptFloat64) {
 	s.TotalRemaining = val
 }
 
 // SetTotalSpent sets the value of TotalSpent.
-func (s *FSProjectFundingWithTotals) SetTotalSpent(val OptString) {
+func (s *FSProjectFundingWithTotals) SetTotalSpent(val OptFloat64) {
 	s.TotalSpent = val
 }
 
@@ -20634,7 +20634,7 @@ type FundingSouceMonthlyReport struct {
 	// ProjectName is name of the project associated to the report entry.
 	ProjectName OptString `json:"project_name"`
 	// Spend is amount spent for a particular month for the associated report entry.
-	Spend OptString `json:"spend"`
+	Spend OptFloat64 `json:"spend"`
 }
 
 // GetAccountID returns the value of AccountID.
@@ -20688,7 +20688,7 @@ func (s *FundingSouceMonthlyReport) GetProjectName() OptString {
 }
 
 // GetSpend returns the value of Spend.
-func (s *FundingSouceMonthlyReport) GetSpend() OptString {
+func (s *FundingSouceMonthlyReport) GetSpend() OptFloat64 {
 	return s.Spend
 }
 
@@ -20743,7 +20743,7 @@ func (s *FundingSouceMonthlyReport) SetProjectName(val OptString) {
 }
 
 // SetSpend sets the value of Spend.
-func (s *FundingSouceMonthlyReport) SetSpend(val OptString) {
+func (s *FundingSouceMonthlyReport) SetSpend(val OptFloat64) {
 	s.Spend = val
 }
 
@@ -20751,7 +20751,7 @@ func (s *FundingSouceMonthlyReport) SetSpend(val OptString) {
 // Ref: #/components/schemas/FundingSource
 type FundingSource struct {
 	// Amount of the funding source.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// Description for the funding source in the application.
 	Description OptString `json:"description"`
 	// The month this funding source stops being usable - this is exclusive of the date returned
@@ -20769,7 +20769,7 @@ type FundingSource struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *FundingSource) GetAmount() OptString {
+func (s *FundingSource) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -20804,7 +20804,7 @@ func (s *FundingSource) GetStartDatecode() OptString {
 }
 
 // SetAmount sets the value of Amount.
-func (s *FundingSource) SetAmount(val OptString) {
+func (s *FundingSource) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -20842,7 +20842,7 @@ func (s *FundingSource) SetStartDatecode(val OptString) {
 // Ref: #/components/schemas/FundingSourceClone
 type FundingSourceClone struct {
 	// Amount of the funding source.
-	Amount string `json:"amount"`
+	Amount float64 `json:"amount"`
 	// Description for the funding source in the application.
 	Description OptString `json:"description"`
 	// Name of the funding source in the application.
@@ -20858,7 +20858,7 @@ type FundingSourceClone struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *FundingSourceClone) GetAmount() string {
+func (s *FundingSourceClone) GetAmount() float64 {
 	return s.Amount
 }
 
@@ -20893,7 +20893,7 @@ func (s *FundingSourceClone) GetStartDatecode() string {
 }
 
 // SetAmount sets the value of Amount.
-func (s *FundingSourceClone) SetAmount(val string) {
+func (s *FundingSourceClone) SetAmount(val float64) {
 	s.Amount = val
 }
 
@@ -20931,7 +20931,7 @@ func (s *FundingSourceClone) SetStartDatecode(val string) {
 // Ref: #/components/schemas/FundingSourceCreate
 type FundingSourceCreate struct {
 	// Amount of the funding source.
-	Amount string `json:"amount"`
+	Amount float64 `json:"amount"`
 	// Description for the funding source in the application.
 	Description OptString `json:"description"`
 	// The month this funding source stops being usable - this is exclusive of the date returned
@@ -20952,7 +20952,7 @@ type FundingSourceCreate struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *FundingSourceCreate) GetAmount() string {
+func (s *FundingSourceCreate) GetAmount() float64 {
 	return s.Amount
 }
 
@@ -20997,7 +20997,7 @@ func (s *FundingSourceCreate) GetStartDatecode() string {
 }
 
 // SetAmount sets the value of Amount.
-func (s *FundingSourceCreate) SetAmount(val string) {
+func (s *FundingSourceCreate) SetAmount(val float64) {
 	s.Amount = val
 }
 
@@ -21442,87 +21442,87 @@ func (s *FundingSourceEnforcmeent) SetUserIds(val OptNilUint64Array) {
 // Ref: #/components/schemas/FundingSourceFinancials
 type FundingSourceFinancials struct {
 	// Amount of the funding source.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// Amount unspent from the funding source. Equal to amount - spend.
-	AmountUnspent OptString `json:"amount_unspent"`
+	AmountUnspent OptFloat64 `json:"amount_unspent"`
 	// Total amount planned from the funding source.
-	Planned OptString `json:"planned"`
+	Planned OptFloat64 `json:"planned"`
 	// Amount that has been planned but not spent. Equal to planned - spend.
-	PlannedUnspent OptString `json:"planned_unspent"`
+	PlannedUnspent OptFloat64 `json:"planned_unspent"`
 	// Total amount spent from the funding source. Use of `spent` is deprecated, use `spend` instead.
-	Spend OptString `json:"spend"`
-	Spent OptString `json:"spent"`
+	Spend OptFloat64 `json:"spend"`
+	Spent OptFloat64 `json:"spent"`
 	// Amount unplanned from the funding source. Equal to amount - planned.
-	Unplanned OptString `json:"unplanned"`
+	Unplanned OptFloat64 `json:"unplanned"`
 }
 
 // GetAmount returns the value of Amount.
-func (s *FundingSourceFinancials) GetAmount() OptString {
+func (s *FundingSourceFinancials) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
 // GetAmountUnspent returns the value of AmountUnspent.
-func (s *FundingSourceFinancials) GetAmountUnspent() OptString {
+func (s *FundingSourceFinancials) GetAmountUnspent() OptFloat64 {
 	return s.AmountUnspent
 }
 
 // GetPlanned returns the value of Planned.
-func (s *FundingSourceFinancials) GetPlanned() OptString {
+func (s *FundingSourceFinancials) GetPlanned() OptFloat64 {
 	return s.Planned
 }
 
 // GetPlannedUnspent returns the value of PlannedUnspent.
-func (s *FundingSourceFinancials) GetPlannedUnspent() OptString {
+func (s *FundingSourceFinancials) GetPlannedUnspent() OptFloat64 {
 	return s.PlannedUnspent
 }
 
 // GetSpend returns the value of Spend.
-func (s *FundingSourceFinancials) GetSpend() OptString {
+func (s *FundingSourceFinancials) GetSpend() OptFloat64 {
 	return s.Spend
 }
 
 // GetSpent returns the value of Spent.
-func (s *FundingSourceFinancials) GetSpent() OptString {
+func (s *FundingSourceFinancials) GetSpent() OptFloat64 {
 	return s.Spent
 }
 
 // GetUnplanned returns the value of Unplanned.
-func (s *FundingSourceFinancials) GetUnplanned() OptString {
+func (s *FundingSourceFinancials) GetUnplanned() OptFloat64 {
 	return s.Unplanned
 }
 
 // SetAmount sets the value of Amount.
-func (s *FundingSourceFinancials) SetAmount(val OptString) {
+func (s *FundingSourceFinancials) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
 // SetAmountUnspent sets the value of AmountUnspent.
-func (s *FundingSourceFinancials) SetAmountUnspent(val OptString) {
+func (s *FundingSourceFinancials) SetAmountUnspent(val OptFloat64) {
 	s.AmountUnspent = val
 }
 
 // SetPlanned sets the value of Planned.
-func (s *FundingSourceFinancials) SetPlanned(val OptString) {
+func (s *FundingSourceFinancials) SetPlanned(val OptFloat64) {
 	s.Planned = val
 }
 
 // SetPlannedUnspent sets the value of PlannedUnspent.
-func (s *FundingSourceFinancials) SetPlannedUnspent(val OptString) {
+func (s *FundingSourceFinancials) SetPlannedUnspent(val OptFloat64) {
 	s.PlannedUnspent = val
 }
 
 // SetSpend sets the value of Spend.
-func (s *FundingSourceFinancials) SetSpend(val OptString) {
+func (s *FundingSourceFinancials) SetSpend(val OptFloat64) {
 	s.Spend = val
 }
 
 // SetSpent sets the value of Spent.
-func (s *FundingSourceFinancials) SetSpent(val OptString) {
+func (s *FundingSourceFinancials) SetSpent(val OptFloat64) {
 	s.Spent = val
 }
 
 // SetUnplanned sets the value of Unplanned.
-func (s *FundingSourceFinancials) SetUnplanned(val OptString) {
+func (s *FundingSourceFinancials) SetUnplanned(val OptFloat64) {
 	s.Unplanned = val
 }
 
@@ -30912,32 +30912,32 @@ func (s *OUEnforcementUpdate) SetUserIds(val OptNilUint64Array) {
 // Ref: #/components/schemas/OUFunding
 type OUFunding struct {
 	// The amount of money from this funding source allocated to this OU.
-	AllocatedIn OptString `json:"allocated_in"`
+	AllocatedIn OptFloat64 `json:"allocated_in"`
 	// The amount of money already allocated down to lower OUs.
-	AllocatedOut OptString `json:"allocated_out"`
+	AllocatedOut OptFloat64 `json:"allocated_out"`
 	// The amount of money in the OU not currently spent or planned.
-	Available     OptString        `json:"available"`
+	Available     OptFloat64       `json:"available"`
 	FundingSource OptFundingSource `json:"funding_source"`
 	// The amount of money already planned for the projects in this OU.
-	Planned OptString `json:"planned"`
+	Planned OptFloat64 `json:"planned"`
 	// The amount of money already spent by projects in this OU. Use of `spent` is deprecated, use
 	// `spend` instead.
-	Spend OptString `json:"spend"`
-	Spent OptString `json:"spent"`
+	Spend OptFloat64 `json:"spend"`
+	Spent OptFloat64 `json:"spent"`
 }
 
 // GetAllocatedIn returns the value of AllocatedIn.
-func (s *OUFunding) GetAllocatedIn() OptString {
+func (s *OUFunding) GetAllocatedIn() OptFloat64 {
 	return s.AllocatedIn
 }
 
 // GetAllocatedOut returns the value of AllocatedOut.
-func (s *OUFunding) GetAllocatedOut() OptString {
+func (s *OUFunding) GetAllocatedOut() OptFloat64 {
 	return s.AllocatedOut
 }
 
 // GetAvailable returns the value of Available.
-func (s *OUFunding) GetAvailable() OptString {
+func (s *OUFunding) GetAvailable() OptFloat64 {
 	return s.Available
 }
 
@@ -30947,32 +30947,32 @@ func (s *OUFunding) GetFundingSource() OptFundingSource {
 }
 
 // GetPlanned returns the value of Planned.
-func (s *OUFunding) GetPlanned() OptString {
+func (s *OUFunding) GetPlanned() OptFloat64 {
 	return s.Planned
 }
 
 // GetSpend returns the value of Spend.
-func (s *OUFunding) GetSpend() OptString {
+func (s *OUFunding) GetSpend() OptFloat64 {
 	return s.Spend
 }
 
 // GetSpent returns the value of Spent.
-func (s *OUFunding) GetSpent() OptString {
+func (s *OUFunding) GetSpent() OptFloat64 {
 	return s.Spent
 }
 
 // SetAllocatedIn sets the value of AllocatedIn.
-func (s *OUFunding) SetAllocatedIn(val OptString) {
+func (s *OUFunding) SetAllocatedIn(val OptFloat64) {
 	s.AllocatedIn = val
 }
 
 // SetAllocatedOut sets the value of AllocatedOut.
-func (s *OUFunding) SetAllocatedOut(val OptString) {
+func (s *OUFunding) SetAllocatedOut(val OptFloat64) {
 	s.AllocatedOut = val
 }
 
 // SetAvailable sets the value of Available.
-func (s *OUFunding) SetAvailable(val OptString) {
+func (s *OUFunding) SetAvailable(val OptFloat64) {
 	s.Available = val
 }
 
@@ -30982,17 +30982,17 @@ func (s *OUFunding) SetFundingSource(val OptFundingSource) {
 }
 
 // SetPlanned sets the value of Planned.
-func (s *OUFunding) SetPlanned(val OptString) {
+func (s *OUFunding) SetPlanned(val OptFloat64) {
 	s.Planned = val
 }
 
 // SetSpend sets the value of Spend.
-func (s *OUFunding) SetSpend(val OptString) {
+func (s *OUFunding) SetSpend(val OptFloat64) {
 	s.Spend = val
 }
 
 // SetSpent sets the value of Spent.
-func (s *OUFunding) SetSpent(val OptString) {
+func (s *OUFunding) SetSpent(val OptFloat64) {
 	s.Spent = val
 }
 
@@ -54294,7 +54294,7 @@ func (s *ProjectEnforcementUsers) SetUserIds(val OptNilUint64Array) {
 // ProjectFunding represents a project funding record in the system.
 // Ref: #/components/schemas/ProjectFunding
 type ProjectFunding struct {
-	Amount          OptString    `json:"amount"`
+	Amount          OptFloat64   `json:"amount"`
 	EndDatecode     OptInt64     `json:"end_datecode"`
 	FundingOrder    OptInt64     `json:"funding_order"`
 	FundingSourceID OptNilUint64 `json:"funding_source_id"`
@@ -54304,7 +54304,7 @@ type ProjectFunding struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *ProjectFunding) GetAmount() OptString {
+func (s *ProjectFunding) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -54339,7 +54339,7 @@ func (s *ProjectFunding) GetStartDatecode() OptInt64 {
 }
 
 // SetAmount sets the value of Amount.
-func (s *ProjectFunding) SetAmount(val OptString) {
+func (s *ProjectFunding) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -54377,7 +54377,7 @@ func (s *ProjectFunding) SetStartDatecode(val OptInt64) {
 // Ref: #/components/schemas/ProjectFundingCreate
 type ProjectFundingCreate struct {
 	// Amount of funding from the funding source.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// The month this funding source stops being usable - this is exclusive of the date returned
 	// (YYYY-MM).
 	EndDatecode OptString `json:"end_datecode"`
@@ -54391,7 +54391,7 @@ type ProjectFundingCreate struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *ProjectFundingCreate) GetAmount() OptString {
+func (s *ProjectFundingCreate) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -54416,7 +54416,7 @@ func (s *ProjectFundingCreate) GetStartDatecode() OptString {
 }
 
 // SetAmount sets the value of Amount.
-func (s *ProjectFundingCreate) SetAmount(val OptString) {
+func (s *ProjectFundingCreate) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -54473,7 +54473,7 @@ func (*ProjectFundingResponse) getFundingByProjectIDRes() {}
 // Ref: #/components/schemas/ProjectFundingUpdate
 type ProjectFundingUpdate struct {
 	// Amount of funding from the funding source.
-	Amount string `json:"amount"`
+	Amount float64 `json:"amount"`
 	// The month this funding source stops being usable (YYYY-MM).
 	EndDatecode string `json:"end_datecode"`
 	// ID of the funding source the money is coming from.
@@ -54483,7 +54483,7 @@ type ProjectFundingUpdate struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *ProjectFundingUpdate) GetAmount() string {
+func (s *ProjectFundingUpdate) GetAmount() float64 {
 	return s.Amount
 }
 
@@ -54503,7 +54503,7 @@ func (s *ProjectFundingUpdate) GetStartDatecode() string {
 }
 
 // SetAmount sets the value of Amount.
-func (s *ProjectFundingUpdate) SetAmount(val string) {
+func (s *ProjectFundingUpdate) SetAmount(val float64) {
 	s.Amount = val
 }
 
@@ -54627,7 +54627,7 @@ func (*ProjectLineBulkEditResponse) bulkeditProjectLineItemRes() {}
 // Ref: #/components/schemas/ProjectLineItem
 type ProjectLineItem struct {
 	// Amount for the project line item in the application.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// Category ID of related Category of the Project Line Item in the application.
 	CategoryID OptNilUint64 `json:"category_id"`
 	// Datecode for the project line item in the application.
@@ -54645,7 +54645,7 @@ type ProjectLineItem struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *ProjectLineItem) GetAmount() OptString {
+func (s *ProjectLineItem) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -54685,7 +54685,7 @@ func (s *ProjectLineItem) GetProjectID() OptNilUint64 {
 }
 
 // SetAmount sets the value of Amount.
-func (s *ProjectLineItem) SetAmount(val OptString) {
+func (s *ProjectLineItem) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -54728,7 +54728,7 @@ func (s *ProjectLineItem) SetProjectID(val OptNilUint64) {
 // Ref: #/components/schemas/ProjectLineItemCreate
 type ProjectLineItemCreate struct {
 	// Amount for the project line item in the application.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// Category ID of related Category of the Project Line Item in the application.
 	CategoryID OptNilUint64 `json:"category_id"`
 	// Datecode for the project line item in the application.
@@ -54744,7 +54744,7 @@ type ProjectLineItemCreate struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *ProjectLineItemCreate) GetAmount() OptString {
+func (s *ProjectLineItemCreate) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -54779,7 +54779,7 @@ func (s *ProjectLineItemCreate) GetProjectID() OptNilUint64 {
 }
 
 // SetAmount sets the value of Amount.
-func (s *ProjectLineItemCreate) SetAmount(val OptString) {
+func (s *ProjectLineItemCreate) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -55222,34 +55222,34 @@ func (*ProjectResponse) getProjectRes() {}
 type ProjectSpending struct {
 	// Amount of spend covered by cloid provider credits. Use of `credits` is deprecated, use `credit`
 	// instead.
-	Credit  OptString `json:"credit"`
-	Credits OptString `json:"credits"`
+	Credit  OptFloat64 `json:"credit"`
+	Credits OptFloat64 `json:"credits"`
 	// The last date of the reported spending (YYYY-MM).
 	EndDatecode OptString `json:"end_datecode"`
 	// The first date of spending not covered by a funding source (YYYY-MM).
 	// An empty string means there is no lapsed funding.
 	LapsedDatecode OptString `json:"lapsed_datecode"`
 	// Amount added to the project's spend plan.
-	Planned OptString `json:"planned"`
+	Planned OptFloat64 `json:"planned"`
 	// The amount of money spent in cloud prviders during the previous month. Use of
 	// `previous_month_spent` is deprecated, use `previous_month_spend`.
-	PreviousMonthSpend OptString `json:"previous_month_spend"`
-	PreviousMonthSpent OptString `json:"previous_month_spent"`
+	PreviousMonthSpend OptFloat64 `json:"previous_month_spend"`
+	PreviousMonthSpent OptFloat64 `json:"previous_month_spent"`
 	// The amount of money spent in cloud prviders.
-	Spend OptString `json:"spend"`
+	Spend OptFloat64 `json:"spend"`
 	// The first date of the reported spending (YYYY-MM).
 	StartDatecode OptString `json:"start_datecode"`
 	// Percentage the current time is between the start date and end date.
-	TimePercentage OptString `json:"time_percentage"`
+	TimePercentage OptFloat64 `json:"time_percentage"`
 }
 
 // GetCredit returns the value of Credit.
-func (s *ProjectSpending) GetCredit() OptString {
+func (s *ProjectSpending) GetCredit() OptFloat64 {
 	return s.Credit
 }
 
 // GetCredits returns the value of Credits.
-func (s *ProjectSpending) GetCredits() OptString {
+func (s *ProjectSpending) GetCredits() OptFloat64 {
 	return s.Credits
 }
 
@@ -55264,22 +55264,22 @@ func (s *ProjectSpending) GetLapsedDatecode() OptString {
 }
 
 // GetPlanned returns the value of Planned.
-func (s *ProjectSpending) GetPlanned() OptString {
+func (s *ProjectSpending) GetPlanned() OptFloat64 {
 	return s.Planned
 }
 
 // GetPreviousMonthSpend returns the value of PreviousMonthSpend.
-func (s *ProjectSpending) GetPreviousMonthSpend() OptString {
+func (s *ProjectSpending) GetPreviousMonthSpend() OptFloat64 {
 	return s.PreviousMonthSpend
 }
 
 // GetPreviousMonthSpent returns the value of PreviousMonthSpent.
-func (s *ProjectSpending) GetPreviousMonthSpent() OptString {
+func (s *ProjectSpending) GetPreviousMonthSpent() OptFloat64 {
 	return s.PreviousMonthSpent
 }
 
 // GetSpend returns the value of Spend.
-func (s *ProjectSpending) GetSpend() OptString {
+func (s *ProjectSpending) GetSpend() OptFloat64 {
 	return s.Spend
 }
 
@@ -55289,17 +55289,17 @@ func (s *ProjectSpending) GetStartDatecode() OptString {
 }
 
 // GetTimePercentage returns the value of TimePercentage.
-func (s *ProjectSpending) GetTimePercentage() OptString {
+func (s *ProjectSpending) GetTimePercentage() OptFloat64 {
 	return s.TimePercentage
 }
 
 // SetCredit sets the value of Credit.
-func (s *ProjectSpending) SetCredit(val OptString) {
+func (s *ProjectSpending) SetCredit(val OptFloat64) {
 	s.Credit = val
 }
 
 // SetCredits sets the value of Credits.
-func (s *ProjectSpending) SetCredits(val OptString) {
+func (s *ProjectSpending) SetCredits(val OptFloat64) {
 	s.Credits = val
 }
 
@@ -55314,22 +55314,22 @@ func (s *ProjectSpending) SetLapsedDatecode(val OptString) {
 }
 
 // SetPlanned sets the value of Planned.
-func (s *ProjectSpending) SetPlanned(val OptString) {
+func (s *ProjectSpending) SetPlanned(val OptFloat64) {
 	s.Planned = val
 }
 
 // SetPreviousMonthSpend sets the value of PreviousMonthSpend.
-func (s *ProjectSpending) SetPreviousMonthSpend(val OptString) {
+func (s *ProjectSpending) SetPreviousMonthSpend(val OptFloat64) {
 	s.PreviousMonthSpend = val
 }
 
 // SetPreviousMonthSpent sets the value of PreviousMonthSpent.
-func (s *ProjectSpending) SetPreviousMonthSpent(val OptString) {
+func (s *ProjectSpending) SetPreviousMonthSpent(val OptFloat64) {
 	s.PreviousMonthSpent = val
 }
 
 // SetSpend sets the value of Spend.
-func (s *ProjectSpending) SetSpend(val OptString) {
+func (s *ProjectSpending) SetSpend(val OptFloat64) {
 	s.Spend = val
 }
 
@@ -55339,7 +55339,7 @@ func (s *ProjectSpending) SetStartDatecode(val OptString) {
 }
 
 // SetTimePercentage sets the value of TimePercentage.
-func (s *ProjectSpending) SetTimePercentage(val OptString) {
+func (s *ProjectSpending) SetTimePercentage(val OptFloat64) {
 	s.TimePercentage = val
 }
 
@@ -55674,7 +55674,7 @@ func (*ReattemptsNeededResponse) reattemptWebhookDeleteRes() {}
 // Ref: #/components/schemas/RecallCreate
 type RecallCreate struct {
 	// Amount of money being recalled from one OU to another.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// Comments about the recall.
 	Comments OptString `json:"comments"`
 	// The ID of the OU the money will be coming from.
@@ -55689,7 +55689,7 @@ type RecallCreate struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *RecallCreate) GetAmount() OptString {
+func (s *RecallCreate) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -55719,7 +55719,7 @@ func (s *RecallCreate) GetToOuID() NilUint64 {
 }
 
 // SetAmount sets the value of Amount.
-func (s *RecallCreate) SetAmount(val OptString) {
+func (s *RecallCreate) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -58050,7 +58050,7 @@ func (s *SpendPlanReprioritize) SetNewMinusOrder(val OptNilUint64Array) {
 // Ref: #/components/schemas/SpendPlanV4Patch
 type SpendPlanV4Patch struct {
 	// Amount of funding from the funding source.
-	Amount OptString `json:"amount"`
+	Amount OptFloat64 `json:"amount"`
 	// The month this funding source stops being usable (YYYY-MM).
 	EndDatecode OptString `json:"end_datecode"`
 	// ID of the funding source the money is coming from.
@@ -58060,7 +58060,7 @@ type SpendPlanV4Patch struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *SpendPlanV4Patch) GetAmount() OptString {
+func (s *SpendPlanV4Patch) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -58080,7 +58080,7 @@ func (s *SpendPlanV4Patch) GetStartDatecode() OptString {
 }
 
 // SetAmount sets the value of Amount.
-func (s *SpendPlanV4Patch) SetAmount(val OptString) {
+func (s *SpendPlanV4Patch) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -58119,7 +58119,7 @@ func (s *SpendPlanV4PatchList) SetSpendMinusPlan(val OptNilSpendPlanV4PatchArray
 // Ref: #/components/schemas/SpendPlanV4Put
 type SpendPlanV4Put struct {
 	// Amount of funding from the funding source.
-	Amount string `json:"amount"`
+	Amount float64 `json:"amount"`
 	// The month this funding source stops being usable (YYYY-MM).
 	EndDatecode string `json:"end_datecode"`
 	// ID of the funding source the money is coming from.
@@ -58129,7 +58129,7 @@ type SpendPlanV4Put struct {
 }
 
 // GetAmount returns the value of Amount.
-func (s *SpendPlanV4Put) GetAmount() string {
+func (s *SpendPlanV4Put) GetAmount() float64 {
 	return s.Amount
 }
 
@@ -58149,7 +58149,7 @@ func (s *SpendPlanV4Put) GetStartDatecode() string {
 }
 
 // SetAmount sets the value of Amount.
-func (s *SpendPlanV4Put) SetAmount(val string) {
+func (s *SpendPlanV4Put) SetAmount(val float64) {
 	s.Amount = val
 }
 
@@ -58438,13 +58438,13 @@ func (s *SpendReportQueryFilterTags) init() SpendReportQueryFilterTags {
 type SpendSummary struct {
 	// Account ID.
 	AccountID OptNilUint64 `json:"account_id"`
-	Amount    OptString    `json:"amount"`
+	Amount    OptFloat64   `json:"amount"`
 	// Funding source ID.
 	FundingSourceID OptNilUint64 `json:"funding_source_id"`
 	// Project ID.
 	ProjectID OptNilUint64 `json:"project_id"`
 	// Spend amount.
-	Spend OptString `json:"spend"`
+	Spend OptFloat64 `json:"spend"`
 }
 
 // GetAccountID returns the value of AccountID.
@@ -58453,7 +58453,7 @@ func (s *SpendSummary) GetAccountID() OptNilUint64 {
 }
 
 // GetAmount returns the value of Amount.
-func (s *SpendSummary) GetAmount() OptString {
+func (s *SpendSummary) GetAmount() OptFloat64 {
 	return s.Amount
 }
 
@@ -58468,7 +58468,7 @@ func (s *SpendSummary) GetProjectID() OptNilUint64 {
 }
 
 // GetSpend returns the value of Spend.
-func (s *SpendSummary) GetSpend() OptString {
+func (s *SpendSummary) GetSpend() OptFloat64 {
 	return s.Spend
 }
 
@@ -58478,7 +58478,7 @@ func (s *SpendSummary) SetAccountID(val OptNilUint64) {
 }
 
 // SetAmount sets the value of Amount.
-func (s *SpendSummary) SetAmount(val OptString) {
+func (s *SpendSummary) SetAmount(val OptFloat64) {
 	s.Amount = val
 }
 
@@ -58493,7 +58493,7 @@ func (s *SpendSummary) SetProjectID(val OptNilUint64) {
 }
 
 // SetSpend sets the value of Spend.
-func (s *SpendSummary) SetSpend(val OptString) {
+func (s *SpendSummary) SetSpend(val OptFloat64) {
 	s.Spend = val
 }
 
