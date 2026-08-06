@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-08-05
+
+### Fixed
+
+- **BREAKING**: **monetary/decimal fields are now numbers, not strings** — every version, every
+  lane (364 fields: 60/63/63/59/59/60 across `master`, `v3_12`–`v3_16`). Portal models these as
+  shopspring `decimal.Decimal` and sets `decimal.MarshalJSONWithoutQuotes = true`
+  (`src/app/webapi/main.go`), so they go over the wire as bare JSON numbers — `{"amount": 10000}` —
+  while the swagger declared them `type: string` alongside `x-go-type: …decimal.Decimal`. The
+  `x-go-type` carried the real intent, but ogen (and every other generator) keys off `type`.
+
+  The Go client therefore **failed to decode any response containing a decimal**:
+
+      decode field "amount": unexpected byte 49 '1'
+
+  Reading a funding source errored outright; budgets, project funding and spend were affected too.
+  Python and TypeScript typed the same fields as `str`/`string`, silently disagreeing with the
+  server. Found by running the Terraform provider against a live Kion.
+
+  `fixspec` now retypes `string` + `x-go-type=decimal.Decimal` to `number`/`double`
+  (`fixDecimalNumbers`). Consumers reading or writing these fields must switch from
+  string handling to numeric: Go `OptString`→`OptFloat64`, Python `str`→`float`,
+  TypeScript `string`→`number`.
+
+### Changed
+
+- Go lane CI caches `GOCACHE`/`GOMODCACHE`/`GOLANGCI_LINT_CACHE` and installs a pinned prebuilt
+  golangci-lint instead of compiling it from source each run (`quality:go` ≈567s → ≈250s).
+- **BREAKING** (python): `from_dict` now returns `Self` instead of a `TypeVar`-bound `T`, and no
+  longer takes `cls: type[T]`. This comes from regenerating with the pinned
+  openapi-python-client 0.29.0 — the committed client predated that template change. Affects
+  4,167 of 4,291 model files. Note the generator still emits a now-unused
+  `T = TypeVar("T", bound=…)` in each file; that is upstream template debt, not a usage change.
+
+### Added
+
+- The python and ts lanes now regenerate from the shared spec and test the **regenerated** client,
+  as the go lane already did (`generate:python`, `generate:ts`). Nothing previously verified those
+  two lanes could still be generated at all — which is why five of six versions kept the decimal
+  bug after it was fixed for `v3_16`.
+- `mypy` in the python lane, covering the generated client (~3.24M lines), which had no static
+  checking of any kind.
+
 ## [0.7.0] - 2026-08-04
 
 ### Added
