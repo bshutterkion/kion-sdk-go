@@ -3671,7 +3671,7 @@ type Invoker interface {
 	// Tests a custom billing source.
 	//
 	// POST /v3/billing-source/test-custom
-	PostTestCustomBillingSource(ctx context.Context, request *CustomBillingSource) (PostTestCustomBillingSourceRes, error)
+	PostTestCustomBillingSource(ctx context.Context, request *CustomBillingSourceTestRequest) (PostTestCustomBillingSourceRes, error)
 	// PostTestGCPBillingSource invokes PostTestGCPBillingSource operation.
 	//
 	// Tests a gcp billing source.
@@ -83054,12 +83054,12 @@ func (c *Client) sendPostTestBillingSource(ctx context.Context, request *AWSBill
 // Tests a custom billing source.
 //
 // POST /v3/billing-source/test-custom
-func (c *Client) PostTestCustomBillingSource(ctx context.Context, request *CustomBillingSource) (PostTestCustomBillingSourceRes, error) {
+func (c *Client) PostTestCustomBillingSource(ctx context.Context, request *CustomBillingSourceTestRequest) (PostTestCustomBillingSourceRes, error) {
 	res, err := c.sendPostTestCustomBillingSource(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendPostTestCustomBillingSource(ctx context.Context, request *CustomBillingSource) (res PostTestCustomBillingSourceRes, err error) {
+func (c *Client) sendPostTestCustomBillingSource(ctx context.Context, request *CustomBillingSourceTestRequest) (res PostTestCustomBillingSourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("PostTestCustomBillingSource"),
 		semconv.HTTPRequestMethodKey.String("POST"),

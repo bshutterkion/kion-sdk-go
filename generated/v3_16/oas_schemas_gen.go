@@ -4663,6 +4663,7 @@ func (s *AllocationCreate) SetToOuID(val NilUint64) {
 // Ref: #/components/schemas/AnthropicBillingSource
 type AnthropicBillingSource struct {
 	AdminAPIKey      OptString `json:"admin_api_key"`
+	AnalyticsAPIKey  OptString `json:"analytics_api_key"`
 	BillingStartDate OptString `json:"billing_start_date"`
 	ID               OptUint64 `json:"id"`
 	Name             OptString `json:"name"`
@@ -4672,6 +4673,11 @@ type AnthropicBillingSource struct {
 // GetAdminAPIKey returns the value of AdminAPIKey.
 func (s *AnthropicBillingSource) GetAdminAPIKey() OptString {
 	return s.AdminAPIKey
+}
+
+// GetAnalyticsAPIKey returns the value of AnalyticsAPIKey.
+func (s *AnthropicBillingSource) GetAnalyticsAPIKey() OptString {
+	return s.AnalyticsAPIKey
 }
 
 // GetBillingStartDate returns the value of BillingStartDate.
@@ -4697,6 +4703,11 @@ func (s *AnthropicBillingSource) GetOrganizationID() OptString {
 // SetAdminAPIKey sets the value of AdminAPIKey.
 func (s *AnthropicBillingSource) SetAdminAPIKey(val OptString) {
 	s.AdminAPIKey = val
+}
+
+// SetAnalyticsAPIKey sets the value of AnalyticsAPIKey.
+func (s *AnthropicBillingSource) SetAnalyticsAPIKey(val OptString) {
+	s.AnalyticsAPIKey = val
 }
 
 // SetBillingStartDate sets the value of BillingStartDate.
@@ -10153,8 +10164,7 @@ func (s *BillingSourceTestResponse) SetStatus(val OptInt64) {
 	s.Status = val
 }
 
-func (*BillingSourceTestResponse) postTestBillingSourceRes()       {}
-func (*BillingSourceTestResponse) postTestCustomBillingSourceRes() {}
+func (*BillingSourceTestResponse) postTestBillingSourceRes() {}
 
 // BillingSourcesPaginated defines a paginated list of billing sources.
 // Ref: #/components/schemas/BillingSourcesPaginated
@@ -18067,7 +18077,8 @@ func (s *CustomAccountCreate) SetStartDatecode(val string) {
 // CustomBillingSource defines a custom billing source.
 // Ref: #/components/schemas/CustomBillingSource
 type CustomBillingSource struct {
-	AWSConnection OptCustomBillingSourceAWSConnection `json:"aws_connection"`
+	AWSConnection   OptCustomBillingSourceAWSConnection   `json:"aws_connection"`
+	AzureConnection OptCustomBillingSourceAzureConnection `json:"azure_connection"`
 	// Start date of billing source (YYYY-MM).
 	BillingStartDate OptString `json:"billing_start_date"`
 	// ID of the billing source.
@@ -18079,6 +18090,11 @@ type CustomBillingSource struct {
 // GetAWSConnection returns the value of AWSConnection.
 func (s *CustomBillingSource) GetAWSConnection() OptCustomBillingSourceAWSConnection {
 	return s.AWSConnection
+}
+
+// GetAzureConnection returns the value of AzureConnection.
+func (s *CustomBillingSource) GetAzureConnection() OptCustomBillingSourceAzureConnection {
+	return s.AzureConnection
 }
 
 // GetBillingStartDate returns the value of BillingStartDate.
@@ -18099,6 +18115,11 @@ func (s *CustomBillingSource) GetName() OptString {
 // SetAWSConnection sets the value of AWSConnection.
 func (s *CustomBillingSource) SetAWSConnection(val OptCustomBillingSourceAWSConnection) {
 	s.AWSConnection = val
+}
+
+// SetAzureConnection sets the value of AzureConnection.
+func (s *CustomBillingSource) SetAzureConnection(val OptCustomBillingSourceAzureConnection) {
+	s.AzureConnection = val
 }
 
 // SetBillingStartDate sets the value of BillingStartDate.
@@ -18246,9 +18267,117 @@ func (s *CustomBillingSourceAWSConnectionUpdate) SetStorageRegion(val OptString)
 	s.StorageRegion = val
 }
 
+// CustomBillingSourceAzureConnection defines the Azure storage connection for a custom
+// billing source. Provide either credentialed_billing_source_id (reuse an existing Azure
+// billing source's tenant credentials) or the tenant credential fields, not both.
+// Ref: #/components/schemas/CustomBillingSourceAzureConnection
+type CustomBillingSourceAzureConnection struct {
+	// ID of an existing Azure billing source whose tenant credentials will be used to
+	// access the storage account.
+	CredentialedBillingSourceID OptNilUint64 `json:"credentialed_billing_source_id"`
+	// Storage container where the custom provider's financial data is stored.
+	StorageContainer OptString `json:"storage_container"`
+	// Storage prefix inside the container where the custom provider's financial data is stored.
+	StoragePrefix OptString `json:"storage_prefix"`
+	// Primary blob endpoint of the storage account that holds the custom provider's
+	// financial data.
+	StoragePrimaryEndpoint OptString `json:"storage_primary_endpoint"`
+	// App registration (client) ID when providing tenant credentials directly.
+	TenantAppID OptString `json:"tenant_app_id"`
+	// Client secret for the app registration. When updating an existing billing source,
+	// leaving blank will leave existing secret as-is.
+	TenantClientSecret OptString `json:"tenant_client_secret"`
+	// Cloud partition of the tenant when providing tenant credentials directly.
+	// 1 = commercial, 2 = government, 3 = secret, 4 = top secret.
+	TenantCloudPartitionID OptNilUint64 `json:"tenant_cloud_partition_id"`
+	// Tenant domain when providing tenant credentials directly.
+	TenantDomain OptString `json:"tenant_domain"`
+}
+
+// GetCredentialedBillingSourceID returns the value of CredentialedBillingSourceID.
+func (s *CustomBillingSourceAzureConnection) GetCredentialedBillingSourceID() OptNilUint64 {
+	return s.CredentialedBillingSourceID
+}
+
+// GetStorageContainer returns the value of StorageContainer.
+func (s *CustomBillingSourceAzureConnection) GetStorageContainer() OptString {
+	return s.StorageContainer
+}
+
+// GetStoragePrefix returns the value of StoragePrefix.
+func (s *CustomBillingSourceAzureConnection) GetStoragePrefix() OptString {
+	return s.StoragePrefix
+}
+
+// GetStoragePrimaryEndpoint returns the value of StoragePrimaryEndpoint.
+func (s *CustomBillingSourceAzureConnection) GetStoragePrimaryEndpoint() OptString {
+	return s.StoragePrimaryEndpoint
+}
+
+// GetTenantAppID returns the value of TenantAppID.
+func (s *CustomBillingSourceAzureConnection) GetTenantAppID() OptString {
+	return s.TenantAppID
+}
+
+// GetTenantClientSecret returns the value of TenantClientSecret.
+func (s *CustomBillingSourceAzureConnection) GetTenantClientSecret() OptString {
+	return s.TenantClientSecret
+}
+
+// GetTenantCloudPartitionID returns the value of TenantCloudPartitionID.
+func (s *CustomBillingSourceAzureConnection) GetTenantCloudPartitionID() OptNilUint64 {
+	return s.TenantCloudPartitionID
+}
+
+// GetTenantDomain returns the value of TenantDomain.
+func (s *CustomBillingSourceAzureConnection) GetTenantDomain() OptString {
+	return s.TenantDomain
+}
+
+// SetCredentialedBillingSourceID sets the value of CredentialedBillingSourceID.
+func (s *CustomBillingSourceAzureConnection) SetCredentialedBillingSourceID(val OptNilUint64) {
+	s.CredentialedBillingSourceID = val
+}
+
+// SetStorageContainer sets the value of StorageContainer.
+func (s *CustomBillingSourceAzureConnection) SetStorageContainer(val OptString) {
+	s.StorageContainer = val
+}
+
+// SetStoragePrefix sets the value of StoragePrefix.
+func (s *CustomBillingSourceAzureConnection) SetStoragePrefix(val OptString) {
+	s.StoragePrefix = val
+}
+
+// SetStoragePrimaryEndpoint sets the value of StoragePrimaryEndpoint.
+func (s *CustomBillingSourceAzureConnection) SetStoragePrimaryEndpoint(val OptString) {
+	s.StoragePrimaryEndpoint = val
+}
+
+// SetTenantAppID sets the value of TenantAppID.
+func (s *CustomBillingSourceAzureConnection) SetTenantAppID(val OptString) {
+	s.TenantAppID = val
+}
+
+// SetTenantClientSecret sets the value of TenantClientSecret.
+func (s *CustomBillingSourceAzureConnection) SetTenantClientSecret(val OptString) {
+	s.TenantClientSecret = val
+}
+
+// SetTenantCloudPartitionID sets the value of TenantCloudPartitionID.
+func (s *CustomBillingSourceAzureConnection) SetTenantCloudPartitionID(val OptNilUint64) {
+	s.TenantCloudPartitionID = val
+}
+
+// SetTenantDomain sets the value of TenantDomain.
+func (s *CustomBillingSourceAzureConnection) SetTenantDomain(val OptString) {
+	s.TenantDomain = val
+}
+
 // Ref: #/components/schemas/CustomBillingSourceCreate
 type CustomBillingSourceCreate struct {
-	AWSConnection OptCustomBillingSourceAWSConnection `json:"aws_connection"`
+	AWSConnection   OptCustomBillingSourceAWSConnection   `json:"aws_connection"`
+	AzureConnection OptCustomBillingSourceAzureConnection `json:"azure_connection"`
 	// Start date of billing source (YYYY-MM).
 	BillingStartDate OptString `json:"billing_start_date"`
 	// ID of the billing source.
@@ -18262,6 +18391,11 @@ type CustomBillingSourceCreate struct {
 // GetAWSConnection returns the value of AWSConnection.
 func (s *CustomBillingSourceCreate) GetAWSConnection() OptCustomBillingSourceAWSConnection {
 	return s.AWSConnection
+}
+
+// GetAzureConnection returns the value of AzureConnection.
+func (s *CustomBillingSourceCreate) GetAzureConnection() OptCustomBillingSourceAzureConnection {
+	return s.AzureConnection
 }
 
 // GetBillingStartDate returns the value of BillingStartDate.
@@ -18289,6 +18423,11 @@ func (s *CustomBillingSourceCreate) SetAWSConnection(val OptCustomBillingSourceA
 	s.AWSConnection = val
 }
 
+// SetAzureConnection sets the value of AzureConnection.
+func (s *CustomBillingSourceCreate) SetAzureConnection(val OptCustomBillingSourceAzureConnection) {
+	s.AzureConnection = val
+}
+
 // SetBillingStartDate sets the value of BillingStartDate.
 func (s *CustomBillingSourceCreate) SetBillingStartDate(val OptString) {
 	s.BillingStartDate = val
@@ -18309,9 +18448,14 @@ func (s *CustomBillingSourceCreate) SetSkipValidation(val OptNilBool) {
 	s.SkipValidation = val
 }
 
-// Ref: #/components/schemas/CustomBillingSourceUpdate
-type CustomBillingSourceUpdate struct {
-	AWSConnection OptCustomBillingSourceAWSConnectionUpdate `json:"aws_connection"`
+// CustomBillingSourceTestRequest defines a request to test a custom billing source.
+// Ref: #/components/schemas/CustomBillingSourceTestRequest
+type CustomBillingSourceTestRequest struct {
+	AWSConnection   OptCustomBillingSourceAWSConnection   `json:"aws_connection"`
+	AzureConnection OptCustomBillingSourceAzureConnection `json:"azure_connection"`
+	// ID of an existing billing source. Provide to test a saved custom billing
+	// source using its stored credentials.
+	BillingSourceID OptNilUint64 `json:"billing_source_id"`
 	// Start date of billing source (YYYY-MM).
 	BillingStartDate OptString `json:"billing_start_date"`
 	// Name of the billing source.
@@ -18319,8 +18463,180 @@ type CustomBillingSourceUpdate struct {
 }
 
 // GetAWSConnection returns the value of AWSConnection.
+func (s *CustomBillingSourceTestRequest) GetAWSConnection() OptCustomBillingSourceAWSConnection {
+	return s.AWSConnection
+}
+
+// GetAzureConnection returns the value of AzureConnection.
+func (s *CustomBillingSourceTestRequest) GetAzureConnection() OptCustomBillingSourceAzureConnection {
+	return s.AzureConnection
+}
+
+// GetBillingSourceID returns the value of BillingSourceID.
+func (s *CustomBillingSourceTestRequest) GetBillingSourceID() OptNilUint64 {
+	return s.BillingSourceID
+}
+
+// GetBillingStartDate returns the value of BillingStartDate.
+func (s *CustomBillingSourceTestRequest) GetBillingStartDate() OptString {
+	return s.BillingStartDate
+}
+
+// GetName returns the value of Name.
+func (s *CustomBillingSourceTestRequest) GetName() OptString {
+	return s.Name
+}
+
+// SetAWSConnection sets the value of AWSConnection.
+func (s *CustomBillingSourceTestRequest) SetAWSConnection(val OptCustomBillingSourceAWSConnection) {
+	s.AWSConnection = val
+}
+
+// SetAzureConnection sets the value of AzureConnection.
+func (s *CustomBillingSourceTestRequest) SetAzureConnection(val OptCustomBillingSourceAzureConnection) {
+	s.AzureConnection = val
+}
+
+// SetBillingSourceID sets the value of BillingSourceID.
+func (s *CustomBillingSourceTestRequest) SetBillingSourceID(val OptNilUint64) {
+	s.BillingSourceID = val
+}
+
+// SetBillingStartDate sets the value of BillingStartDate.
+func (s *CustomBillingSourceTestRequest) SetBillingStartDate(val OptString) {
+	s.BillingStartDate = val
+}
+
+// SetName sets the value of Name.
+func (s *CustomBillingSourceTestRequest) SetName(val OptString) {
+	s.Name = val
+}
+
+type CustomBillingSourceTestResponse struct {
+	Data OptCustomBillingSourceTestResults `json:"data"`
+	// HTTP status code.
+	Status OptInt64 `json:"status"`
+}
+
+// GetData returns the value of Data.
+func (s *CustomBillingSourceTestResponse) GetData() OptCustomBillingSourceTestResults {
+	return s.Data
+}
+
+// GetStatus returns the value of Status.
+func (s *CustomBillingSourceTestResponse) GetStatus() OptInt64 {
+	return s.Status
+}
+
+// SetData sets the value of Data.
+func (s *CustomBillingSourceTestResponse) SetData(val OptCustomBillingSourceTestResults) {
+	s.Data = val
+}
+
+// SetStatus sets the value of Status.
+func (s *CustomBillingSourceTestResponse) SetStatus(val OptInt64) {
+	s.Status = val
+}
+
+func (*CustomBillingSourceTestResponse) postTestCustomBillingSourceRes() {}
+
+// CustomBillingSourceTestResults defines the results of a custom billing source test.
+// Ref: #/components/schemas/CustomBillingSourceTestResults
+type CustomBillingSourceTestResults struct {
+	// When true, Kion is able to connect to the account where the custom billing reports are held.
+	CanAccessAccount OptNilBool `json:"can_access_account"`
+	// When true, Kion is able to access the storage location for the custom billing reports.
+	CanAccessStorage OptNilBool `json:"can_access_storage"`
+	// The date and time of the most recently created report for this custom billing source.
+	NewestTimestamp OptDateTime `json:"newest_timestamp"`
+	// The first month with a report for this custom billing source.
+	OldestMonth OptDateTime `json:"oldest_month"`
+	// The number of reports found for this custom billing source.
+	ReportCount OptInt64 `json:"report_count"`
+	// Text summary of any issues discovered during the test.
+	TestSummary OptString `json:"test_summary"`
+}
+
+// GetCanAccessAccount returns the value of CanAccessAccount.
+func (s *CustomBillingSourceTestResults) GetCanAccessAccount() OptNilBool {
+	return s.CanAccessAccount
+}
+
+// GetCanAccessStorage returns the value of CanAccessStorage.
+func (s *CustomBillingSourceTestResults) GetCanAccessStorage() OptNilBool {
+	return s.CanAccessStorage
+}
+
+// GetNewestTimestamp returns the value of NewestTimestamp.
+func (s *CustomBillingSourceTestResults) GetNewestTimestamp() OptDateTime {
+	return s.NewestTimestamp
+}
+
+// GetOldestMonth returns the value of OldestMonth.
+func (s *CustomBillingSourceTestResults) GetOldestMonth() OptDateTime {
+	return s.OldestMonth
+}
+
+// GetReportCount returns the value of ReportCount.
+func (s *CustomBillingSourceTestResults) GetReportCount() OptInt64 {
+	return s.ReportCount
+}
+
+// GetTestSummary returns the value of TestSummary.
+func (s *CustomBillingSourceTestResults) GetTestSummary() OptString {
+	return s.TestSummary
+}
+
+// SetCanAccessAccount sets the value of CanAccessAccount.
+func (s *CustomBillingSourceTestResults) SetCanAccessAccount(val OptNilBool) {
+	s.CanAccessAccount = val
+}
+
+// SetCanAccessStorage sets the value of CanAccessStorage.
+func (s *CustomBillingSourceTestResults) SetCanAccessStorage(val OptNilBool) {
+	s.CanAccessStorage = val
+}
+
+// SetNewestTimestamp sets the value of NewestTimestamp.
+func (s *CustomBillingSourceTestResults) SetNewestTimestamp(val OptDateTime) {
+	s.NewestTimestamp = val
+}
+
+// SetOldestMonth sets the value of OldestMonth.
+func (s *CustomBillingSourceTestResults) SetOldestMonth(val OptDateTime) {
+	s.OldestMonth = val
+}
+
+// SetReportCount sets the value of ReportCount.
+func (s *CustomBillingSourceTestResults) SetReportCount(val OptInt64) {
+	s.ReportCount = val
+}
+
+// SetTestSummary sets the value of TestSummary.
+func (s *CustomBillingSourceTestResults) SetTestSummary(val OptString) {
+	s.TestSummary = val
+}
+
+// Ref: #/components/schemas/CustomBillingSourceUpdate
+type CustomBillingSourceUpdate struct {
+	AWSConnection   OptCustomBillingSourceAWSConnectionUpdate `json:"aws_connection"`
+	AzureConnection OptCustomBillingSourceAzureConnection     `json:"azure_connection"`
+	// Start date of billing source (YYYY-MM).
+	BillingStartDate OptString `json:"billing_start_date"`
+	// Name of the billing source.
+	Name OptString `json:"name"`
+	// When true, will skip validating the connection to the configured storage.
+	SkipValidation OptNilBool `json:"skip_validation"`
+}
+
+// GetAWSConnection returns the value of AWSConnection.
 func (s *CustomBillingSourceUpdate) GetAWSConnection() OptCustomBillingSourceAWSConnectionUpdate {
 	return s.AWSConnection
+}
+
+// GetAzureConnection returns the value of AzureConnection.
+func (s *CustomBillingSourceUpdate) GetAzureConnection() OptCustomBillingSourceAzureConnection {
+	return s.AzureConnection
 }
 
 // GetBillingStartDate returns the value of BillingStartDate.
@@ -18333,9 +18649,19 @@ func (s *CustomBillingSourceUpdate) GetName() OptString {
 	return s.Name
 }
 
+// GetSkipValidation returns the value of SkipValidation.
+func (s *CustomBillingSourceUpdate) GetSkipValidation() OptNilBool {
+	return s.SkipValidation
+}
+
 // SetAWSConnection sets the value of AWSConnection.
 func (s *CustomBillingSourceUpdate) SetAWSConnection(val OptCustomBillingSourceAWSConnectionUpdate) {
 	s.AWSConnection = val
+}
+
+// SetAzureConnection sets the value of AzureConnection.
+func (s *CustomBillingSourceUpdate) SetAzureConnection(val OptCustomBillingSourceAzureConnection) {
+	s.AzureConnection = val
 }
 
 // SetBillingStartDate sets the value of BillingStartDate.
@@ -18346,6 +18672,11 @@ func (s *CustomBillingSourceUpdate) SetBillingStartDate(val OptString) {
 // SetName sets the value of Name.
 func (s *CustomBillingSourceUpdate) SetName(val OptString) {
 	s.Name = val
+}
+
+// SetSkipValidation sets the value of SkipValidation.
+func (s *CustomBillingSourceUpdate) SetSkipValidation(val OptNilBool) {
+	s.SkipValidation = val
 }
 
 // CustomBrandingConfig represents the system settings for custom branding options.
@@ -37712,6 +38043,98 @@ func (o OptCustomBillingSourceAWSConnectionUpdate) Get() (v CustomBillingSourceA
 
 // Or returns value if set, or given parameter if does not.
 func (o OptCustomBillingSourceAWSConnectionUpdate) Or(d CustomBillingSourceAWSConnectionUpdate) CustomBillingSourceAWSConnectionUpdate {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptCustomBillingSourceAzureConnection returns new OptCustomBillingSourceAzureConnection with value set to v.
+func NewOptCustomBillingSourceAzureConnection(v CustomBillingSourceAzureConnection) OptCustomBillingSourceAzureConnection {
+	return OptCustomBillingSourceAzureConnection{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptCustomBillingSourceAzureConnection is optional CustomBillingSourceAzureConnection.
+type OptCustomBillingSourceAzureConnection struct {
+	Value CustomBillingSourceAzureConnection
+	Set   bool
+}
+
+// IsSet returns true if OptCustomBillingSourceAzureConnection was set.
+func (o OptCustomBillingSourceAzureConnection) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptCustomBillingSourceAzureConnection) Reset() {
+	var v CustomBillingSourceAzureConnection
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptCustomBillingSourceAzureConnection) SetTo(v CustomBillingSourceAzureConnection) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptCustomBillingSourceAzureConnection) Get() (v CustomBillingSourceAzureConnection, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptCustomBillingSourceAzureConnection) Or(d CustomBillingSourceAzureConnection) CustomBillingSourceAzureConnection {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptCustomBillingSourceTestResults returns new OptCustomBillingSourceTestResults with value set to v.
+func NewOptCustomBillingSourceTestResults(v CustomBillingSourceTestResults) OptCustomBillingSourceTestResults {
+	return OptCustomBillingSourceTestResults{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptCustomBillingSourceTestResults is optional CustomBillingSourceTestResults.
+type OptCustomBillingSourceTestResults struct {
+	Value CustomBillingSourceTestResults
+	Set   bool
+}
+
+// IsSet returns true if OptCustomBillingSourceTestResults was set.
+func (o OptCustomBillingSourceTestResults) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptCustomBillingSourceTestResults) Reset() {
+	var v CustomBillingSourceTestResults
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptCustomBillingSourceTestResults) SetTo(v CustomBillingSourceTestResults) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptCustomBillingSourceTestResults) Get() (v CustomBillingSourceTestResults, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptCustomBillingSourceTestResults) Or(d CustomBillingSourceTestResults) CustomBillingSourceTestResults {
 	if v, ok := o.Get(); ok {
 		return v
 	}

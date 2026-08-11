@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-08-11
+
+### Added
+
+- **Azure storage connections for custom billing sources** (`v3_16`). New
+  `CustomBillingSourceAzureConnection` type, plus an `azure_connection` field on
+  `CustomBillingSource`, `CustomBillingSourceCreate` and `CustomBillingSourceUpdate`. Supply
+  *either* `credentialed_billing_source_id` — reusing an existing Azure billing source's tenant
+  credentials — *or* the tenant credential fields (`tenant_app_id`, `tenant_client_secret`,
+  `tenant_cloud_partition_id`), not both, alongside `storage_container`, `storage_prefix` and
+  `storage_primary_endpoint`.
+- `analytics_api_key` on `AnthropicBillingSource` (`v3_16`).
+
+### Changed
+
+- **BREAKING** (`v3_16`): **`POST /v3/billing-source/test-custom` no longer uses the AWS
+  request and response models.** The endpoint had been typed against AWS-specific shapes;
+  portal has given it purpose-built ones on `support-3.16.x`:
+
+      request body    CustomBillingSource         -> CustomBillingSourceTestRequest
+      response `data` AWSBillingSourceTestResults -> CustomBillingSourceTestResults
+
+  Consumers calling this endpoint must change the type they pass:
+
+      Go         PostTestCustomBillingSource(ctx, *CustomBillingSource)
+                   -> PostTestCustomBillingSource(ctx, *CustomBillingSourceTestRequest)
+      Python/TS  body: CustomBillingSource -> body: CustomBillingSourceTestRequest
+
+  The request no longer accepts `id`. The 200 response drops the AWS-only fields
+  `can_access_cur_bucket`, `can_access_focus_account`, `can_access_focus_bucket`,
+  `can_access_mr_bucket` and `cost_and_usage_report_count`.
+
+  `oasdiff` graded this 0 errors / 15 warnings — "possibly breaking" — because it compares
+  properties rather than the identity of the request type. The generated clients change
+  signature, so it is a source break in every lane. Only `v3_16` is affected; `v3_12`–`v3_15`
+  are unchanged.
+
 ## [0.8.0] - 2026-08-05
 
 ### Fixed

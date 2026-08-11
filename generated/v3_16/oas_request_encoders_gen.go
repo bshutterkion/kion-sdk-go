@@ -3543,7 +3543,7 @@ func encodePostTestBillingSourceRequest(
 }
 
 func encodePostTestCustomBillingSourceRequest(
-	req *CustomBillingSource,
+	req *CustomBillingSourceTestRequest,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

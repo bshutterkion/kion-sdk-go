@@ -118373,7 +118373,7 @@ func decodePostTestCustomBillingSourceResponse(resp *http.Response) (res PostTes
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response BillingSourceTestResponse
+			var response CustomBillingSourceTestResponse
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err

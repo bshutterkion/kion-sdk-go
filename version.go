@@ -8,7 +8,7 @@ package kion
 // Note this is the SDK's version, NOT a Kion API version. Go module consumers
 // resolve versions from git tags on the published mirror (go.mod has no version
 // field); this constant just lets a program introspect what it was built with.
-const Version = "0.8.0"
+const Version = "0.9.0"
 
 // KionVersions maps each generated sub-package to the Kion release its API
 // belongs to. The SDK ships every supported Kion version simultaneously, which

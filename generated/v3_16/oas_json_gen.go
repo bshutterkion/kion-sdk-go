@@ -9287,6 +9287,12 @@ func (s *AnthropicBillingSource) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AnalyticsAPIKey.Set {
+			e.FieldStart("analytics_api_key")
+			s.AnalyticsAPIKey.Encode(e)
+		}
+	}
+	{
 		if s.BillingStartDate.Set {
 			e.FieldStart("billing_start_date")
 			s.BillingStartDate.Encode(e)
@@ -9312,12 +9318,13 @@ func (s *AnthropicBillingSource) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfAnthropicBillingSource = [5]string{
+var jsonFieldsNameOfAnthropicBillingSource = [6]string{
 	0: "admin_api_key",
-	1: "billing_start_date",
-	2: "id",
-	3: "name",
-	4: "organization_id",
+	1: "analytics_api_key",
+	2: "billing_start_date",
+	3: "id",
+	4: "name",
+	5: "organization_id",
 }
 
 // Decode decodes AnthropicBillingSource from json.
@@ -9337,6 +9344,16 @@ func (s *AnthropicBillingSource) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"admin_api_key\"")
+			}
+		case "analytics_api_key":
+			if err := func() error {
+				s.AnalyticsAPIKey.Reset()
+				if err := s.AnalyticsAPIKey.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"analytics_api_key\"")
 			}
 		case "billing_start_date":
 			if err := func() error {
@@ -38742,6 +38759,12 @@ func (s *CustomBillingSource) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AzureConnection.Set {
+			e.FieldStart("azure_connection")
+			s.AzureConnection.Encode(e)
+		}
+	}
+	{
 		if s.BillingStartDate.Set {
 			e.FieldStart("billing_start_date")
 			s.BillingStartDate.Encode(e)
@@ -38761,11 +38784,12 @@ func (s *CustomBillingSource) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfCustomBillingSource = [4]string{
+var jsonFieldsNameOfCustomBillingSource = [5]string{
 	0: "aws_connection",
-	1: "billing_start_date",
-	2: "id",
-	3: "name",
+	1: "azure_connection",
+	2: "billing_start_date",
+	3: "id",
+	4: "name",
 }
 
 // Decode decodes CustomBillingSource from json.
@@ -38785,6 +38809,16 @@ func (s *CustomBillingSource) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_connection\"")
+			}
+		case "azure_connection":
+			if err := func() error {
+				s.AzureConnection.Reset()
+				if err := s.AzureConnection.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"azure_connection\"")
 			}
 		case "billing_start_date":
 			if err := func() error {
@@ -39103,6 +39137,188 @@ func (s *CustomBillingSourceAWSConnectionUpdate) UnmarshalJSON(data []byte) erro
 }
 
 // Encode implements json.Marshaler.
+func (s *CustomBillingSourceAzureConnection) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *CustomBillingSourceAzureConnection) encodeFields(e *jx.Encoder) {
+	{
+		if s.CredentialedBillingSourceID.Set {
+			e.FieldStart("credentialed_billing_source_id")
+			s.CredentialedBillingSourceID.Encode(e)
+		}
+	}
+	{
+		if s.StorageContainer.Set {
+			e.FieldStart("storage_container")
+			s.StorageContainer.Encode(e)
+		}
+	}
+	{
+		if s.StoragePrefix.Set {
+			e.FieldStart("storage_prefix")
+			s.StoragePrefix.Encode(e)
+		}
+	}
+	{
+		if s.StoragePrimaryEndpoint.Set {
+			e.FieldStart("storage_primary_endpoint")
+			s.StoragePrimaryEndpoint.Encode(e)
+		}
+	}
+	{
+		if s.TenantAppID.Set {
+			e.FieldStart("tenant_app_id")
+			s.TenantAppID.Encode(e)
+		}
+	}
+	{
+		if s.TenantClientSecret.Set {
+			e.FieldStart("tenant_client_secret")
+			s.TenantClientSecret.Encode(e)
+		}
+	}
+	{
+		if s.TenantCloudPartitionID.Set {
+			e.FieldStart("tenant_cloud_partition_id")
+			s.TenantCloudPartitionID.Encode(e)
+		}
+	}
+	{
+		if s.TenantDomain.Set {
+			e.FieldStart("tenant_domain")
+			s.TenantDomain.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfCustomBillingSourceAzureConnection = [8]string{
+	0: "credentialed_billing_source_id",
+	1: "storage_container",
+	2: "storage_prefix",
+	3: "storage_primary_endpoint",
+	4: "tenant_app_id",
+	5: "tenant_client_secret",
+	6: "tenant_cloud_partition_id",
+	7: "tenant_domain",
+}
+
+// Decode decodes CustomBillingSourceAzureConnection from json.
+func (s *CustomBillingSourceAzureConnection) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CustomBillingSourceAzureConnection to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "credentialed_billing_source_id":
+			if err := func() error {
+				s.CredentialedBillingSourceID.Reset()
+				if err := s.CredentialedBillingSourceID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"credentialed_billing_source_id\"")
+			}
+		case "storage_container":
+			if err := func() error {
+				s.StorageContainer.Reset()
+				if err := s.StorageContainer.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"storage_container\"")
+			}
+		case "storage_prefix":
+			if err := func() error {
+				s.StoragePrefix.Reset()
+				if err := s.StoragePrefix.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"storage_prefix\"")
+			}
+		case "storage_primary_endpoint":
+			if err := func() error {
+				s.StoragePrimaryEndpoint.Reset()
+				if err := s.StoragePrimaryEndpoint.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"storage_primary_endpoint\"")
+			}
+		case "tenant_app_id":
+			if err := func() error {
+				s.TenantAppID.Reset()
+				if err := s.TenantAppID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tenant_app_id\"")
+			}
+		case "tenant_client_secret":
+			if err := func() error {
+				s.TenantClientSecret.Reset()
+				if err := s.TenantClientSecret.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tenant_client_secret\"")
+			}
+		case "tenant_cloud_partition_id":
+			if err := func() error {
+				s.TenantCloudPartitionID.Reset()
+				if err := s.TenantCloudPartitionID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tenant_cloud_partition_id\"")
+			}
+		case "tenant_domain":
+			if err := func() error {
+				s.TenantDomain.Reset()
+				if err := s.TenantDomain.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tenant_domain\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode CustomBillingSourceAzureConnection")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *CustomBillingSourceAzureConnection) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CustomBillingSourceAzureConnection) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *CustomBillingSourceCreate) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -39115,6 +39331,12 @@ func (s *CustomBillingSourceCreate) encodeFields(e *jx.Encoder) {
 		if s.AWSConnection.Set {
 			e.FieldStart("aws_connection")
 			s.AWSConnection.Encode(e)
+		}
+	}
+	{
+		if s.AzureConnection.Set {
+			e.FieldStart("azure_connection")
+			s.AzureConnection.Encode(e)
 		}
 	}
 	{
@@ -39143,12 +39365,13 @@ func (s *CustomBillingSourceCreate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfCustomBillingSourceCreate = [5]string{
+var jsonFieldsNameOfCustomBillingSourceCreate = [6]string{
 	0: "aws_connection",
-	1: "billing_start_date",
-	2: "id",
-	3: "name",
-	4: "skip_validation",
+	1: "azure_connection",
+	2: "billing_start_date",
+	3: "id",
+	4: "name",
+	5: "skip_validation",
 }
 
 // Decode decodes CustomBillingSourceCreate from json.
@@ -39168,6 +39391,16 @@ func (s *CustomBillingSourceCreate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_connection\"")
+			}
+		case "azure_connection":
+			if err := func() error {
+				s.AzureConnection.Reset()
+				if err := s.AzureConnection.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"azure_connection\"")
 			}
 		case "billing_start_date":
 			if err := func() error {
@@ -39234,18 +39467,30 @@ func (s *CustomBillingSourceCreate) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *CustomBillingSourceUpdate) Encode(e *jx.Encoder) {
+func (s *CustomBillingSourceTestRequest) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *CustomBillingSourceUpdate) encodeFields(e *jx.Encoder) {
+func (s *CustomBillingSourceTestRequest) encodeFields(e *jx.Encoder) {
 	{
 		if s.AWSConnection.Set {
 			e.FieldStart("aws_connection")
 			s.AWSConnection.Encode(e)
+		}
+	}
+	{
+		if s.AzureConnection.Set {
+			e.FieldStart("azure_connection")
+			s.AzureConnection.Encode(e)
+		}
+	}
+	{
+		if s.BillingSourceID.Set {
+			e.FieldStart("billing_source_id")
+			s.BillingSourceID.Encode(e)
 		}
 	}
 	{
@@ -39262,16 +39507,18 @@ func (s *CustomBillingSourceUpdate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfCustomBillingSourceUpdate = [3]string{
+var jsonFieldsNameOfCustomBillingSourceTestRequest = [5]string{
 	0: "aws_connection",
-	1: "billing_start_date",
-	2: "name",
+	1: "azure_connection",
+	2: "billing_source_id",
+	3: "billing_start_date",
+	4: "name",
 }
 
-// Decode decodes CustomBillingSourceUpdate from json.
-func (s *CustomBillingSourceUpdate) Decode(d *jx.Decoder) error {
+// Decode decodes CustomBillingSourceTestRequest from json.
+func (s *CustomBillingSourceTestRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode CustomBillingSourceUpdate to nil")
+		return errors.New("invalid: unable to decode CustomBillingSourceTestRequest to nil")
 	}
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
@@ -39285,6 +39532,26 @@ func (s *CustomBillingSourceUpdate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_connection\"")
+			}
+		case "azure_connection":
+			if err := func() error {
+				s.AzureConnection.Reset()
+				if err := s.AzureConnection.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"azure_connection\"")
+			}
+		case "billing_source_id":
+			if err := func() error {
+				s.BillingSourceID.Reset()
+				if err := s.BillingSourceID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"billing_source_id\"")
 			}
 		case "billing_start_date":
 			if err := func() error {
@@ -39305,6 +39572,365 @@ func (s *CustomBillingSourceUpdate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"name\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode CustomBillingSourceTestRequest")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *CustomBillingSourceTestRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CustomBillingSourceTestRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *CustomBillingSourceTestResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *CustomBillingSourceTestResponse) encodeFields(e *jx.Encoder) {
+	{
+		if s.Data.Set {
+			e.FieldStart("data")
+			s.Data.Encode(e)
+		}
+	}
+	{
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfCustomBillingSourceTestResponse = [2]string{
+	0: "data",
+	1: "status",
+}
+
+// Decode decodes CustomBillingSourceTestResponse from json.
+func (s *CustomBillingSourceTestResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CustomBillingSourceTestResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "data":
+			if err := func() error {
+				s.Data.Reset()
+				if err := s.Data.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"data\"")
+			}
+		case "status":
+			if err := func() error {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode CustomBillingSourceTestResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *CustomBillingSourceTestResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CustomBillingSourceTestResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *CustomBillingSourceTestResults) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *CustomBillingSourceTestResults) encodeFields(e *jx.Encoder) {
+	{
+		if s.CanAccessAccount.Set {
+			e.FieldStart("can_access_account")
+			s.CanAccessAccount.Encode(e)
+		}
+	}
+	{
+		if s.CanAccessStorage.Set {
+			e.FieldStart("can_access_storage")
+			s.CanAccessStorage.Encode(e)
+		}
+	}
+	{
+		if s.NewestTimestamp.Set {
+			e.FieldStart("newest_timestamp")
+			s.NewestTimestamp.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
+		if s.OldestMonth.Set {
+			e.FieldStart("oldest_month")
+			s.OldestMonth.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
+		if s.ReportCount.Set {
+			e.FieldStart("report_count")
+			s.ReportCount.Encode(e)
+		}
+	}
+	{
+		if s.TestSummary.Set {
+			e.FieldStart("test_summary")
+			s.TestSummary.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfCustomBillingSourceTestResults = [6]string{
+	0: "can_access_account",
+	1: "can_access_storage",
+	2: "newest_timestamp",
+	3: "oldest_month",
+	4: "report_count",
+	5: "test_summary",
+}
+
+// Decode decodes CustomBillingSourceTestResults from json.
+func (s *CustomBillingSourceTestResults) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CustomBillingSourceTestResults to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "can_access_account":
+			if err := func() error {
+				s.CanAccessAccount.Reset()
+				if err := s.CanAccessAccount.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"can_access_account\"")
+			}
+		case "can_access_storage":
+			if err := func() error {
+				s.CanAccessStorage.Reset()
+				if err := s.CanAccessStorage.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"can_access_storage\"")
+			}
+		case "newest_timestamp":
+			if err := func() error {
+				s.NewestTimestamp.Reset()
+				if err := s.NewestTimestamp.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"newest_timestamp\"")
+			}
+		case "oldest_month":
+			if err := func() error {
+				s.OldestMonth.Reset()
+				if err := s.OldestMonth.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"oldest_month\"")
+			}
+		case "report_count":
+			if err := func() error {
+				s.ReportCount.Reset()
+				if err := s.ReportCount.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"report_count\"")
+			}
+		case "test_summary":
+			if err := func() error {
+				s.TestSummary.Reset()
+				if err := s.TestSummary.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"test_summary\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode CustomBillingSourceTestResults")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *CustomBillingSourceTestResults) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CustomBillingSourceTestResults) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *CustomBillingSourceUpdate) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *CustomBillingSourceUpdate) encodeFields(e *jx.Encoder) {
+	{
+		if s.AWSConnection.Set {
+			e.FieldStart("aws_connection")
+			s.AWSConnection.Encode(e)
+		}
+	}
+	{
+		if s.AzureConnection.Set {
+			e.FieldStart("azure_connection")
+			s.AzureConnection.Encode(e)
+		}
+	}
+	{
+		if s.BillingStartDate.Set {
+			e.FieldStart("billing_start_date")
+			s.BillingStartDate.Encode(e)
+		}
+	}
+	{
+		if s.Name.Set {
+			e.FieldStart("name")
+			s.Name.Encode(e)
+		}
+	}
+	{
+		if s.SkipValidation.Set {
+			e.FieldStart("skip_validation")
+			s.SkipValidation.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfCustomBillingSourceUpdate = [5]string{
+	0: "aws_connection",
+	1: "azure_connection",
+	2: "billing_start_date",
+	3: "name",
+	4: "skip_validation",
+}
+
+// Decode decodes CustomBillingSourceUpdate from json.
+func (s *CustomBillingSourceUpdate) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CustomBillingSourceUpdate to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "aws_connection":
+			if err := func() error {
+				s.AWSConnection.Reset()
+				if err := s.AWSConnection.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_connection\"")
+			}
+		case "azure_connection":
+			if err := func() error {
+				s.AzureConnection.Reset()
+				if err := s.AzureConnection.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"azure_connection\"")
+			}
+		case "billing_start_date":
+			if err := func() error {
+				s.BillingStartDate.Reset()
+				if err := s.BillingStartDate.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"billing_start_date\"")
+			}
+		case "name":
+			if err := func() error {
+				s.Name.Reset()
+				if err := s.Name.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "skip_validation":
+			if err := func() error {
+				s.SkipValidation.Reset()
+				if err := s.SkipValidation.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"skip_validation\"")
 			}
 		default:
 			return d.Skip()
@@ -70412,6 +71038,72 @@ func (s OptCustomBillingSourceAWSConnectionUpdate) MarshalJSON() ([]byte, error)
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptCustomBillingSourceAWSConnectionUpdate) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes CustomBillingSourceAzureConnection as json.
+func (o OptCustomBillingSourceAzureConnection) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes CustomBillingSourceAzureConnection from json.
+func (o *OptCustomBillingSourceAzureConnection) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptCustomBillingSourceAzureConnection to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptCustomBillingSourceAzureConnection) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptCustomBillingSourceAzureConnection) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes CustomBillingSourceTestResults as json.
+func (o OptCustomBillingSourceTestResults) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes CustomBillingSourceTestResults from json.
+func (o *OptCustomBillingSourceTestResults) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptCustomBillingSourceTestResults to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptCustomBillingSourceTestResults) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptCustomBillingSourceTestResults) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
