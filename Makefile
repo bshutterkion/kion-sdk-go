@@ -115,6 +115,7 @@ scaffold-version:
 	    -e "s|master (unreleased)|$$label|g" \
 	    -e "s|generated/master|generated/$(VERSION)|g" \
 	    -e "s|master\\.New|$(VERSION).New|g" \
+	    -e "s|master \"github.com/kionsoftware/kion-sdk-go/generated/|$(VERSION) \"github.com/kionsoftware/kion-sdk-go/generated/|g" \
 	    generated/master/client.go > generated/$(VERSION)/client.go; \
 	sed -e "s|^package master|package $(VERSION)|" \
 	    generated/master/auth.go > generated/$(VERSION)/auth.go; \

@@ -24,8 +24,9 @@ import (
 //	    kion.WithSkipVerify(true),
 //	)
 //
-// For a specific stable version, import a versioned sub-package instead
-// (e.g. github.com/kionsoftware/kion-sdk-go/generated/v3_15).
+// Every supported Kion release ships as its own sub-package under generated/;
+// import the one matching your instance. The master sub-package tracks
+// portal/master and is never shipped to customers.
 func New(baseURL string, opts ...kion.Option) (*Client, error) {
 	cfg := kion.ConfigFor(opts...)
 	serverURL := kion.NormalizeServerURL(baseURL)

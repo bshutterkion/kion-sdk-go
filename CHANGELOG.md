@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-11
+
+### Added
+
+- **Kion 3.17 support** (`v3_17`). Generated from `portal/support-3.17.x` into every lane:
+  `github.com/kionsoftware/kion-sdk-go/generated/v3_17`, `kion_sdk.v3_17`, and the
+  `kion-sdk/v3_17` npm subpath.
+
+- **`publish-lane.sh` now fails if a spec reaches a mirror.** Mirrors are customer-facing and
+  ship the generated client, not `openapi3.json` or `swagger.json`. That held only because the
+  specs sit at the monorepo root, outside every lane, so the tracked-file copy never saw them —
+  an accident of layout rather than a guarantee. The check runs against the assembled tree, so
+  it holds however a file got there.
+
+### Removed
+
+- **Kion 3.12 and 3.13 support** (`v3_12`, `v3_13`) — **breaking.** Kion supports the current
+  release plus three back; with 3.17 current that window is 3.14–3.17, and the SDK now ships
+  exactly it. `generated/v3_12`, `generated/v3_13`, `kion_sdk.v3_12`, `kion_sdk.v3_13` and the
+  `kion-sdk/v3_12` / `kion-sdk/v3_13` subpaths are gone from the published mirrors. Consumers
+  still on Kion 3.12 or 3.13 should pin SDK `0.9.x`, which continues to ship both.
+
+  `v3_12` had sat outside the support window since 3.16 with no recorded reason beyond having
+  been in the original 3.12–3.15 set, and `go/README.md` had retroactively described it as
+  "kept until Kion officially ends 3.12 support" — a criterion that could not distinguish it
+  from 3.13, since portal has ended neither. Dropping only 3.13 would have retired the version
+  portal still patches (`support-3.13.x`, last commit 2026-08-21) while keeping the one it has
+  not touched since 2026-05-20. The carve-out is removed rather than moved, so the rule stays
+  mechanical: add the new version, drop the oldest.
+
+### Changed
+
+- **The supported-version set is now declared once.** `SDK_VERSIONS` in the root `Makefile` is the
+  single source: the portal branch for a version is derived (`scripts/portal-branch.sh`) instead of
+  hand-listed in a `case`, and CI reads the list via `make print-versions` rather than keeping three
+  copies of its own. Adding a version was nine coordinated edits; it is now one, plus four registry
+  entries that `make check-registries` names for you if you miss them.
+
+- **`make check-registries`** — new check, run on every MR. Fails if the per-lane version registries
+  (`go/version.go`, the python `_wrapper`, the ts wrapper) or `ts/package.json`'s npm `exports` drift
+  from `SDK_VERSIONS`. These lists sit outside the generated directories on purpose, since those are
+  deleted and recreated on every regeneration, so nothing in the generation path could catch a gap.
+
+- **`ts/build.mjs` discovers versions from `src/`** instead of a hardcoded array. It deliberately
+  skips versions that aren't present (for partial checkouts), so a version missing from that array
+  produced a green build that silently never shipped the package.
+
 ## [0.9.0] - 2026-08-11
 
 ### Added

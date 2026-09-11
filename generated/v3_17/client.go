@@ -1,4 +1,4 @@
-package v3_13
+package v3_17
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	kion "github.com/kionsoftware/kion-sdk-go"
 )
 
-// New constructs a typed client for the Kion 3.13
+// New constructs a typed client for the Kion 3.17
 // API version.
 //
 // Options come from the root kion package and are shared across all
@@ -16,16 +16,17 @@ import (
 //
 //	import (
 //	    kion "github.com/kionsoftware/kion-sdk-go"
-//	    master "github.com/kionsoftware/kion-sdk-go/generated/v3_13"
+//	    v3_17 "github.com/kionsoftware/kion-sdk-go/generated/v3_17"
 //	)
 //
-//	client, err := v3_13.New("https://kion.example.com",
+//	client, err := v3_17.New("https://kion.example.com",
 //	    kion.WithAPIKey("..."),
 //	    kion.WithSkipVerify(true),
 //	)
 //
-// For a specific stable version, import a versioned sub-package instead
-// (e.g. github.com/kionsoftware/kion-sdk-go/generated/v3_15).
+// Every supported Kion release ships as its own sub-package under generated/;
+// import the one matching your instance. The master sub-package tracks
+// portal/master and is never shipped to customers.
 func New(baseURL string, opts ...kion.Option) (*Client, error) {
 	cfg := kion.ConfigFor(opts...)
 	serverURL := kion.NormalizeServerURL(baseURL)
