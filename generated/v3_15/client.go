@@ -51,7 +51,8 @@ func New(baseURL string, opts ...kion.Option) (*Client, error) {
 	return NewClient(serverURL, sec, WithClient(httpClient))
 }
 
-// queryStringPathMarker MUST match the same constant in cmd/fixspec/main.go.
+// queryStringPathMarker MUST match the same constant in preprocess/main.go
+// and every other lane's transport. Enforced by `make check-invariants`.
 // fixspec rewrites paths like "/v3/account?account-type=aws" to
 // "/v3/account/__qs__/account-type/aws", and this transport rewrites them
 // back at request time.

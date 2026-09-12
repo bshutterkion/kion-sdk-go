@@ -327,7 +327,7 @@ make test-integration           # go test -tags integration -v -count=1 ./...
 
 ### The `fixspec` tool
 
-`cmd/fixspec/main.go` is a small Go binary that converts the raw Swagger 2.0 spec portal produces into an OpenAPI 3.0 spec that ogen can consume cleanly. In order, it:
+`preprocess/main.go` (its own Go module at the monorepo root, built as `bin/fixspec`) is a small Go binary that converts the raw Swagger 2.0 spec portal produces into an OpenAPI 3.0 spec that ogen can consume cleanly. In order, it:
 
 1. **Sanitizes broken refs** in the raw swagger JSON before kin-openapi parses it — some portal release branches emit dangling `$ref`s to undefined responses (e.g. `support-3.13.x` has `#/responses/CloudProviderType` with no definition). Broken response refs are replaced with inline empty objects, broken parameter refs are dropped, broken definition refs inside parameter schemas are stubbed as empty objects.
 2. **Converts Swagger 2.0 → OpenAPI 3.0** via [kin-openapi](https://github.com/getkin/kin-openapi).
