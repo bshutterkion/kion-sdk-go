@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-16
+
+### Added
+
+- **Additional Cloud Access Role types on `v3_15` and `v3_16`.** Refreshed from
+  portal 3.15.13 and 3.16.5, which open the OU and Project cloud-access-role
+  create/update bodies to role types other than User. Six settable fields on
+  `OUCloudAccessRoleCreate` and `ProjectCloudAccessRoleCreate`:
+  `cloud_access_role_type_id` (1 User, 2 Custom Trust, 3 Account, 4 Service),
+  `aws_iam_role_trust_policy`, `aws_trusted_account_numbers`,
+  `aws_trusted_services`, `aws_partition` and `aws_create_instance_profile`.
+  Before this the public API hardcoded every role it created as a User role.
+
+  **`v3_17` does NOT carry these.** The change went to the support branches and
+  has not been forward-ported, so a consumer must gate on the connected Kion
+  version rather than assume newer means newer. Portal decodes with no
+  `DisallowUnknownFields`, so sending the fields to a 3.17 install is accepted,
+  ignored, and answered 200: the role is created as a User role with nothing to
+  react to.
+
+### Changed
+
+- **BREAKING** (`v3_17`): **financial amounts are numbers, not untyped objects.** `amount` on
+  budgets, funding sources, spend plans, line items and project funding now
+  carries `type: number, format: double` and the decimal Go type, matching what
+  `v3_15` and `v3_16` already had. `oasdiff` reports this as 98 breaking changes;
+  it is `v3_17` catching up to the other lanes, not a regression. Only `v3_17`
+  consumers are affected.
+
 ## [0.10.0] - 2026-09-11
 
 ### Added

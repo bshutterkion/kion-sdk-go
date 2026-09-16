@@ -12432,6 +12432,12 @@ func (s *AugmentedCloudAccessRole) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AWSCreateInstanceProfile.Set {
+			e.FieldStart("aws_create_instance_profile")
+			s.AWSCreateInstanceProfile.Encode(e)
+		}
+	}
+	{
 		if s.AWSIamPath.Set {
 			e.FieldStart("aws_iam_path")
 			s.AWSIamPath.Encode(e)
@@ -12444,9 +12450,39 @@ func (s *AugmentedCloudAccessRole) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AWSIamRoleTrustPolicy.Set {
+			e.FieldStart("aws_iam_role_trust_policy")
+			s.AWSIamRoleTrustPolicy.Encode(e)
+		}
+	}
+	{
+		if s.AWSPartition.Set {
+			e.FieldStart("aws_partition")
+			s.AWSPartition.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedAccountNumbers.Set {
+			e.FieldStart("aws_trusted_account_numbers")
+			s.AWSTrustedAccountNumbers.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedServices.Set {
+			e.FieldStart("aws_trusted_services")
+			s.AWSTrustedServices.Encode(e)
+		}
+	}
+	{
 		if s.CloudAccessRoleType.Set {
 			e.FieldStart("cloud_access_role_type")
 			s.CloudAccessRoleType.Encode(e)
+		}
+	}
+	{
+		if s.CloudAccessRoleTypeID.Set {
+			e.FieldStart("cloud_access_role_type_id")
+			s.CloudAccessRoleTypeID.Encode(e)
 		}
 	}
 	{
@@ -12511,7 +12547,7 @@ func (s *AugmentedCloudAccessRole) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfAugmentedCloudAccessRole = [20]string{
+var jsonFieldsNameOfAugmentedCloudAccessRole = [26]string{
 	0:  "account_alias",
 	1:  "account_id",
 	2:  "account_name",
@@ -12519,19 +12555,25 @@ var jsonFieldsNameOfAugmentedCloudAccessRole = [20]string{
 	4:  "account_type",
 	5:  "account_type_id",
 	6:  "apply_to_all_accounts",
-	7:  "aws_iam_path",
-	8:  "aws_iam_role_name",
-	9:  "cloud_access_role_type",
-	10: "created_at",
-	11: "deleted_at",
-	12: "future_accounts",
-	13: "id",
-	14: "long_term_access_keys",
-	15: "name",
-	16: "project_id",
-	17: "short_term_access_keys",
-	18: "updated_at",
-	19: "web_access",
+	7:  "aws_create_instance_profile",
+	8:  "aws_iam_path",
+	9:  "aws_iam_role_name",
+	10: "aws_iam_role_trust_policy",
+	11: "aws_partition",
+	12: "aws_trusted_account_numbers",
+	13: "aws_trusted_services",
+	14: "cloud_access_role_type",
+	15: "cloud_access_role_type_id",
+	16: "created_at",
+	17: "deleted_at",
+	18: "future_accounts",
+	19: "id",
+	20: "long_term_access_keys",
+	21: "name",
+	22: "project_id",
+	23: "short_term_access_keys",
+	24: "updated_at",
+	25: "web_access",
 }
 
 // Decode decodes AugmentedCloudAccessRole from json.
@@ -12612,6 +12654,16 @@ func (s *AugmentedCloudAccessRole) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"apply_to_all_accounts\"")
 			}
+		case "aws_create_instance_profile":
+			if err := func() error {
+				s.AWSCreateInstanceProfile.Reset()
+				if err := s.AWSCreateInstanceProfile.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_create_instance_profile\"")
+			}
 		case "aws_iam_path":
 			if err := func() error {
 				s.AWSIamPath.Reset()
@@ -12632,6 +12684,46 @@ func (s *AugmentedCloudAccessRole) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_iam_role_name\"")
 			}
+		case "aws_iam_role_trust_policy":
+			if err := func() error {
+				s.AWSIamRoleTrustPolicy.Reset()
+				if err := s.AWSIamRoleTrustPolicy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_iam_role_trust_policy\"")
+			}
+		case "aws_partition":
+			if err := func() error {
+				s.AWSPartition.Reset()
+				if err := s.AWSPartition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_partition\"")
+			}
+		case "aws_trusted_account_numbers":
+			if err := func() error {
+				s.AWSTrustedAccountNumbers.Reset()
+				if err := s.AWSTrustedAccountNumbers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_account_numbers\"")
+			}
+		case "aws_trusted_services":
+			if err := func() error {
+				s.AWSTrustedServices.Reset()
+				if err := s.AWSTrustedServices.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_services\"")
+			}
 		case "cloud_access_role_type":
 			if err := func() error {
 				s.CloudAccessRoleType.Reset()
@@ -12641,6 +12733,16 @@ func (s *AugmentedCloudAccessRole) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"cloud_access_role_type\"")
+			}
+		case "cloud_access_role_type_id":
+			if err := func() error {
+				s.CloudAccessRoleTypeID.Reset()
+				if err := s.CloudAccessRoleTypeID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cloud_access_role_type_id\"")
 			}
 		case "created_at":
 			if err := func() error {
@@ -61232,6 +61334,12 @@ func (s *OUCloudAccessRole) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *OUCloudAccessRole) encodeFields(e *jx.Encoder) {
 	{
+		if s.AWSCreateInstanceProfile.Set {
+			e.FieldStart("aws_create_instance_profile")
+			s.AWSCreateInstanceProfile.Encode(e)
+		}
+	}
+	{
 		if s.AWSIamPath.Set {
 			e.FieldStart("aws_iam_path")
 			s.AWSIamPath.Encode(e)
@@ -61241,6 +61349,36 @@ func (s *OUCloudAccessRole) encodeFields(e *jx.Encoder) {
 		if s.AWSIamRoleName.Set {
 			e.FieldStart("aws_iam_role_name")
 			s.AWSIamRoleName.Encode(e)
+		}
+	}
+	{
+		if s.AWSIamRoleTrustPolicy.Set {
+			e.FieldStart("aws_iam_role_trust_policy")
+			s.AWSIamRoleTrustPolicy.Encode(e)
+		}
+	}
+	{
+		if s.AWSPartition.Set {
+			e.FieldStart("aws_partition")
+			s.AWSPartition.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedAccountNumbers.Set {
+			e.FieldStart("aws_trusted_account_numbers")
+			s.AWSTrustedAccountNumbers.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedServices.Set {
+			e.FieldStart("aws_trusted_services")
+			s.AWSTrustedServices.Encode(e)
+		}
+	}
+	{
+		if s.CloudAccessRoleTypeID.Set {
+			e.FieldStart("cloud_access_role_type_id")
+			s.CloudAccessRoleTypeID.Encode(e)
 		}
 	}
 	{
@@ -61281,15 +61419,21 @@ func (s *OUCloudAccessRole) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfOUCloudAccessRole = [8]string{
-	0: "aws_iam_path",
-	1: "aws_iam_role_name",
-	2: "id",
-	3: "long_term_access_keys",
-	4: "name",
-	5: "ou_id",
-	6: "short_term_access_keys",
-	7: "web_access",
+var jsonFieldsNameOfOUCloudAccessRole = [14]string{
+	0:  "aws_create_instance_profile",
+	1:  "aws_iam_path",
+	2:  "aws_iam_role_name",
+	3:  "aws_iam_role_trust_policy",
+	4:  "aws_partition",
+	5:  "aws_trusted_account_numbers",
+	6:  "aws_trusted_services",
+	7:  "cloud_access_role_type_id",
+	8:  "id",
+	9:  "long_term_access_keys",
+	10: "name",
+	11: "ou_id",
+	12: "short_term_access_keys",
+	13: "web_access",
 }
 
 // Decode decodes OUCloudAccessRole from json.
@@ -61300,6 +61444,16 @@ func (s *OUCloudAccessRole) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
+		case "aws_create_instance_profile":
+			if err := func() error {
+				s.AWSCreateInstanceProfile.Reset()
+				if err := s.AWSCreateInstanceProfile.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_create_instance_profile\"")
+			}
 		case "aws_iam_path":
 			if err := func() error {
 				s.AWSIamPath.Reset()
@@ -61319,6 +61473,56 @@ func (s *OUCloudAccessRole) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_iam_role_name\"")
+			}
+		case "aws_iam_role_trust_policy":
+			if err := func() error {
+				s.AWSIamRoleTrustPolicy.Reset()
+				if err := s.AWSIamRoleTrustPolicy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_iam_role_trust_policy\"")
+			}
+		case "aws_partition":
+			if err := func() error {
+				s.AWSPartition.Reset()
+				if err := s.AWSPartition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_partition\"")
+			}
+		case "aws_trusted_account_numbers":
+			if err := func() error {
+				s.AWSTrustedAccountNumbers.Reset()
+				if err := s.AWSTrustedAccountNumbers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_account_numbers\"")
+			}
+		case "aws_trusted_services":
+			if err := func() error {
+				s.AWSTrustedServices.Reset()
+				if err := s.AWSTrustedServices.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_services\"")
+			}
+		case "cloud_access_role_type_id":
+			if err := func() error {
+				s.CloudAccessRoleTypeID.Reset()
+				if err := s.CloudAccessRoleTypeID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cloud_access_role_type_id\"")
 			}
 		case "id":
 			if err := func() error {
@@ -61562,6 +61766,12 @@ func (s *OUCloudAccessRoleCreate) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *OUCloudAccessRoleCreate) encodeFields(e *jx.Encoder) {
 	{
+		if s.AWSCreateInstanceProfile.Set {
+			e.FieldStart("aws_create_instance_profile")
+			s.AWSCreateInstanceProfile.Encode(e)
+		}
+	}
+	{
 		if s.AWSIamPath.Set {
 			e.FieldStart("aws_iam_path")
 			s.AWSIamPath.Encode(e)
@@ -61586,15 +61796,45 @@ func (s *OUCloudAccessRoleCreate) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AWSIamRoleTrustPolicy.Set {
+			e.FieldStart("aws_iam_role_trust_policy")
+			s.AWSIamRoleTrustPolicy.Encode(e)
+		}
+	}
+	{
+		if s.AWSPartition.Set {
+			e.FieldStart("aws_partition")
+			s.AWSPartition.Encode(e)
+		}
+	}
+	{
 		if s.AWSSessionTags.Set {
 			e.FieldStart("aws_session_tags")
 			s.AWSSessionTags.Encode(e)
 		}
 	}
 	{
+		if s.AWSTrustedAccountNumbers.Set {
+			e.FieldStart("aws_trusted_account_numbers")
+			s.AWSTrustedAccountNumbers.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedServices.Set {
+			e.FieldStart("aws_trusted_services")
+			s.AWSTrustedServices.Encode(e)
+		}
+	}
+	{
 		if s.AzureRoleDefinitions.Set {
 			e.FieldStart("azure_role_definitions")
 			s.AzureRoleDefinitions.Encode(e)
+		}
+	}
+	{
+		if s.CloudAccessRoleTypeID.Set {
+			e.FieldStart("cloud_access_role_type_id")
+			s.CloudAccessRoleTypeID.Encode(e)
 		}
 	}
 	{
@@ -61643,21 +61883,27 @@ func (s *OUCloudAccessRoleCreate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfOUCloudAccessRoleCreate = [14]string{
-	0:  "aws_iam_path",
-	1:  "aws_iam_permissions_boundary",
-	2:  "aws_iam_policies",
-	3:  "aws_iam_role_name",
-	4:  "aws_session_tags",
-	5:  "azure_role_definitions",
-	6:  "gcp_iam_roles",
-	7:  "long_term_access_keys",
-	8:  "name",
-	9:  "ou_id",
-	10: "short_term_access_keys",
-	11: "user_group_ids",
-	12: "user_ids",
-	13: "web_access",
+var jsonFieldsNameOfOUCloudAccessRoleCreate = [20]string{
+	0:  "aws_create_instance_profile",
+	1:  "aws_iam_path",
+	2:  "aws_iam_permissions_boundary",
+	3:  "aws_iam_policies",
+	4:  "aws_iam_role_name",
+	5:  "aws_iam_role_trust_policy",
+	6:  "aws_partition",
+	7:  "aws_session_tags",
+	8:  "aws_trusted_account_numbers",
+	9:  "aws_trusted_services",
+	10: "azure_role_definitions",
+	11: "cloud_access_role_type_id",
+	12: "gcp_iam_roles",
+	13: "long_term_access_keys",
+	14: "name",
+	15: "ou_id",
+	16: "short_term_access_keys",
+	17: "user_group_ids",
+	18: "user_ids",
+	19: "web_access",
 }
 
 // Decode decodes OUCloudAccessRoleCreate from json.
@@ -61665,10 +61911,20 @@ func (s *OUCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode OUCloudAccessRoleCreate to nil")
 	}
-	var requiredBitSet [2]uint8
+	var requiredBitSet [3]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
+		case "aws_create_instance_profile":
+			if err := func() error {
+				s.AWSCreateInstanceProfile.Reset()
+				if err := s.AWSCreateInstanceProfile.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_create_instance_profile\"")
+			}
 		case "aws_iam_path":
 			if err := func() error {
 				s.AWSIamPath.Reset()
@@ -61709,6 +61965,26 @@ func (s *OUCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_iam_role_name\"")
 			}
+		case "aws_iam_role_trust_policy":
+			if err := func() error {
+				s.AWSIamRoleTrustPolicy.Reset()
+				if err := s.AWSIamRoleTrustPolicy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_iam_role_trust_policy\"")
+			}
+		case "aws_partition":
+			if err := func() error {
+				s.AWSPartition.Reset()
+				if err := s.AWSPartition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_partition\"")
+			}
 		case "aws_session_tags":
 			if err := func() error {
 				s.AWSSessionTags.Reset()
@@ -61719,6 +61995,26 @@ func (s *OUCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_session_tags\"")
 			}
+		case "aws_trusted_account_numbers":
+			if err := func() error {
+				s.AWSTrustedAccountNumbers.Reset()
+				if err := s.AWSTrustedAccountNumbers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_account_numbers\"")
+			}
+		case "aws_trusted_services":
+			if err := func() error {
+				s.AWSTrustedServices.Reset()
+				if err := s.AWSTrustedServices.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_services\"")
+			}
 		case "azure_role_definitions":
 			if err := func() error {
 				s.AzureRoleDefinitions.Reset()
@@ -61728,6 +62024,16 @@ func (s *OUCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"azure_role_definitions\"")
+			}
+		case "cloud_access_role_type_id":
+			if err := func() error {
+				s.CloudAccessRoleTypeID.Reset()
+				if err := s.CloudAccessRoleTypeID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cloud_access_role_type_id\"")
 			}
 		case "gcp_iam_roles":
 			if err := func() error {
@@ -61750,7 +62056,7 @@ func (s *OUCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"long_term_access_keys\"")
 			}
 		case "name":
-			requiredBitSet[1] |= 1 << 0
+			requiredBitSet[1] |= 1 << 6
 			if err := func() error {
 				v, err := d.Str()
 				s.Name = string(v)
@@ -61762,7 +62068,7 @@ func (s *OUCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
 		case "ou_id":
-			requiredBitSet[1] |= 1 << 1
+			requiredBitSet[1] |= 1 << 7
 			if err := func() error {
 				if err := s.OuID.Decode(d); err != nil {
 					return err
@@ -61820,9 +62126,10 @@ func (s *OUCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
-	for i, mask := range [2]uint8{
+	for i, mask := range [3]uint8{
 		0b00000000,
-		0b00000011,
+		0b11000000,
+		0b00000000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -62590,15 +62897,45 @@ func (s *OUCloudAccessRoleUpdate) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *OUCloudAccessRoleUpdate) encodeFields(e *jx.Encoder) {
 	{
+		if s.AWSCreateInstanceProfile.Set {
+			e.FieldStart("aws_create_instance_profile")
+			s.AWSCreateInstanceProfile.Encode(e)
+		}
+	}
+	{
 		if s.AWSIamPermissionsBoundary.Set {
 			e.FieldStart("aws_iam_permissions_boundary")
 			s.AWSIamPermissionsBoundary.Encode(e)
 		}
 	}
 	{
+		if s.AWSIamRoleTrustPolicy.Set {
+			e.FieldStart("aws_iam_role_trust_policy")
+			s.AWSIamRoleTrustPolicy.Encode(e)
+		}
+	}
+	{
+		if s.AWSPartition.Set {
+			e.FieldStart("aws_partition")
+			s.AWSPartition.Encode(e)
+		}
+	}
+	{
 		if s.AWSSessionTags.Set {
 			e.FieldStart("aws_session_tags")
 			s.AWSSessionTags.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedAccountNumbers.Set {
+			e.FieldStart("aws_trusted_account_numbers")
+			s.AWSTrustedAccountNumbers.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedServices.Set {
+			e.FieldStart("aws_trusted_services")
+			s.AWSTrustedServices.Encode(e)
 		}
 	}
 	{
@@ -62627,13 +62964,18 @@ func (s *OUCloudAccessRoleUpdate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfOUCloudAccessRoleUpdate = [6]string{
-	0: "aws_iam_permissions_boundary",
-	1: "aws_session_tags",
-	2: "long_term_access_keys",
-	3: "name",
-	4: "short_term_access_keys",
-	5: "web_access",
+var jsonFieldsNameOfOUCloudAccessRoleUpdate = [11]string{
+	0:  "aws_create_instance_profile",
+	1:  "aws_iam_permissions_boundary",
+	2:  "aws_iam_role_trust_policy",
+	3:  "aws_partition",
+	4:  "aws_session_tags",
+	5:  "aws_trusted_account_numbers",
+	6:  "aws_trusted_services",
+	7:  "long_term_access_keys",
+	8:  "name",
+	9:  "short_term_access_keys",
+	10: "web_access",
 }
 
 // Decode decodes OUCloudAccessRoleUpdate from json.
@@ -62644,6 +62986,16 @@ func (s *OUCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
+		case "aws_create_instance_profile":
+			if err := func() error {
+				s.AWSCreateInstanceProfile.Reset()
+				if err := s.AWSCreateInstanceProfile.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_create_instance_profile\"")
+			}
 		case "aws_iam_permissions_boundary":
 			if err := func() error {
 				s.AWSIamPermissionsBoundary.Reset()
@@ -62654,6 +63006,26 @@ func (s *OUCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_iam_permissions_boundary\"")
 			}
+		case "aws_iam_role_trust_policy":
+			if err := func() error {
+				s.AWSIamRoleTrustPolicy.Reset()
+				if err := s.AWSIamRoleTrustPolicy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_iam_role_trust_policy\"")
+			}
+		case "aws_partition":
+			if err := func() error {
+				s.AWSPartition.Reset()
+				if err := s.AWSPartition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_partition\"")
+			}
 		case "aws_session_tags":
 			if err := func() error {
 				s.AWSSessionTags.Reset()
@@ -62663,6 +63035,26 @@ func (s *OUCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_session_tags\"")
+			}
+		case "aws_trusted_account_numbers":
+			if err := func() error {
+				s.AWSTrustedAccountNumbers.Reset()
+				if err := s.AWSTrustedAccountNumbers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_account_numbers\"")
+			}
+		case "aws_trusted_services":
+			if err := func() error {
+				s.AWSTrustedServices.Reset()
+				if err := s.AWSTrustedServices.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_services\"")
 			}
 		case "long_term_access_keys":
 			if err := func() error {
@@ -85238,6 +85630,12 @@ func (s *ProjectCloudAccessRole) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AWSCreateInstanceProfile.Set {
+			e.FieldStart("aws_create_instance_profile")
+			s.AWSCreateInstanceProfile.Encode(e)
+		}
+	}
+	{
 		if s.AWSIamPath.Set {
 			e.FieldStart("aws_iam_path")
 			s.AWSIamPath.Encode(e)
@@ -85247,6 +85645,36 @@ func (s *ProjectCloudAccessRole) encodeFields(e *jx.Encoder) {
 		if s.AWSIamRoleName.Set {
 			e.FieldStart("aws_iam_role_name")
 			s.AWSIamRoleName.Encode(e)
+		}
+	}
+	{
+		if s.AWSIamRoleTrustPolicy.Set {
+			e.FieldStart("aws_iam_role_trust_policy")
+			s.AWSIamRoleTrustPolicy.Encode(e)
+		}
+	}
+	{
+		if s.AWSPartition.Set {
+			e.FieldStart("aws_partition")
+			s.AWSPartition.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedAccountNumbers.Set {
+			e.FieldStart("aws_trusted_account_numbers")
+			s.AWSTrustedAccountNumbers.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedServices.Set {
+			e.FieldStart("aws_trusted_services")
+			s.AWSTrustedServices.Encode(e)
+		}
+	}
+	{
+		if s.CloudAccessRoleTypeID.Set {
+			e.FieldStart("cloud_access_role_type_id")
+			s.CloudAccessRoleTypeID.Encode(e)
 		}
 	}
 	{
@@ -85311,20 +85739,26 @@ func (s *ProjectCloudAccessRole) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectCloudAccessRole = [13]string{
+var jsonFieldsNameOfProjectCloudAccessRole = [19]string{
 	0:  "apply_to_all_accounts",
-	1:  "aws_iam_path",
-	2:  "aws_iam_role_name",
-	3:  "created_at",
-	4:  "deleted_at",
-	5:  "future_accounts",
-	6:  "id",
-	7:  "long_term_access_keys",
-	8:  "name",
-	9:  "project_id",
-	10: "short_term_access_keys",
-	11: "updated_at",
-	12: "web_access",
+	1:  "aws_create_instance_profile",
+	2:  "aws_iam_path",
+	3:  "aws_iam_role_name",
+	4:  "aws_iam_role_trust_policy",
+	5:  "aws_partition",
+	6:  "aws_trusted_account_numbers",
+	7:  "aws_trusted_services",
+	8:  "cloud_access_role_type_id",
+	9:  "created_at",
+	10: "deleted_at",
+	11: "future_accounts",
+	12: "id",
+	13: "long_term_access_keys",
+	14: "name",
+	15: "project_id",
+	16: "short_term_access_keys",
+	17: "updated_at",
+	18: "web_access",
 }
 
 // Decode decodes ProjectCloudAccessRole from json.
@@ -85345,6 +85779,16 @@ func (s *ProjectCloudAccessRole) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"apply_to_all_accounts\"")
 			}
+		case "aws_create_instance_profile":
+			if err := func() error {
+				s.AWSCreateInstanceProfile.Reset()
+				if err := s.AWSCreateInstanceProfile.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_create_instance_profile\"")
+			}
 		case "aws_iam_path":
 			if err := func() error {
 				s.AWSIamPath.Reset()
@@ -85364,6 +85808,56 @@ func (s *ProjectCloudAccessRole) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_iam_role_name\"")
+			}
+		case "aws_iam_role_trust_policy":
+			if err := func() error {
+				s.AWSIamRoleTrustPolicy.Reset()
+				if err := s.AWSIamRoleTrustPolicy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_iam_role_trust_policy\"")
+			}
+		case "aws_partition":
+			if err := func() error {
+				s.AWSPartition.Reset()
+				if err := s.AWSPartition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_partition\"")
+			}
+		case "aws_trusted_account_numbers":
+			if err := func() error {
+				s.AWSTrustedAccountNumbers.Reset()
+				if err := s.AWSTrustedAccountNumbers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_account_numbers\"")
+			}
+		case "aws_trusted_services":
+			if err := func() error {
+				s.AWSTrustedServices.Reset()
+				if err := s.AWSTrustedServices.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_services\"")
+			}
+		case "cloud_access_role_type_id":
+			if err := func() error {
+				s.CloudAccessRoleTypeID.Reset()
+				if err := s.CloudAccessRoleTypeID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cloud_access_role_type_id\"")
 			}
 		case "created_at":
 			if err := func() error {
@@ -85676,6 +86170,12 @@ func (s *ProjectCloudAccessRoleCreate) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AWSCreateInstanceProfile.Set {
+			e.FieldStart("aws_create_instance_profile")
+			s.AWSCreateInstanceProfile.Encode(e)
+		}
+	}
+	{
 		if s.AWSIamPath.Set {
 			e.FieldStart("aws_iam_path")
 			s.AWSIamPath.Encode(e)
@@ -85700,15 +86200,45 @@ func (s *ProjectCloudAccessRoleCreate) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AWSIamRoleTrustPolicy.Set {
+			e.FieldStart("aws_iam_role_trust_policy")
+			s.AWSIamRoleTrustPolicy.Encode(e)
+		}
+	}
+	{
+		if s.AWSPartition.Set {
+			e.FieldStart("aws_partition")
+			s.AWSPartition.Encode(e)
+		}
+	}
+	{
 		if s.AWSSessionTags.Set {
 			e.FieldStart("aws_session_tags")
 			s.AWSSessionTags.Encode(e)
 		}
 	}
 	{
+		if s.AWSTrustedAccountNumbers.Set {
+			e.FieldStart("aws_trusted_account_numbers")
+			s.AWSTrustedAccountNumbers.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedServices.Set {
+			e.FieldStart("aws_trusted_services")
+			s.AWSTrustedServices.Encode(e)
+		}
+	}
+	{
 		if s.AzureRoleDefinitions.Set {
 			e.FieldStart("azure_role_definitions")
 			s.AzureRoleDefinitions.Encode(e)
+		}
+	}
+	{
+		if s.CloudAccessRoleTypeID.Set {
+			e.FieldStart("cloud_access_role_type_id")
+			s.CloudAccessRoleTypeID.Encode(e)
 		}
 	}
 	{
@@ -85769,25 +86299,31 @@ func (s *ProjectCloudAccessRoleCreate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectCloudAccessRoleCreate = [18]string{
+var jsonFieldsNameOfProjectCloudAccessRoleCreate = [24]string{
 	0:  "account_ids",
 	1:  "apply_to_all_accounts",
-	2:  "aws_iam_path",
-	3:  "aws_iam_permissions_boundary",
-	4:  "aws_iam_policies",
-	5:  "aws_iam_role_name",
-	6:  "aws_session_tags",
-	7:  "azure_role_definitions",
-	8:  "cloud_provider_ids",
-	9:  "future_accounts",
-	10: "gcp_iam_roles",
-	11: "long_term_access_keys",
-	12: "name",
-	13: "project_id",
-	14: "short_term_access_keys",
-	15: "user_group_ids",
-	16: "user_ids",
-	17: "web_access",
+	2:  "aws_create_instance_profile",
+	3:  "aws_iam_path",
+	4:  "aws_iam_permissions_boundary",
+	5:  "aws_iam_policies",
+	6:  "aws_iam_role_name",
+	7:  "aws_iam_role_trust_policy",
+	8:  "aws_partition",
+	9:  "aws_session_tags",
+	10: "aws_trusted_account_numbers",
+	11: "aws_trusted_services",
+	12: "azure_role_definitions",
+	13: "cloud_access_role_type_id",
+	14: "cloud_provider_ids",
+	15: "future_accounts",
+	16: "gcp_iam_roles",
+	17: "long_term_access_keys",
+	18: "name",
+	19: "project_id",
+	20: "short_term_access_keys",
+	21: "user_group_ids",
+	22: "user_ids",
+	23: "web_access",
 }
 
 // Decode decodes ProjectCloudAccessRoleCreate from json.
@@ -85818,6 +86354,16 @@ func (s *ProjectCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"apply_to_all_accounts\"")
+			}
+		case "aws_create_instance_profile":
+			if err := func() error {
+				s.AWSCreateInstanceProfile.Reset()
+				if err := s.AWSCreateInstanceProfile.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_create_instance_profile\"")
 			}
 		case "aws_iam_path":
 			if err := func() error {
@@ -85859,6 +86405,26 @@ func (s *ProjectCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_iam_role_name\"")
 			}
+		case "aws_iam_role_trust_policy":
+			if err := func() error {
+				s.AWSIamRoleTrustPolicy.Reset()
+				if err := s.AWSIamRoleTrustPolicy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_iam_role_trust_policy\"")
+			}
+		case "aws_partition":
+			if err := func() error {
+				s.AWSPartition.Reset()
+				if err := s.AWSPartition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_partition\"")
+			}
 		case "aws_session_tags":
 			if err := func() error {
 				s.AWSSessionTags.Reset()
@@ -85869,6 +86435,26 @@ func (s *ProjectCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_session_tags\"")
 			}
+		case "aws_trusted_account_numbers":
+			if err := func() error {
+				s.AWSTrustedAccountNumbers.Reset()
+				if err := s.AWSTrustedAccountNumbers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_account_numbers\"")
+			}
+		case "aws_trusted_services":
+			if err := func() error {
+				s.AWSTrustedServices.Reset()
+				if err := s.AWSTrustedServices.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_services\"")
+			}
 		case "azure_role_definitions":
 			if err := func() error {
 				s.AzureRoleDefinitions.Reset()
@@ -85878,6 +86464,16 @@ func (s *ProjectCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"azure_role_definitions\"")
+			}
+		case "cloud_access_role_type_id":
+			if err := func() error {
+				s.CloudAccessRoleTypeID.Reset()
+				if err := s.CloudAccessRoleTypeID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cloud_access_role_type_id\"")
 			}
 		case "cloud_provider_ids":
 			if err := func() error {
@@ -85920,7 +86516,7 @@ func (s *ProjectCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"long_term_access_keys\"")
 			}
 		case "name":
-			requiredBitSet[1] |= 1 << 4
+			requiredBitSet[2] |= 1 << 2
 			if err := func() error {
 				v, err := d.Str()
 				s.Name = string(v)
@@ -85932,7 +86528,7 @@ func (s *ProjectCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
 		case "project_id":
-			requiredBitSet[1] |= 1 << 5
+			requiredBitSet[2] |= 1 << 3
 			if err := func() error {
 				if err := s.ProjectID.Decode(d); err != nil {
 					return err
@@ -85992,8 +86588,8 @@ func (s *ProjectCloudAccessRoleCreate) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [3]uint8{
 		0b00000000,
-		0b00110000,
 		0b00000000,
+		0b00001100,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -86801,15 +87397,45 @@ func (s *ProjectCloudAccessRoleUpdate) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.AWSCreateInstanceProfile.Set {
+			e.FieldStart("aws_create_instance_profile")
+			s.AWSCreateInstanceProfile.Encode(e)
+		}
+	}
+	{
 		if s.AWSIamPermissionsBoundary.Set {
 			e.FieldStart("aws_iam_permissions_boundary")
 			s.AWSIamPermissionsBoundary.Encode(e)
 		}
 	}
 	{
+		if s.AWSIamRoleTrustPolicy.Set {
+			e.FieldStart("aws_iam_role_trust_policy")
+			s.AWSIamRoleTrustPolicy.Encode(e)
+		}
+	}
+	{
+		if s.AWSPartition.Set {
+			e.FieldStart("aws_partition")
+			s.AWSPartition.Encode(e)
+		}
+	}
+	{
 		if s.AWSSessionTags.Set {
 			e.FieldStart("aws_session_tags")
 			s.AWSSessionTags.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedAccountNumbers.Set {
+			e.FieldStart("aws_trusted_account_numbers")
+			s.AWSTrustedAccountNumbers.Encode(e)
+		}
+	}
+	{
+		if s.AWSTrustedServices.Set {
+			e.FieldStart("aws_trusted_services")
+			s.AWSTrustedServices.Encode(e)
 		}
 	}
 	{
@@ -86848,16 +87474,21 @@ func (s *ProjectCloudAccessRoleUpdate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectCloudAccessRoleUpdate = [9]string{
-	0: "apply_to_all_accounts",
-	1: "aws_iam_permissions_boundary",
-	2: "aws_session_tags",
-	3: "cloud_provider_ids",
-	4: "future_accounts",
-	5: "long_term_access_keys",
-	6: "name",
-	7: "short_term_access_keys",
-	8: "web_access",
+var jsonFieldsNameOfProjectCloudAccessRoleUpdate = [14]string{
+	0:  "apply_to_all_accounts",
+	1:  "aws_create_instance_profile",
+	2:  "aws_iam_permissions_boundary",
+	3:  "aws_iam_role_trust_policy",
+	4:  "aws_partition",
+	5:  "aws_session_tags",
+	6:  "aws_trusted_account_numbers",
+	7:  "aws_trusted_services",
+	8:  "cloud_provider_ids",
+	9:  "future_accounts",
+	10: "long_term_access_keys",
+	11: "name",
+	12: "short_term_access_keys",
+	13: "web_access",
 }
 
 // Decode decodes ProjectCloudAccessRoleUpdate from json.
@@ -86879,6 +87510,16 @@ func (s *ProjectCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"apply_to_all_accounts\"")
 			}
+		case "aws_create_instance_profile":
+			if err := func() error {
+				s.AWSCreateInstanceProfile.Reset()
+				if err := s.AWSCreateInstanceProfile.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_create_instance_profile\"")
+			}
 		case "aws_iam_permissions_boundary":
 			if err := func() error {
 				s.AWSIamPermissionsBoundary.Reset()
@@ -86889,6 +87530,26 @@ func (s *ProjectCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_iam_permissions_boundary\"")
 			}
+		case "aws_iam_role_trust_policy":
+			if err := func() error {
+				s.AWSIamRoleTrustPolicy.Reset()
+				if err := s.AWSIamRoleTrustPolicy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_iam_role_trust_policy\"")
+			}
+		case "aws_partition":
+			if err := func() error {
+				s.AWSPartition.Reset()
+				if err := s.AWSPartition.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_partition\"")
+			}
 		case "aws_session_tags":
 			if err := func() error {
 				s.AWSSessionTags.Reset()
@@ -86898,6 +87559,26 @@ func (s *ProjectCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"aws_session_tags\"")
+			}
+		case "aws_trusted_account_numbers":
+			if err := func() error {
+				s.AWSTrustedAccountNumbers.Reset()
+				if err := s.AWSTrustedAccountNumbers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_account_numbers\"")
+			}
+		case "aws_trusted_services":
+			if err := func() error {
+				s.AWSTrustedServices.Reset()
+				if err := s.AWSTrustedServices.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"aws_trusted_services\"")
 			}
 		case "cloud_provider_ids":
 			if err := func() error {
@@ -86930,7 +87611,7 @@ func (s *ProjectCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"long_term_access_keys\"")
 			}
 		case "name":
-			requiredBitSet[0] |= 1 << 6
+			requiredBitSet[1] |= 1 << 3
 			if err := func() error {
 				v, err := d.Str()
 				s.Name = string(v)
@@ -86971,8 +87652,8 @@ func (s *ProjectCloudAccessRoleUpdate) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
-		0b01000000,
 		0b00000000,
+		0b00001000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

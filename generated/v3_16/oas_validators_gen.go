@@ -1267,6 +1267,91 @@ func (s *AssociateLabels) Validate() error {
 	return nil
 }
 
+func (s *AugmentedCloudAccessRole) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.AWSTrustedAccountNumbers.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_account_numbers",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedServices.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_services",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *AugmentedCloudAccessRoleListResponse) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		var failures []validate.FieldError
+		for i, elem := range s.Data {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "data",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *AzureARMTemplateDefinitionCreate) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -3435,6 +3520,23 @@ func (s *CloudAccessRoles) Validate() error {
 				if value == nil {
 					return errors.New("nil is invalid value")
 				}
+				var failures []validate.FieldError
+				for i, elem := range value {
+					if err := func() error {
+						if err := elem.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
+				}
 				return nil
 			}(); err != nil {
 				return err
@@ -3452,6 +3554,23 @@ func (s *CloudAccessRoles) Validate() error {
 			if err := func() error {
 				if value == nil {
 					return errors.New("nil is invalid value")
+				}
+				var failures []validate.FieldError
+				for i, elem := range value {
+					if err := func() error {
+						if err := elem.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
 				}
 				return nil
 			}(); err != nil {
@@ -9015,6 +9134,54 @@ func (s *OUBaseFilter) Validate() error {
 	return nil
 }
 
+func (s *OUCloudAccessRole) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.AWSTrustedAccountNumbers.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_account_numbers",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedServices.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_services",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *OUCloudAccessRoleAssociations) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -9156,6 +9323,42 @@ func (s *OUCloudAccessRoleCreate) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "aws_session_tags",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedAccountNumbers.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_account_numbers",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedServices.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_services",
 			Error: err,
 		})
 	}
@@ -9438,6 +9641,24 @@ func (s *OUCloudAccessRoleFull) Validate() error {
 		})
 	}
 	if err := func() error {
+		if value, ok := s.OuCloudAccessRole.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "ou_cloud_access_role",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if value, ok := s.UserGroups.Get(); ok {
 			if err := func() error {
 				if value == nil {
@@ -9470,6 +9691,43 @@ func (s *OUCloudAccessRoleFull) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "users",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *OUCloudAccessRoleListResponse) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		var failures []validate.FieldError
+		for i, elem := range s.Data {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "data",
 			Error: err,
 		})
 	}
@@ -9607,6 +9865,42 @@ func (s *OUCloudAccessRoleUpdate) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "aws_session_tags",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedAccountNumbers.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_account_numbers",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedServices.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_services",
 			Error: err,
 		})
 	}
@@ -11012,6 +11306,54 @@ func (s PostSpendReportQueryOKApplicationJSON) Validate() error {
 	return nil
 }
 
+func (s *ProjectCloudAccessRole) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.AWSTrustedAccountNumbers.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_account_numbers",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedServices.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_services",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *ProjectCloudAccessRoleAssociations) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -11189,6 +11531,42 @@ func (s *ProjectCloudAccessRoleCreate) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "aws_session_tags",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedAccountNumbers.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_account_numbers",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedServices.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_services",
 			Error: err,
 		})
 	}
@@ -11525,6 +11903,24 @@ func (s *ProjectCloudAccessRoleFull) Validate() error {
 		})
 	}
 	if err := func() error {
+		if value, ok := s.ProjectCloudAccessRole.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "project_cloud_access_role",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if value, ok := s.UserGroups.Get(); ok {
 			if err := func() error {
 				if value == nil {
@@ -11557,6 +11953,43 @@ func (s *ProjectCloudAccessRoleFull) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "users",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *ProjectCloudAccessRoleListResponse) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		var failures []validate.FieldError
+		for i, elem := range s.Data {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "data",
 			Error: err,
 		})
 	}
@@ -11694,6 +12127,42 @@ func (s *ProjectCloudAccessRoleUpdate) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "aws_session_tags",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedAccountNumbers.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_account_numbers",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.AWSTrustedServices.Get(); ok {
+			if err := func() error {
+				if value == nil {
+					return errors.New("nil is invalid value")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "aws_trusted_services",
 			Error: err,
 		})
 	}

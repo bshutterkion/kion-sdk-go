@@ -7657,13 +7657,13 @@ func (s *AccountServiceSpend) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Spend != nil {
+		if s.Spend.Set {
 			e.FieldStart("spend")
 			s.Spend.Encode(e)
 		}
 	}
 	{
-		if s.Total != nil {
+		if s.Total.Set {
 			e.FieldStart("total")
 			s.Total.Encode(e)
 		}
@@ -7718,24 +7718,20 @@ func (s *AccountServiceSpend) Decode(d *jx.Decoder) error {
 			}
 		case "spend":
 			if err := func() error {
-				s.Spend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spend.Reset()
+				if err := s.Spend.Decode(d); err != nil {
 					return err
 				}
-				s.Spend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spend\"")
 			}
 		case "total":
 			if err := func() error {
-				s.Total = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Total.Reset()
+				if err := s.Total.Decode(d); err != nil {
 					return err
 				}
-				s.Total = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"total\"")
@@ -7798,13 +7794,13 @@ func (s *AccountSpend) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Spend != nil {
+		if s.Spend.Set {
 			e.FieldStart("spend")
 			s.Spend.Encode(e)
 		}
 	}
 	{
-		if s.Total != nil {
+		if s.Total.Set {
 			e.FieldStart("total")
 			s.Total.Encode(e)
 		}
@@ -7870,24 +7866,20 @@ func (s *AccountSpend) Decode(d *jx.Decoder) error {
 			}
 		case "spend":
 			if err := func() error {
-				s.Spend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spend.Reset()
+				if err := s.Spend.Decode(d); err != nil {
 					return err
 				}
-				s.Spend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spend\"")
 			}
 		case "total":
 			if err := func() error {
-				s.Total = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Total.Reset()
+				if err := s.Total.Decode(d); err != nil {
 					return err
 				}
-				s.Total = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"total\"")
@@ -9336,7 +9328,7 @@ func (s *AllocationCreate) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -9391,12 +9383,10 @@ func (s *AllocationCreate) Decode(d *jx.Decoder) error {
 			}
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -10007,13 +9997,13 @@ func (s *ApiV1postSpendReportQueryResponseObject) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.AttributedSpend != nil {
+		if s.AttributedSpend.Set {
 			e.FieldStart("attributed_spend")
 			s.AttributedSpend.Encode(e)
 		}
 	}
 	{
-		if s.BilledSpend != nil {
+		if s.BilledSpend.Set {
 			e.FieldStart("billed_spend")
 			s.BilledSpend.Encode(e)
 		}
@@ -10043,19 +10033,19 @@ func (s *ApiV1postSpendReportQueryResponseObject) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.ConfiguredSpend != nil {
+		if s.ConfiguredSpend.Set {
 			e.FieldStart("configured_spend")
 			s.ConfiguredSpend.Encode(e)
 		}
 	}
 	{
-		if s.Credit != nil {
+		if s.Credit.Set {
 			e.FieldStart("credit")
 			s.Credit.Encode(e)
 		}
 	}
 	{
-		if s.ListSpend != nil {
+		if s.ListSpend.Set {
 			e.FieldStart("list_spend")
 			s.ListSpend.Encode(e)
 		}
@@ -10067,25 +10057,25 @@ func (s *ApiV1postSpendReportQueryResponseObject) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.NetAttributedSpend != nil {
+		if s.NetAttributedSpend.Set {
 			e.FieldStart("net_attributed_spend")
 			s.NetAttributedSpend.Encode(e)
 		}
 	}
 	{
-		if s.NetBilledSpend != nil {
+		if s.NetBilledSpend.Set {
 			e.FieldStart("net_billed_spend")
 			s.NetBilledSpend.Encode(e)
 		}
 	}
 	{
-		if s.NetListSpend != nil {
+		if s.NetListSpend.Set {
 			e.FieldStart("net_list_spend")
 			s.NetListSpend.Encode(e)
 		}
 	}
 	{
-		if s.NetUnattributedSpend != nil {
+		if s.NetUnattributedSpend.Set {
 			e.FieldStart("net_unattributed_spend")
 			s.NetUnattributedSpend.Encode(e)
 		}
@@ -10121,7 +10111,7 @@ func (s *ApiV1postSpendReportQueryResponseObject) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Refund != nil {
+		if s.Refund.Set {
 			e.FieldStart("refund")
 			s.Refund.Encode(e)
 		}
@@ -10145,13 +10135,13 @@ func (s *ApiV1postSpendReportQueryResponseObject) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.UnadjustedSpend != nil {
+		if s.UnadjustedSpend.Set {
 			e.FieldStart("unadjusted_spend")
 			s.UnadjustedSpend.Encode(e)
 		}
 	}
 	{
-		if s.UnattributedSpend != nil {
+		if s.UnattributedSpend.Set {
 			e.FieldStart("unattributed_spend")
 			s.UnattributedSpend.Encode(e)
 		}
@@ -10240,24 +10230,20 @@ func (s *ApiV1postSpendReportQueryResponseObject) Decode(d *jx.Decoder) error {
 			}
 		case "attributed_spend":
 			if err := func() error {
-				s.AttributedSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.AttributedSpend.Reset()
+				if err := s.AttributedSpend.Decode(d); err != nil {
 					return err
 				}
-				s.AttributedSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"attributed_spend\"")
 			}
 		case "billed_spend":
 			if err := func() error {
-				s.BilledSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.BilledSpend.Reset()
+				if err := s.BilledSpend.Decode(d); err != nil {
 					return err
 				}
-				s.BilledSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"billed_spend\"")
@@ -10304,36 +10290,30 @@ func (s *ApiV1postSpendReportQueryResponseObject) Decode(d *jx.Decoder) error {
 			}
 		case "configured_spend":
 			if err := func() error {
-				s.ConfiguredSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.ConfiguredSpend.Reset()
+				if err := s.ConfiguredSpend.Decode(d); err != nil {
 					return err
 				}
-				s.ConfiguredSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"configured_spend\"")
 			}
 		case "credit":
 			if err := func() error {
-				s.Credit = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Credit.Reset()
+				if err := s.Credit.Decode(d); err != nil {
 					return err
 				}
-				s.Credit = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"credit\"")
 			}
 		case "list_spend":
 			if err := func() error {
-				s.ListSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.ListSpend.Reset()
+				if err := s.ListSpend.Decode(d); err != nil {
 					return err
 				}
-				s.ListSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"list_spend\"")
@@ -10350,48 +10330,40 @@ func (s *ApiV1postSpendReportQueryResponseObject) Decode(d *jx.Decoder) error {
 			}
 		case "net_attributed_spend":
 			if err := func() error {
-				s.NetAttributedSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.NetAttributedSpend.Reset()
+				if err := s.NetAttributedSpend.Decode(d); err != nil {
 					return err
 				}
-				s.NetAttributedSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"net_attributed_spend\"")
 			}
 		case "net_billed_spend":
 			if err := func() error {
-				s.NetBilledSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.NetBilledSpend.Reset()
+				if err := s.NetBilledSpend.Decode(d); err != nil {
 					return err
 				}
-				s.NetBilledSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"net_billed_spend\"")
 			}
 		case "net_list_spend":
 			if err := func() error {
-				s.NetListSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.NetListSpend.Reset()
+				if err := s.NetListSpend.Decode(d); err != nil {
 					return err
 				}
-				s.NetListSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"net_list_spend\"")
 			}
 		case "net_unattributed_spend":
 			if err := func() error {
-				s.NetUnattributedSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.NetUnattributedSpend.Reset()
+				if err := s.NetUnattributedSpend.Decode(d); err != nil {
 					return err
 				}
-				s.NetUnattributedSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"net_unattributed_spend\"")
@@ -10448,12 +10420,10 @@ func (s *ApiV1postSpendReportQueryResponseObject) Decode(d *jx.Decoder) error {
 			}
 		case "refund":
 			if err := func() error {
-				s.Refund = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Refund.Reset()
+				if err := s.Refund.Decode(d); err != nil {
 					return err
 				}
-				s.Refund = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"refund\"")
@@ -10490,24 +10460,20 @@ func (s *ApiV1postSpendReportQueryResponseObject) Decode(d *jx.Decoder) error {
 			}
 		case "unadjusted_spend":
 			if err := func() error {
-				s.UnadjustedSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.UnadjustedSpend.Reset()
+				if err := s.UnadjustedSpend.Decode(d); err != nil {
 					return err
 				}
-				s.UnadjustedSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"unadjusted_spend\"")
 			}
 		case "unattributed_spend":
 			if err := func() error {
-				s.UnattributedSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.UnattributedSpend.Reset()
+				if err := s.UnattributedSpend.Decode(d); err != nil {
 					return err
 				}
-				s.UnattributedSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"unattributed_spend\"")
@@ -23420,7 +23386,7 @@ func (s *BudgetData) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *BudgetData) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -23469,12 +23435,10 @@ func (s *BudgetData) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -23554,7 +23518,7 @@ func (s *BudgetDataCreate) Encode(e *jx.Encoder) {
 func (s *BudgetDataCreate) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		s.Amount.Encode(e)
+		e.Float64(s.Amount)
 	}
 	{
 		e.FieldStart("datecode")
@@ -23593,7 +23557,9 @@ func (s *BudgetDataCreate) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.Amount.Decode(d); err != nil {
+				v, err := d.Float64()
+				s.Amount = float64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -44075,50 +44041,6 @@ func (s *CustomWhiteLabelConfigResponse) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *Decimal) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *Decimal) encodeFields(e *jx.Encoder) {
-}
-
-var jsonFieldsNameOfDecimal = [0]string{}
-
-// Decode decodes Decimal from json.
-func (s *Decimal) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode Decimal to nil")
-	}
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		default:
-			return d.Skip()
-		}
-	}); err != nil {
-		return errors.Wrap(err, "decode Decimal")
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *Decimal) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *Decimal) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
 func (s *DeleteUserCloudAccessRoleAliasRequest) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -45313,7 +45235,7 @@ func (s *FSProjectFunding) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *FSProjectFunding) encodeFields(e *jx.Encoder) {
 	{
-		if s.AvailableToProject != nil {
+		if s.AvailableToProject.Set {
 			e.FieldStart("available_to_project")
 			s.AvailableToProject.Encode(e)
 		}
@@ -45331,19 +45253,19 @@ func (s *FSProjectFunding) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.PlannedForProject != nil {
+		if s.PlannedForProject.Set {
 			e.FieldStart("planned_for_project")
 			s.PlannedForProject.Encode(e)
 		}
 	}
 	{
-		if s.RemainingOnProject != nil {
+		if s.RemainingOnProject.Set {
 			e.FieldStart("remaining_on_project")
 			s.RemainingOnProject.Encode(e)
 		}
 	}
 	{
-		if s.SpentOnProject != nil {
+		if s.SpentOnProject.Set {
 			e.FieldStart("spent_on_project")
 			s.SpentOnProject.Encode(e)
 		}
@@ -45376,12 +45298,10 @@ func (s *FSProjectFunding) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "available_to_project":
 			if err := func() error {
-				s.AvailableToProject = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.AvailableToProject.Reset()
+				if err := s.AvailableToProject.Decode(d); err != nil {
 					return err
 				}
-				s.AvailableToProject = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"available_to_project\"")
@@ -45408,36 +45328,30 @@ func (s *FSProjectFunding) Decode(d *jx.Decoder) error {
 			}
 		case "planned_for_project":
 			if err := func() error {
-				s.PlannedForProject = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.PlannedForProject.Reset()
+				if err := s.PlannedForProject.Decode(d); err != nil {
 					return err
 				}
-				s.PlannedForProject = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"planned_for_project\"")
 			}
 		case "remaining_on_project":
 			if err := func() error {
-				s.RemainingOnProject = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.RemainingOnProject.Reset()
+				if err := s.RemainingOnProject.Decode(d); err != nil {
 					return err
 				}
-				s.RemainingOnProject = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"remaining_on_project\"")
 			}
 		case "spent_on_project":
 			if err := func() error {
-				s.SpentOnProject = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.SpentOnProject.Reset()
+				if err := s.SpentOnProject.Decode(d); err != nil {
 					return err
 				}
-				s.SpentOnProject = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spent_on_project\"")
@@ -45492,19 +45406,19 @@ func (s *FSProjectFundingWithTotals) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.TotalPlanned != nil {
+		if s.TotalPlanned.Set {
 			e.FieldStart("total_planned")
 			s.TotalPlanned.Encode(e)
 		}
 	}
 	{
-		if s.TotalRemaining != nil {
+		if s.TotalRemaining.Set {
 			e.FieldStart("total_remaining")
 			s.TotalRemaining.Encode(e)
 		}
 	}
 	{
-		if s.TotalSpent != nil {
+		if s.TotalSpent.Set {
 			e.FieldStart("total_spent")
 			s.TotalSpent.Encode(e)
 		}
@@ -45538,36 +45452,30 @@ func (s *FSProjectFundingWithTotals) Decode(d *jx.Decoder) error {
 			}
 		case "total_planned":
 			if err := func() error {
-				s.TotalPlanned = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.TotalPlanned.Reset()
+				if err := s.TotalPlanned.Decode(d); err != nil {
 					return err
 				}
-				s.TotalPlanned = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"total_planned\"")
 			}
 		case "total_remaining":
 			if err := func() error {
-				s.TotalRemaining = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.TotalRemaining.Reset()
+				if err := s.TotalRemaining.Decode(d); err != nil {
 					return err
 				}
-				s.TotalRemaining = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"total_remaining\"")
 			}
 		case "total_spent":
 			if err := func() error {
-				s.TotalSpent = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.TotalSpent.Reset()
+				if err := s.TotalSpent.Decode(d); err != nil {
 					return err
 				}
-				s.TotalSpent = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"total_spent\"")
@@ -46563,7 +46471,7 @@ func (s *FundingSouceMonthlyReport) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Spend != nil {
+		if s.Spend.Set {
 			e.FieldStart("spend")
 			s.Spend.Encode(e)
 		}
@@ -46694,12 +46602,10 @@ func (s *FundingSouceMonthlyReport) Decode(d *jx.Decoder) error {
 			}
 		case "spend":
 			if err := func() error {
-				s.Spend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spend.Reset()
+				if err := s.Spend.Decode(d); err != nil {
 					return err
 				}
-				s.Spend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spend\"")
@@ -46738,7 +46644,7 @@ func (s *FundingSource) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *FundingSource) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -46801,12 +46707,10 @@ func (s *FundingSource) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -46906,7 +46810,7 @@ func (s *FundingSourceClone) Encode(e *jx.Encoder) {
 func (s *FundingSourceClone) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		s.Amount.Encode(e)
+		e.Float64(s.Amount)
 	}
 	{
 		if s.Description.Set {
@@ -46962,7 +46866,9 @@ func (s *FundingSourceClone) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.Amount.Decode(d); err != nil {
+				v, err := d.Float64()
+				s.Amount = float64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -47100,7 +47006,7 @@ func (s *FundingSourceCreate) Encode(e *jx.Encoder) {
 func (s *FundingSourceCreate) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		s.Amount.Encode(e)
+		e.Float64(s.Amount)
 	}
 	{
 		if s.Description.Set {
@@ -47168,7 +47074,9 @@ func (s *FundingSourceCreate) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.Amount.Decode(d); err != nil {
+				v, err := d.Float64()
+				s.Amount = float64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -48113,43 +48021,43 @@ func (s *FundingSourceFinancials) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *FundingSourceFinancials) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
 	}
 	{
-		if s.AmountUnspent != nil {
+		if s.AmountUnspent.Set {
 			e.FieldStart("amount_unspent")
 			s.AmountUnspent.Encode(e)
 		}
 	}
 	{
-		if s.Planned != nil {
+		if s.Planned.Set {
 			e.FieldStart("planned")
 			s.Planned.Encode(e)
 		}
 	}
 	{
-		if s.PlannedUnspent != nil {
+		if s.PlannedUnspent.Set {
 			e.FieldStart("planned_unspent")
 			s.PlannedUnspent.Encode(e)
 		}
 	}
 	{
-		if s.Spend != nil {
+		if s.Spend.Set {
 			e.FieldStart("spend")
 			s.Spend.Encode(e)
 		}
 	}
 	{
-		if s.Spent != nil {
+		if s.Spent.Set {
 			e.FieldStart("spent")
 			s.Spent.Encode(e)
 		}
 	}
 	{
-		if s.Unplanned != nil {
+		if s.Unplanned.Set {
 			e.FieldStart("unplanned")
 			s.Unplanned.Encode(e)
 		}
@@ -48176,84 +48084,70 @@ func (s *FundingSourceFinancials) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
 			}
 		case "amount_unspent":
 			if err := func() error {
-				s.AmountUnspent = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.AmountUnspent.Reset()
+				if err := s.AmountUnspent.Decode(d); err != nil {
 					return err
 				}
-				s.AmountUnspent = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount_unspent\"")
 			}
 		case "planned":
 			if err := func() error {
-				s.Planned = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Planned.Reset()
+				if err := s.Planned.Decode(d); err != nil {
 					return err
 				}
-				s.Planned = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"planned\"")
 			}
 		case "planned_unspent":
 			if err := func() error {
-				s.PlannedUnspent = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.PlannedUnspent.Reset()
+				if err := s.PlannedUnspent.Decode(d); err != nil {
 					return err
 				}
-				s.PlannedUnspent = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"planned_unspent\"")
 			}
 		case "spend":
 			if err := func() error {
-				s.Spend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spend.Reset()
+				if err := s.Spend.Decode(d); err != nil {
 					return err
 				}
-				s.Spend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spend\"")
 			}
 		case "spent":
 			if err := func() error {
-				s.Spent = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spent.Reset()
+				if err := s.Spent.Decode(d); err != nil {
 					return err
 				}
-				s.Spent = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spent\"")
 			}
 		case "unplanned":
 			if err := func() error {
-				s.Unplanned = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Unplanned.Reset()
+				if err := s.Unplanned.Decode(d); err != nil {
 					return err
 				}
-				s.Unplanned = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"unplanned\"")
@@ -66440,19 +66334,19 @@ func (s *OUFunding) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *OUFunding) encodeFields(e *jx.Encoder) {
 	{
-		if s.AllocatedIn != nil {
+		if s.AllocatedIn.Set {
 			e.FieldStart("allocated_in")
 			s.AllocatedIn.Encode(e)
 		}
 	}
 	{
-		if s.AllocatedOut != nil {
+		if s.AllocatedOut.Set {
 			e.FieldStart("allocated_out")
 			s.AllocatedOut.Encode(e)
 		}
 	}
 	{
-		if s.Available != nil {
+		if s.Available.Set {
 			e.FieldStart("available")
 			s.Available.Encode(e)
 		}
@@ -66464,19 +66358,19 @@ func (s *OUFunding) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Planned != nil {
+		if s.Planned.Set {
 			e.FieldStart("planned")
 			s.Planned.Encode(e)
 		}
 	}
 	{
-		if s.Spend != nil {
+		if s.Spend.Set {
 			e.FieldStart("spend")
 			s.Spend.Encode(e)
 		}
 	}
 	{
-		if s.Spent != nil {
+		if s.Spent.Set {
 			e.FieldStart("spent")
 			s.Spent.Encode(e)
 		}
@@ -66503,36 +66397,30 @@ func (s *OUFunding) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "allocated_in":
 			if err := func() error {
-				s.AllocatedIn = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.AllocatedIn.Reset()
+				if err := s.AllocatedIn.Decode(d); err != nil {
 					return err
 				}
-				s.AllocatedIn = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"allocated_in\"")
 			}
 		case "allocated_out":
 			if err := func() error {
-				s.AllocatedOut = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.AllocatedOut.Reset()
+				if err := s.AllocatedOut.Decode(d); err != nil {
 					return err
 				}
-				s.AllocatedOut = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"allocated_out\"")
 			}
 		case "available":
 			if err := func() error {
-				s.Available = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Available.Reset()
+				if err := s.Available.Decode(d); err != nil {
 					return err
 				}
-				s.Available = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"available\"")
@@ -66549,36 +66437,30 @@ func (s *OUFunding) Decode(d *jx.Decoder) error {
 			}
 		case "planned":
 			if err := func() error {
-				s.Planned = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Planned.Reset()
+				if err := s.Planned.Decode(d); err != nil {
 					return err
 				}
-				s.Planned = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"planned\"")
 			}
 		case "spend":
 			if err := func() error {
-				s.Spend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spend.Reset()
+				if err := s.Spend.Decode(d); err != nil {
 					return err
 				}
-				s.Spend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spend\"")
 			}
 		case "spent":
 			if err := func() error {
-				s.Spent = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spent.Reset()
+				if err := s.Spent.Decode(d); err != nil {
 					return err
 				}
-				s.Spent = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spent\"")
@@ -86712,12 +86594,6 @@ func (s *PaginationQuery) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *PaginationQuery) encodeFields(e *jx.Encoder) {
 	{
-		if s.Augmented.Set {
-			e.FieldStart("augmented")
-			s.Augmented.Encode(e)
-		}
-	}
-	{
 		if s.Count.Set {
 			e.FieldStart("count")
 			s.Count.Encode(e)
@@ -86743,12 +86619,11 @@ func (s *PaginationQuery) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfPaginationQuery = [5]string{
-	0: "augmented",
-	1: "count",
-	2: "page",
-	3: "sort_method",
-	4: "sort_order",
+var jsonFieldsNameOfPaginationQuery = [4]string{
+	0: "count",
+	1: "page",
+	2: "sort_method",
+	3: "sort_order",
 }
 
 // Decode decodes PaginationQuery from json.
@@ -86760,16 +86635,6 @@ func (s *PaginationQuery) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "augmented":
-			if err := func() error {
-				s.Augmented.Reset()
-				if err := s.Augmented.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"augmented\"")
-			}
 		case "count":
 			if err := func() error {
 				s.Count.Reset()
@@ -91926,7 +91791,7 @@ func (s *ProjectFunding) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ProjectFunding) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -91989,12 +91854,10 @@ func (s *ProjectFunding) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -92093,7 +91956,7 @@ func (s *ProjectFundingCreate) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ProjectFundingCreate) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -92142,12 +92005,10 @@ func (s *ProjectFundingCreate) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -92318,7 +92179,7 @@ func (s *ProjectFundingUpdate) Encode(e *jx.Encoder) {
 func (s *ProjectFundingUpdate) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		s.Amount.Encode(e)
+		e.Float64(s.Amount)
 	}
 	{
 		e.FieldStart("end_datecode")
@@ -92353,7 +92214,9 @@ func (s *ProjectFundingUpdate) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.Amount.Decode(d); err != nil {
+				v, err := d.Float64()
+				s.Amount = float64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -92774,7 +92637,7 @@ func (s *ProjectLineItem) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ProjectLineItem) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -92844,12 +92707,10 @@ func (s *ProjectLineItem) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -92958,7 +92819,7 @@ func (s *ProjectLineItemCreate) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ProjectLineItemCreate) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -93021,12 +92882,10 @@ func (s *ProjectLineItemCreate) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -94096,13 +93955,13 @@ func (s *ProjectSpending) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ProjectSpending) encodeFields(e *jx.Encoder) {
 	{
-		if s.Credit != nil {
+		if s.Credit.Set {
 			e.FieldStart("credit")
 			s.Credit.Encode(e)
 		}
 	}
 	{
-		if s.Credits != nil {
+		if s.Credits.Set {
 			e.FieldStart("credits")
 			s.Credits.Encode(e)
 		}
@@ -94120,25 +93979,25 @@ func (s *ProjectSpending) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Planned != nil {
+		if s.Planned.Set {
 			e.FieldStart("planned")
 			s.Planned.Encode(e)
 		}
 	}
 	{
-		if s.PreviousMonthSpend != nil {
+		if s.PreviousMonthSpend.Set {
 			e.FieldStart("previous_month_spend")
 			s.PreviousMonthSpend.Encode(e)
 		}
 	}
 	{
-		if s.PreviousMonthSpent != nil {
+		if s.PreviousMonthSpent.Set {
 			e.FieldStart("previous_month_spent")
 			s.PreviousMonthSpent.Encode(e)
 		}
 	}
 	{
-		if s.Spend != nil {
+		if s.Spend.Set {
 			e.FieldStart("spend")
 			s.Spend.Encode(e)
 		}
@@ -94150,7 +94009,7 @@ func (s *ProjectSpending) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.TimePercentage != nil {
+		if s.TimePercentage.Set {
 			e.FieldStart("time_percentage")
 			s.TimePercentage.Encode(e)
 		}
@@ -94180,24 +94039,20 @@ func (s *ProjectSpending) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "credit":
 			if err := func() error {
-				s.Credit = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Credit.Reset()
+				if err := s.Credit.Decode(d); err != nil {
 					return err
 				}
-				s.Credit = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"credit\"")
 			}
 		case "credits":
 			if err := func() error {
-				s.Credits = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Credits.Reset()
+				if err := s.Credits.Decode(d); err != nil {
 					return err
 				}
-				s.Credits = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"credits\"")
@@ -94224,48 +94079,40 @@ func (s *ProjectSpending) Decode(d *jx.Decoder) error {
 			}
 		case "planned":
 			if err := func() error {
-				s.Planned = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Planned.Reset()
+				if err := s.Planned.Decode(d); err != nil {
 					return err
 				}
-				s.Planned = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"planned\"")
 			}
 		case "previous_month_spend":
 			if err := func() error {
-				s.PreviousMonthSpend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.PreviousMonthSpend.Reset()
+				if err := s.PreviousMonthSpend.Decode(d); err != nil {
 					return err
 				}
-				s.PreviousMonthSpend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"previous_month_spend\"")
 			}
 		case "previous_month_spent":
 			if err := func() error {
-				s.PreviousMonthSpent = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.PreviousMonthSpent.Reset()
+				if err := s.PreviousMonthSpent.Decode(d); err != nil {
 					return err
 				}
-				s.PreviousMonthSpent = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"previous_month_spent\"")
 			}
 		case "spend":
 			if err := func() error {
-				s.Spend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spend.Reset()
+				if err := s.Spend.Decode(d); err != nil {
 					return err
 				}
-				s.Spend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spend\"")
@@ -94282,12 +94129,10 @@ func (s *ProjectSpending) Decode(d *jx.Decoder) error {
 			}
 		case "time_percentage":
 			if err := func() error {
-				s.TimePercentage = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.TimePercentage.Reset()
+				if err := s.TimePercentage.Decode(d); err != nil {
 					return err
 				}
-				s.TimePercentage = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"time_percentage\"")
@@ -94953,7 +94798,7 @@ func (s *RecallCreate) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *RecallCreate) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -95004,12 +94849,10 @@ func (s *RecallCreate) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -100408,7 +100251,7 @@ func (s *SpendPlanV4Patch) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *SpendPlanV4Patch) encodeFields(e *jx.Encoder) {
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -100449,12 +100292,10 @@ func (s *SpendPlanV4Patch) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -100619,7 +100460,7 @@ func (s *SpendPlanV4Put) Encode(e *jx.Encoder) {
 func (s *SpendPlanV4Put) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("amount")
-		s.Amount.Encode(e)
+		e.Float64(s.Amount)
 	}
 	{
 		e.FieldStart("end_datecode")
@@ -100654,7 +100495,9 @@ func (s *SpendPlanV4Put) Decode(d *jx.Decoder) error {
 		case "amount":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.Amount.Decode(d); err != nil {
+				v, err := d.Float64()
+				s.Amount = float64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -101481,7 +101324,7 @@ func (s *SpendSummary) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Amount != nil {
+		if s.Amount.Set {
 			e.FieldStart("amount")
 			s.Amount.Encode(e)
 		}
@@ -101499,7 +101342,7 @@ func (s *SpendSummary) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Spend != nil {
+		if s.Spend.Set {
 			e.FieldStart("spend")
 			s.Spend.Encode(e)
 		}
@@ -101534,12 +101377,10 @@ func (s *SpendSummary) Decode(d *jx.Decoder) error {
 			}
 		case "amount":
 			if err := func() error {
-				s.Amount = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Amount.Reset()
+				if err := s.Amount.Decode(d); err != nil {
 					return err
 				}
-				s.Amount = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"amount\"")
@@ -101566,12 +101407,10 @@ func (s *SpendSummary) Decode(d *jx.Decoder) error {
 			}
 		case "spend":
 			if err := func() error {
-				s.Spend = nil
-				var elem Decimal
-				if err := elem.Decode(d); err != nil {
+				s.Spend.Reset()
+				if err := s.Spend.Decode(d); err != nil {
 					return err
 				}
-				s.Spend = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"spend\"")

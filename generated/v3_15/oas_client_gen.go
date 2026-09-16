@@ -679,7 +679,8 @@ type Invoker interface {
 	DeleteOUCloudAccessRole(ctx context.Context, params DeleteOUCloudAccessRoleParams) (DeleteOUCloudAccessRoleRes, error)
 	// DeleteOUCloudAccessRoleAssociations invokes DeleteOUCloudAccessRoleAssociations operation.
 	//
-	// Removes associations to a cloud access role in the application.
+	// For non-User CAR types, only AWS IAM policy associations are accepted.
+	// Requests that include user, user group, Azure, or GCP associations are rejected.
 	//
 	// DELETE /v3/ou-cloud-access-role/{id}/association
 	DeleteOUCloudAccessRoleAssociations(ctx context.Context, request *OUCloudAccessRoleAssociations, params DeleteOUCloudAccessRoleAssociationsParams) (DeleteOUCloudAccessRoleAssociationsRes, error)
@@ -764,7 +765,8 @@ type Invoker interface {
 	DeleteProjectCloudAccessRole(ctx context.Context, params DeleteProjectCloudAccessRoleParams) (DeleteProjectCloudAccessRoleRes, error)
 	// DeleteProjectCloudAccessRoleAssociations invokes DeleteProjectCloudAccessRoleAssociations operation.
 	//
-	// Removes associations to a cloud access role in the application.
+	// For non-User CAR types, only AWS IAM policy associations are accepted.
+	// Requests that include user, user group, Azure, or GCP associations are rejected.
 	//
 	// DELETE /v3/project-cloud-access-role/{id}/association
 	DeleteProjectCloudAccessRoleAssociations(ctx context.Context, request *ProjectCloudAccessRoleAssociations, params DeleteProjectCloudAccessRoleAssociationsParams) (DeleteProjectCloudAccessRoleAssociationsRes, error)
@@ -2632,7 +2634,11 @@ type Invoker interface {
 	PatchOU(ctx context.Context, request *OUUpdatable, params PatchOUParams) (PatchOURes, error)
 	// PatchOUCloudAccessRole invokes PatchOUCloudAccessRole operation.
 	//
-	// Updates an ou cloud access role in the application.
+	// For non-User CAR types (Custom Trust, Account, Service), per-type trust
+	// fields may be updated (`aws_iam_role_trust_policy`, `aws_trusted_account_numbers`,
+	// `aws_trusted_services`). The CAR type itself is not mutable via update.
+	// `web_access`, `short_term_access_keys`, and `long_term_access_keys` remain
+	// forced to false for non-User types.
 	//
 	// PATCH /v3/ou-cloud-access-role/{id}
 	PatchOUCloudAccessRole(ctx context.Context, request *OUCloudAccessRoleUpdate, params PatchOUCloudAccessRoleParams) (PatchOUCloudAccessRoleRes, error)
@@ -2668,7 +2674,11 @@ type Invoker interface {
 	PatchProject(ctx context.Context, request *ProjectUpdate, params PatchProjectParams) (PatchProjectRes, error)
 	// PatchProjectCloudAccessRole invokes PatchProjectCloudAccessRole operation.
 	//
-	// Updates a project cloud access role in the application.
+	// For non-User CAR types (Custom Trust, Account, Service), per-type trust
+	// fields may be updated (`aws_iam_role_trust_policy`, `aws_trusted_account_numbers`,
+	// `aws_trusted_services`). The CAR type itself is not mutable via update.
+	// `web_access`, `short_term_access_keys`, and `long_term_access_keys` remain
+	// forced to false for non-User types.
 	//
 	// PATCH /v3/project-cloud-access-role/{id}
 	PatchProjectCloudAccessRole(ctx context.Context, request *ProjectCloudAccessRoleUpdate, params PatchProjectCloudAccessRoleParams) (PatchProjectCloudAccessRoleRes, error)
@@ -3351,13 +3361,22 @@ type Invoker interface {
 	PostOUAddOwners(ctx context.Context, request *OUOwners, params PostOUAddOwnersParams) (PostOUAddOwnersRes, error)
 	// PostOUCloudAccessRole invokes PostOUCloudAccessRole operation.
 	//
-	// Creates a new ou cloud access role in the application.
+	// The optional `cloud_access_role_type_id` field selects the role type:
+	// 1 = User (default, multi-cloud, assumable by Kion users/groups),
+	// 2 = Custom Trust (AWS-only; requires `aws_iam_role_trust_policy`),
+	// 3 = Account (AWS-only; requires `aws_trusted_account_numbers`),
+	// 4 = Service (AWS-only; requires `aws_trusted_services`).
+	// Non-User CAR types are AWS-only and reject user/group, Azure, or GCP
+	// associations. `web_access`, `short_term_access_keys`, and `long_term_access_keys`
+	// are forced to false for non-User types.
 	//
 	// POST /v3/ou-cloud-access-role
 	PostOUCloudAccessRole(ctx context.Context, request *OUCloudAccessRoleCreate) (PostOUCloudAccessRoleRes, error)
 	// PostOUCloudAccessRoleAssociations invokes PostOUCloudAccessRoleAssociations operation.
 	//
-	// Adds associations to a ou cloud access role in the application.
+	// For non-User CAR types, only AWS IAM policy associations (including
+	// permissions boundary) are accepted. Requests that include user, user group,
+	// Azure, or GCP associations are rejected.
 	//
 	// POST /v3/ou-cloud-access-role/{id}/association
 	PostOUCloudAccessRoleAssociations(ctx context.Context, request *OUCloudAccessRoleAssociations, params PostOUCloudAccessRoleAssociationsParams) (PostOUCloudAccessRoleAssociationsRes, error)
@@ -3422,15 +3441,22 @@ type Invoker interface {
 	PostProject(ctx context.Context, request OptProjectCreate) (PostProjectRes, error)
 	// PostProjectCloudAccessRole invokes PostProjectCloudAccessRole operation.
 	//
-	// Creates a project cloud access role in the application. Provided cloud provider IDs will be used
-	// to enforce
-	// that provided accounts, policies, and other entities are specific to the CSP.
+	// The optional `cloud_access_role_type_id` field selects the role type:
+	// 1 = User (default, multi-cloud, assumable by Kion users/groups),
+	// 2 = Custom Trust (AWS-only; requires `aws_iam_role_trust_policy`),
+	// 3 = Account (AWS-only; requires `aws_trusted_account_numbers`),
+	// 4 = Service (AWS-only; requires `aws_trusted_services`).
+	// Non-User CAR types are AWS-only and reject user/group, Azure, or GCP
+	// associations. `web_access`, `short_term_access_keys`, and `long_term_access_keys`
+	// are forced to false for non-User types.
 	//
 	// POST /v3/project-cloud-access-role
 	PostProjectCloudAccessRole(ctx context.Context, request *ProjectCloudAccessRoleCreate) (PostProjectCloudAccessRoleRes, error)
 	// PostProjectCloudAccessRoleAssociations invokes PostProjectCloudAccessRoleAssociations operation.
 	//
-	// Adds associations to a project cloud access role in the application.
+	// For non-User CAR types, only AWS IAM policy associations (including
+	// permissions boundary and account associations) are accepted. Requests
+	// that include user, user group, Azure, or GCP associations are rejected.
 	//
 	// POST /v3/project-cloud-access-role/{id}/association
 	PostProjectCloudAccessRoleAssociations(ctx context.Context, request *ProjectCloudAccessRoleAssociations, params PostProjectCloudAccessRoleAssociationsParams) (PostProjectCloudAccessRoleAssociationsRes, error)
@@ -18086,7 +18112,8 @@ func (c *Client) sendDeleteOUCloudAccessRole(ctx context.Context, params DeleteO
 
 // DeleteOUCloudAccessRoleAssociations invokes DeleteOUCloudAccessRoleAssociations operation.
 //
-// Removes associations to a cloud access role in the application.
+// For non-User CAR types, only AWS IAM policy associations are accepted.
+// Requests that include user, user group, Azure, or GCP associations are rejected.
 //
 // DELETE /v3/ou-cloud-access-role/{id}/association
 func (c *Client) DeleteOUCloudAccessRoleAssociations(ctx context.Context, request *OUCloudAccessRoleAssociations, params DeleteOUCloudAccessRoleAssociationsParams) (DeleteOUCloudAccessRoleAssociationsRes, error) {
@@ -19993,7 +20020,8 @@ func (c *Client) sendDeleteProjectCloudAccessRole(ctx context.Context, params De
 
 // DeleteProjectCloudAccessRoleAssociations invokes DeleteProjectCloudAccessRoleAssociations operation.
 //
-// Removes associations to a cloud access role in the application.
+// For non-User CAR types, only AWS IAM policy associations are accepted.
+// Requests that include user, user group, Azure, or GCP associations are rejected.
 //
 // DELETE /v3/project-cloud-access-role/{id}/association
 func (c *Client) DeleteProjectCloudAccessRoleAssociations(ctx context.Context, request *ProjectCloudAccessRoleAssociations, params DeleteProjectCloudAccessRoleAssociationsParams) (DeleteProjectCloudAccessRoleAssociationsRes, error) {
@@ -62091,7 +62119,11 @@ func (c *Client) sendPatchOU(ctx context.Context, request *OUUpdatable, params P
 
 // PatchOUCloudAccessRole invokes PatchOUCloudAccessRole operation.
 //
-// Updates an ou cloud access role in the application.
+// For non-User CAR types (Custom Trust, Account, Service), per-type trust
+// fields may be updated (`aws_iam_role_trust_policy`, `aws_trusted_account_numbers`,
+// `aws_trusted_services`). The CAR type itself is not mutable via update.
+// `web_access`, `short_term_access_keys`, and `long_term_access_keys` remain
+// forced to false for non-User types.
 //
 // PATCH /v3/ou-cloud-access-role/{id}
 func (c *Client) PatchOUCloudAccessRole(ctx context.Context, request *OUCloudAccessRoleUpdate, params PatchOUCloudAccessRoleParams) (PatchOUCloudAccessRoleRes, error) {
@@ -62860,7 +62892,11 @@ func (c *Client) sendPatchProject(ctx context.Context, request *ProjectUpdate, p
 
 // PatchProjectCloudAccessRole invokes PatchProjectCloudAccessRole operation.
 //
-// Updates a project cloud access role in the application.
+// For non-User CAR types (Custom Trust, Account, Service), per-type trust
+// fields may be updated (`aws_iam_role_trust_policy`, `aws_trusted_account_numbers`,
+// `aws_trusted_services`). The CAR type itself is not mutable via update.
+// `web_access`, `short_term_access_keys`, and `long_term_access_keys` remain
+// forced to false for non-User types.
 //
 // PATCH /v3/project-cloud-access-role/{id}
 func (c *Client) PatchProjectCloudAccessRole(ctx context.Context, request *ProjectCloudAccessRoleUpdate, params PatchProjectCloudAccessRoleParams) (PatchProjectCloudAccessRoleRes, error) {
@@ -76764,7 +76800,14 @@ func (c *Client) sendPostOUAddOwners(ctx context.Context, request *OUOwners, par
 
 // PostOUCloudAccessRole invokes PostOUCloudAccessRole operation.
 //
-// Creates a new ou cloud access role in the application.
+// The optional `cloud_access_role_type_id` field selects the role type:
+// 1 = User (default, multi-cloud, assumable by Kion users/groups),
+// 2 = Custom Trust (AWS-only; requires `aws_iam_role_trust_policy`),
+// 3 = Account (AWS-only; requires `aws_trusted_account_numbers`),
+// 4 = Service (AWS-only; requires `aws_trusted_services`).
+// Non-User CAR types are AWS-only and reject user/group, Azure, or GCP
+// associations. `web_access`, `short_term_access_keys`, and `long_term_access_keys`
+// are forced to false for non-User types.
 //
 // POST /v3/ou-cloud-access-role
 func (c *Client) PostOUCloudAccessRole(ctx context.Context, request *OUCloudAccessRoleCreate) (PostOUCloudAccessRoleRes, error) {
@@ -76874,7 +76917,9 @@ func (c *Client) sendPostOUCloudAccessRole(ctx context.Context, request *OUCloud
 
 // PostOUCloudAccessRoleAssociations invokes PostOUCloudAccessRoleAssociations operation.
 //
-// Adds associations to a ou cloud access role in the application.
+// For non-User CAR types, only AWS IAM policy associations (including
+// permissions boundary) are accepted. Requests that include user, user group,
+// Azure, or GCP associations are rejected.
 //
 // POST /v3/ou-cloud-access-role/{id}/association
 func (c *Client) PostOUCloudAccessRoleAssociations(ctx context.Context, request *OUCloudAccessRoleAssociations, params PostOUCloudAccessRoleAssociationsParams) (PostOUCloudAccessRoleAssociationsRes, error) {
@@ -78092,9 +78137,14 @@ func (c *Client) sendPostProject(ctx context.Context, request OptProjectCreate) 
 
 // PostProjectCloudAccessRole invokes PostProjectCloudAccessRole operation.
 //
-// Creates a project cloud access role in the application. Provided cloud provider IDs will be used
-// to enforce
-// that provided accounts, policies, and other entities are specific to the CSP.
+// The optional `cloud_access_role_type_id` field selects the role type:
+// 1 = User (default, multi-cloud, assumable by Kion users/groups),
+// 2 = Custom Trust (AWS-only; requires `aws_iam_role_trust_policy`),
+// 3 = Account (AWS-only; requires `aws_trusted_account_numbers`),
+// 4 = Service (AWS-only; requires `aws_trusted_services`).
+// Non-User CAR types are AWS-only and reject user/group, Azure, or GCP
+// associations. `web_access`, `short_term_access_keys`, and `long_term_access_keys`
+// are forced to false for non-User types.
 //
 // POST /v3/project-cloud-access-role
 func (c *Client) PostProjectCloudAccessRole(ctx context.Context, request *ProjectCloudAccessRoleCreate) (PostProjectCloudAccessRoleRes, error) {
@@ -78204,7 +78254,9 @@ func (c *Client) sendPostProjectCloudAccessRole(ctx context.Context, request *Pr
 
 // PostProjectCloudAccessRoleAssociations invokes PostProjectCloudAccessRoleAssociations operation.
 //
-// Adds associations to a project cloud access role in the application.
+// For non-User CAR types, only AWS IAM policy associations (including
+// permissions boundary and account associations) are accepted. Requests
+// that include user, user group, Azure, or GCP associations are rejected.
 //
 // POST /v3/project-cloud-access-role/{id}/association
 func (c *Client) PostProjectCloudAccessRoleAssociations(ctx context.Context, request *ProjectCloudAccessRoleAssociations, params PostProjectCloudAccessRoleAssociationsParams) (PostProjectCloudAccessRoleAssociationsRes, error) {
