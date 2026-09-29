@@ -6182,13 +6182,34 @@ type AugmentedCloudAccessRole struct {
 	// project.
 	// This will only be for accounts that match the given CSP type.
 	ApplyToAllAccounts OptNilBool `json:"apply_to_all_accounts"`
+	// Whether an instance profile is created for the role. Populated for
+	// non-User CARs (omitted for User CARs).
+	AWSCreateInstanceProfile OptNilBool `json:"aws_create_instance_profile"`
 	// Text of the IAM Path in AWS to be stored in AWS.
 	AWSIamPath OptString `json:"aws_iam_path"`
 	// AWS IAM role name corresponding to the cloud access role.
-	AWSIamRoleName      OptString      `json:"aws_iam_role_name"`
-	CloudAccessRoleType OptString      `json:"cloud_access_role_type"`
-	CreatedAt           OptNullTime    `json:"created_at"`
-	DeletedAt           OptNilNullTime `json:"deleted_at"`
+	AWSIamRoleName OptString `json:"aws_iam_role_name"`
+	// Raw AWS IAM role trust policy JSON. Set for Custom Trust CARs (2) from the
+	// request and for Service CARs (4) from aws_trusted_services. Empty for User
+	// (1) and Account (3) CARs, whose policies awsiamsync builds without storing.
+	AWSIamRoleTrustPolicy OptString `json:"aws_iam_role_trust_policy"`
+	// AWS partition the role is synced to. Populated for non-User CARs.
+	AWSPartition OptString `json:"aws_partition"`
+	// For Account CARs (type 3), the list of AWS account IDs that are
+	// trusted to assume this role. Currently only a single entry is stored.
+	AWSTrustedAccountNumbers OptNilStringArray `json:"aws_trusted_account_numbers"`
+	// For Service CARs (type 4), the AWS service principals allowed to assume
+	// this role.
+	AWSTrustedServices  OptNilStringArray `json:"aws_trusted_services"`
+	CloudAccessRoleType OptString         `json:"cloud_access_role_type"`
+	// Type of the cloud access role:
+	// 1 = User (default, multi-cloud, assumable by Kion users/groups)
+	// 2 = Custom Trust (AWS-only, custom trust policy)
+	// 3 = Account (AWS-only, trusts another AWS account)
+	// 4 = Service (AWS-only, trusts one or more AWS services).
+	CloudAccessRoleTypeID OptNilUint64   `json:"cloud_access_role_type_id"`
+	CreatedAt             OptNullTime    `json:"created_at"`
+	DeletedAt             OptNilNullTime `json:"deleted_at"`
 	// If future accounts is true, this cloud access role will be added to any account that is added to
 	// this project.
 	// This will only be for new accounts that match the given CSP type.
@@ -6245,6 +6266,11 @@ func (s *AugmentedCloudAccessRole) GetApplyToAllAccounts() OptNilBool {
 	return s.ApplyToAllAccounts
 }
 
+// GetAWSCreateInstanceProfile returns the value of AWSCreateInstanceProfile.
+func (s *AugmentedCloudAccessRole) GetAWSCreateInstanceProfile() OptNilBool {
+	return s.AWSCreateInstanceProfile
+}
+
 // GetAWSIamPath returns the value of AWSIamPath.
 func (s *AugmentedCloudAccessRole) GetAWSIamPath() OptString {
 	return s.AWSIamPath
@@ -6255,9 +6281,34 @@ func (s *AugmentedCloudAccessRole) GetAWSIamRoleName() OptString {
 	return s.AWSIamRoleName
 }
 
+// GetAWSIamRoleTrustPolicy returns the value of AWSIamRoleTrustPolicy.
+func (s *AugmentedCloudAccessRole) GetAWSIamRoleTrustPolicy() OptString {
+	return s.AWSIamRoleTrustPolicy
+}
+
+// GetAWSPartition returns the value of AWSPartition.
+func (s *AugmentedCloudAccessRole) GetAWSPartition() OptString {
+	return s.AWSPartition
+}
+
+// GetAWSTrustedAccountNumbers returns the value of AWSTrustedAccountNumbers.
+func (s *AugmentedCloudAccessRole) GetAWSTrustedAccountNumbers() OptNilStringArray {
+	return s.AWSTrustedAccountNumbers
+}
+
+// GetAWSTrustedServices returns the value of AWSTrustedServices.
+func (s *AugmentedCloudAccessRole) GetAWSTrustedServices() OptNilStringArray {
+	return s.AWSTrustedServices
+}
+
 // GetCloudAccessRoleType returns the value of CloudAccessRoleType.
 func (s *AugmentedCloudAccessRole) GetCloudAccessRoleType() OptString {
 	return s.CloudAccessRoleType
+}
+
+// GetCloudAccessRoleTypeID returns the value of CloudAccessRoleTypeID.
+func (s *AugmentedCloudAccessRole) GetCloudAccessRoleTypeID() OptNilUint64 {
+	return s.CloudAccessRoleTypeID
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -6345,6 +6396,11 @@ func (s *AugmentedCloudAccessRole) SetApplyToAllAccounts(val OptNilBool) {
 	s.ApplyToAllAccounts = val
 }
 
+// SetAWSCreateInstanceProfile sets the value of AWSCreateInstanceProfile.
+func (s *AugmentedCloudAccessRole) SetAWSCreateInstanceProfile(val OptNilBool) {
+	s.AWSCreateInstanceProfile = val
+}
+
 // SetAWSIamPath sets the value of AWSIamPath.
 func (s *AugmentedCloudAccessRole) SetAWSIamPath(val OptString) {
 	s.AWSIamPath = val
@@ -6355,9 +6411,34 @@ func (s *AugmentedCloudAccessRole) SetAWSIamRoleName(val OptString) {
 	s.AWSIamRoleName = val
 }
 
+// SetAWSIamRoleTrustPolicy sets the value of AWSIamRoleTrustPolicy.
+func (s *AugmentedCloudAccessRole) SetAWSIamRoleTrustPolicy(val OptString) {
+	s.AWSIamRoleTrustPolicy = val
+}
+
+// SetAWSPartition sets the value of AWSPartition.
+func (s *AugmentedCloudAccessRole) SetAWSPartition(val OptString) {
+	s.AWSPartition = val
+}
+
+// SetAWSTrustedAccountNumbers sets the value of AWSTrustedAccountNumbers.
+func (s *AugmentedCloudAccessRole) SetAWSTrustedAccountNumbers(val OptNilStringArray) {
+	s.AWSTrustedAccountNumbers = val
+}
+
+// SetAWSTrustedServices sets the value of AWSTrustedServices.
+func (s *AugmentedCloudAccessRole) SetAWSTrustedServices(val OptNilStringArray) {
+	s.AWSTrustedServices = val
+}
+
 // SetCloudAccessRoleType sets the value of CloudAccessRoleType.
 func (s *AugmentedCloudAccessRole) SetCloudAccessRoleType(val OptString) {
 	s.CloudAccessRoleType = val
+}
+
+// SetCloudAccessRoleTypeID sets the value of CloudAccessRoleTypeID.
+func (s *AugmentedCloudAccessRole) SetCloudAccessRoleTypeID(val OptNilUint64) {
+	s.CloudAccessRoleTypeID = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
@@ -30928,10 +31009,31 @@ func (s *OUBaseFilter) SetValues(val OptNilUint64Array) {
 // OUCloudAccessRole defines a cloud access role for an ou.
 // Ref: #/components/schemas/OUCloudAccessRole
 type OUCloudAccessRole struct {
+	// Whether an instance profile is created for the role. Populated for
+	// non-User CARs (omitted for User CARs).
+	AWSCreateInstanceProfile OptNilBool `json:"aws_create_instance_profile"`
 	// Text of the IAM Path in AWS to be stored in AWS.
 	AWSIamPath OptString `json:"aws_iam_path"`
 	// AWS IAM role name corresponding to the cloud access role.
 	AWSIamRoleName OptString `json:"aws_iam_role_name"`
+	// Raw AWS IAM role trust policy JSON. Set for Custom Trust CARs (2) from the
+	// request and for Service CARs (4) from aws_trusted_services. Empty for User
+	// (1) and Account (3) CARs, whose policies awsiamsync builds without storing.
+	AWSIamRoleTrustPolicy OptString `json:"aws_iam_role_trust_policy"`
+	// AWS partition the role is synced to. Populated for non-User CARs.
+	AWSPartition OptString `json:"aws_partition"`
+	// For Account CARs (type 3), the list of AWS account IDs that are
+	// trusted to assume this role. Currently only a single entry is stored.
+	AWSTrustedAccountNumbers OptNilStringArray `json:"aws_trusted_account_numbers"`
+	// For Service CARs (type 4), the AWS service principals allowed to assume
+	// this role.
+	AWSTrustedServices OptNilStringArray `json:"aws_trusted_services"`
+	// Type of the cloud access role:
+	// 1 = User (default, multi-cloud, assumable by Kion users/groups)
+	// 2 = Custom Trust (AWS-only, custom trust policy)
+	// 3 = Account (AWS-only, trusts another AWS account)
+	// 4 = Service (AWS-only, trusts one or more AWS services).
+	CloudAccessRoleTypeID OptNilUint64 `json:"cloud_access_role_type_id"`
 	// ID of the record in the application.
 	ID OptUint64 `json:"id"`
 	// If long term key access is true, users of this cloud access role can generate aws long-term access
@@ -30948,6 +31050,11 @@ type OUCloudAccessRole struct {
 	WebAccess OptNilBool `json:"web_access"`
 }
 
+// GetAWSCreateInstanceProfile returns the value of AWSCreateInstanceProfile.
+func (s *OUCloudAccessRole) GetAWSCreateInstanceProfile() OptNilBool {
+	return s.AWSCreateInstanceProfile
+}
+
 // GetAWSIamPath returns the value of AWSIamPath.
 func (s *OUCloudAccessRole) GetAWSIamPath() OptString {
 	return s.AWSIamPath
@@ -30956,6 +31063,31 @@ func (s *OUCloudAccessRole) GetAWSIamPath() OptString {
 // GetAWSIamRoleName returns the value of AWSIamRoleName.
 func (s *OUCloudAccessRole) GetAWSIamRoleName() OptString {
 	return s.AWSIamRoleName
+}
+
+// GetAWSIamRoleTrustPolicy returns the value of AWSIamRoleTrustPolicy.
+func (s *OUCloudAccessRole) GetAWSIamRoleTrustPolicy() OptString {
+	return s.AWSIamRoleTrustPolicy
+}
+
+// GetAWSPartition returns the value of AWSPartition.
+func (s *OUCloudAccessRole) GetAWSPartition() OptString {
+	return s.AWSPartition
+}
+
+// GetAWSTrustedAccountNumbers returns the value of AWSTrustedAccountNumbers.
+func (s *OUCloudAccessRole) GetAWSTrustedAccountNumbers() OptNilStringArray {
+	return s.AWSTrustedAccountNumbers
+}
+
+// GetAWSTrustedServices returns the value of AWSTrustedServices.
+func (s *OUCloudAccessRole) GetAWSTrustedServices() OptNilStringArray {
+	return s.AWSTrustedServices
+}
+
+// GetCloudAccessRoleTypeID returns the value of CloudAccessRoleTypeID.
+func (s *OUCloudAccessRole) GetCloudAccessRoleTypeID() OptNilUint64 {
+	return s.CloudAccessRoleTypeID
 }
 
 // GetID returns the value of ID.
@@ -30988,6 +31120,11 @@ func (s *OUCloudAccessRole) GetWebAccess() OptNilBool {
 	return s.WebAccess
 }
 
+// SetAWSCreateInstanceProfile sets the value of AWSCreateInstanceProfile.
+func (s *OUCloudAccessRole) SetAWSCreateInstanceProfile(val OptNilBool) {
+	s.AWSCreateInstanceProfile = val
+}
+
 // SetAWSIamPath sets the value of AWSIamPath.
 func (s *OUCloudAccessRole) SetAWSIamPath(val OptString) {
 	s.AWSIamPath = val
@@ -30996,6 +31133,31 @@ func (s *OUCloudAccessRole) SetAWSIamPath(val OptString) {
 // SetAWSIamRoleName sets the value of AWSIamRoleName.
 func (s *OUCloudAccessRole) SetAWSIamRoleName(val OptString) {
 	s.AWSIamRoleName = val
+}
+
+// SetAWSIamRoleTrustPolicy sets the value of AWSIamRoleTrustPolicy.
+func (s *OUCloudAccessRole) SetAWSIamRoleTrustPolicy(val OptString) {
+	s.AWSIamRoleTrustPolicy = val
+}
+
+// SetAWSPartition sets the value of AWSPartition.
+func (s *OUCloudAccessRole) SetAWSPartition(val OptString) {
+	s.AWSPartition = val
+}
+
+// SetAWSTrustedAccountNumbers sets the value of AWSTrustedAccountNumbers.
+func (s *OUCloudAccessRole) SetAWSTrustedAccountNumbers(val OptNilStringArray) {
+	s.AWSTrustedAccountNumbers = val
+}
+
+// SetAWSTrustedServices sets the value of AWSTrustedServices.
+func (s *OUCloudAccessRole) SetAWSTrustedServices(val OptNilStringArray) {
+	s.AWSTrustedServices = val
+}
+
+// SetCloudAccessRoleTypeID sets the value of CloudAccessRoleTypeID.
+func (s *OUCloudAccessRole) SetCloudAccessRoleTypeID(val OptNilUint64) {
+	s.CloudAccessRoleTypeID = val
 }
 
 // SetID sets the value of ID.
@@ -31109,6 +31271,10 @@ func (s *OUCloudAccessRoleAssociations) SetUserIds(val OptNilUint64Array) {
 // OUCloudAccessRoleCreate defines the json structure for the ou cloud access role's create action.
 // Ref: #/components/schemas/OUCloudAccessRoleCreate
 type OUCloudAccessRoleCreate struct {
+	// If true, an IAM instance profile is created for this role. Applies only
+	// to non-User CAR types (Custom Trust, Account, Service). Will default to
+	// false if not set.
+	AWSCreateInstanceProfile OptNilBool `json:"aws_create_instance_profile"`
 	// Text of the IAM Path in AWS to be stored in AWS.
 	AWSIamPath OptString `json:"aws_iam_path"`
 	// ID of the AWS IAM policy to be used as a permissions boundary for this role.
@@ -31117,10 +31283,34 @@ type OUCloudAccessRoleCreate struct {
 	AWSIamPolicies OptNilUint64Array `json:"aws_iam_policies"`
 	// AWS IAM role name corresponding to the cloud access role.
 	AWSIamRoleName OptString `json:"aws_iam_role_name"`
+	// AWS IAM role trust policy JSON. Required when cloud_access_role_type_id = 2
+	// (Custom Trust). Rejected for other types.
+	AWSIamRoleTrustPolicy OptString `json:"aws_iam_role_trust_policy"`
+	// Optional AWS partition this role is synced to. Applies only to non-User
+	// CAR types (Custom Trust, Account, Service), which are AWS-only. Defaults
+	// to commercial ("aws") when omitted. Valid values are "aws", "aws-us-gov",
+	// "aws-iso", and "aws-iso-b". Callers in GovCloud or ISO partitions must set
+	// this explicitly.
+	AWSPartition OptString `json:"aws_partition"`
 	// AWS Session Tags used in this role when accessing the AWS console.
 	AWSSessionTags OptNilAWSSessionTagArray `json:"aws_session_tags"`
+	// AWS account IDs this role trusts. Required when
+	// cloud_access_role_type_id = 3 (Account). Currently supports only one
+	// 12-digit AWS account number.
+	AWSTrustedAccountNumbers OptNilStringArray `json:"aws_trusted_account_numbers"`
+	// AWS service principals this role trusts. Required when
+	// cloud_access_role_type_id = 4 (Service).
+	AWSTrustedServices OptNilStringArray `json:"aws_trusted_services"`
 	// IDs of the Azure Role Definitions attached to this role.
 	AzureRoleDefinitions OptNilUint64Array `json:"azure_role_definitions"`
+	// Optional type of the cloud access role. Defaults to 1 (User CAR) when omitted
+	// so existing callers are unaffected. Non-User types are AWS-only and cannot
+	// be associated with Kion users/groups or Azure/GCP role definitions.
+	// 1 = User (default)
+	// 2 = Custom Trust  (requires aws_iam_role_trust_policy)
+	// 3 = Account        (requires aws_trusted_account_numbers)
+	// 4 = Service        (requires aws_trusted_services).
+	CloudAccessRoleTypeID OptNilUint64 `json:"cloud_access_role_type_id"`
 	// IDs of the GCP IAM roles attached to this role.
 	GcpIamRoles OptNilUint64Array `json:"gcp_iam_roles"`
 	// If long term access is true, users of this cloud access role can generate aws long-term access
@@ -31143,6 +31333,11 @@ type OUCloudAccessRoleCreate struct {
 	WebAccess OptNilBool `json:"web_access"`
 }
 
+// GetAWSCreateInstanceProfile returns the value of AWSCreateInstanceProfile.
+func (s *OUCloudAccessRoleCreate) GetAWSCreateInstanceProfile() OptNilBool {
+	return s.AWSCreateInstanceProfile
+}
+
 // GetAWSIamPath returns the value of AWSIamPath.
 func (s *OUCloudAccessRoleCreate) GetAWSIamPath() OptString {
 	return s.AWSIamPath
@@ -31163,14 +31358,39 @@ func (s *OUCloudAccessRoleCreate) GetAWSIamRoleName() OptString {
 	return s.AWSIamRoleName
 }
 
+// GetAWSIamRoleTrustPolicy returns the value of AWSIamRoleTrustPolicy.
+func (s *OUCloudAccessRoleCreate) GetAWSIamRoleTrustPolicy() OptString {
+	return s.AWSIamRoleTrustPolicy
+}
+
+// GetAWSPartition returns the value of AWSPartition.
+func (s *OUCloudAccessRoleCreate) GetAWSPartition() OptString {
+	return s.AWSPartition
+}
+
 // GetAWSSessionTags returns the value of AWSSessionTags.
 func (s *OUCloudAccessRoleCreate) GetAWSSessionTags() OptNilAWSSessionTagArray {
 	return s.AWSSessionTags
 }
 
+// GetAWSTrustedAccountNumbers returns the value of AWSTrustedAccountNumbers.
+func (s *OUCloudAccessRoleCreate) GetAWSTrustedAccountNumbers() OptNilStringArray {
+	return s.AWSTrustedAccountNumbers
+}
+
+// GetAWSTrustedServices returns the value of AWSTrustedServices.
+func (s *OUCloudAccessRoleCreate) GetAWSTrustedServices() OptNilStringArray {
+	return s.AWSTrustedServices
+}
+
 // GetAzureRoleDefinitions returns the value of AzureRoleDefinitions.
 func (s *OUCloudAccessRoleCreate) GetAzureRoleDefinitions() OptNilUint64Array {
 	return s.AzureRoleDefinitions
+}
+
+// GetCloudAccessRoleTypeID returns the value of CloudAccessRoleTypeID.
+func (s *OUCloudAccessRoleCreate) GetCloudAccessRoleTypeID() OptNilUint64 {
+	return s.CloudAccessRoleTypeID
 }
 
 // GetGcpIamRoles returns the value of GcpIamRoles.
@@ -31213,6 +31433,11 @@ func (s *OUCloudAccessRoleCreate) GetWebAccess() OptNilBool {
 	return s.WebAccess
 }
 
+// SetAWSCreateInstanceProfile sets the value of AWSCreateInstanceProfile.
+func (s *OUCloudAccessRoleCreate) SetAWSCreateInstanceProfile(val OptNilBool) {
+	s.AWSCreateInstanceProfile = val
+}
+
 // SetAWSIamPath sets the value of AWSIamPath.
 func (s *OUCloudAccessRoleCreate) SetAWSIamPath(val OptString) {
 	s.AWSIamPath = val
@@ -31233,14 +31458,39 @@ func (s *OUCloudAccessRoleCreate) SetAWSIamRoleName(val OptString) {
 	s.AWSIamRoleName = val
 }
 
+// SetAWSIamRoleTrustPolicy sets the value of AWSIamRoleTrustPolicy.
+func (s *OUCloudAccessRoleCreate) SetAWSIamRoleTrustPolicy(val OptString) {
+	s.AWSIamRoleTrustPolicy = val
+}
+
+// SetAWSPartition sets the value of AWSPartition.
+func (s *OUCloudAccessRoleCreate) SetAWSPartition(val OptString) {
+	s.AWSPartition = val
+}
+
 // SetAWSSessionTags sets the value of AWSSessionTags.
 func (s *OUCloudAccessRoleCreate) SetAWSSessionTags(val OptNilAWSSessionTagArray) {
 	s.AWSSessionTags = val
 }
 
+// SetAWSTrustedAccountNumbers sets the value of AWSTrustedAccountNumbers.
+func (s *OUCloudAccessRoleCreate) SetAWSTrustedAccountNumbers(val OptNilStringArray) {
+	s.AWSTrustedAccountNumbers = val
+}
+
+// SetAWSTrustedServices sets the value of AWSTrustedServices.
+func (s *OUCloudAccessRoleCreate) SetAWSTrustedServices(val OptNilStringArray) {
+	s.AWSTrustedServices = val
+}
+
 // SetAzureRoleDefinitions sets the value of AzureRoleDefinitions.
 func (s *OUCloudAccessRoleCreate) SetAzureRoleDefinitions(val OptNilUint64Array) {
 	s.AzureRoleDefinitions = val
+}
+
+// SetCloudAccessRoleTypeID sets the value of CloudAccessRoleTypeID.
+func (s *OUCloudAccessRoleCreate) SetCloudAccessRoleTypeID(val OptNilUint64) {
+	s.CloudAccessRoleTypeID = val
 }
 
 // SetGcpIamRoles sets the value of GcpIamRoles.
@@ -31599,10 +31849,28 @@ func (*OUCloudAccessRoleResponse) getOUCloudAccessRoleRes() {}
 // OUCloudAccessRoleUpdate defines an updatable cloud access role for an ou.
 // Ref: #/components/schemas/OUCloudAccessRoleUpdate
 type OUCloudAccessRoleUpdate struct {
+	// Whether to create an instance profile for the role. Accepted only for
+	// non-User CARs (and only valid when the role trusts the ec2 service). When
+	// omitted the existing value is left unchanged.
+	AWSCreateInstanceProfile OptNilBool `json:"aws_create_instance_profile"`
 	// ID of the AWS IAM policy to be used as a permissions boundary for this role.
 	AWSIamPermissionsBoundary OptNilUint64 `json:"aws_iam_permissions_boundary"`
+	// AWS IAM role trust policy JSON. Accepted only for Custom Trust CARs
+	// (cloud_access_role_type_id = 2). Rejected for other types.
+	AWSIamRoleTrustPolicy OptString `json:"aws_iam_role_trust_policy"`
+	// AWS partition for the role. Accepted only for non-User CARs. When omitted
+	// the existing partition is left unchanged. One of: aws, aws-us-gov, aws-iso,
+	// aws-iso-b.
+	AWSPartition OptString `json:"aws_partition"`
 	// AWS Session Tags used in this role when accessing the AWS console.
 	AWSSessionTags OptNilAWSSessionTagArray `json:"aws_session_tags"`
+	// AWS account IDs this role trusts. Accepted only for Account CARs
+	// (cloud_access_role_type_id = 3). Currently accepts at most one entry, a
+	// 12-digit AWS account number; supplying more is rejected.
+	AWSTrustedAccountNumbers OptNilStringArray `json:"aws_trusted_account_numbers"`
+	// AWS service principals this role trusts. Accepted only for Service CARs
+	// (cloud_access_role_type_id = 4). If provided, replaces the existing list.
+	AWSTrustedServices OptNilStringArray `json:"aws_trusted_services"`
 	// If long term key access is true, users of this cloud access role can generate aws long-term access
 	// keys.
 	LongTermAccessKeys OptNilBool `json:"long_term_access_keys"`
@@ -31615,14 +31883,39 @@ type OUCloudAccessRoleUpdate struct {
 	WebAccess OptNilBool `json:"web_access"`
 }
 
+// GetAWSCreateInstanceProfile returns the value of AWSCreateInstanceProfile.
+func (s *OUCloudAccessRoleUpdate) GetAWSCreateInstanceProfile() OptNilBool {
+	return s.AWSCreateInstanceProfile
+}
+
 // GetAWSIamPermissionsBoundary returns the value of AWSIamPermissionsBoundary.
 func (s *OUCloudAccessRoleUpdate) GetAWSIamPermissionsBoundary() OptNilUint64 {
 	return s.AWSIamPermissionsBoundary
 }
 
+// GetAWSIamRoleTrustPolicy returns the value of AWSIamRoleTrustPolicy.
+func (s *OUCloudAccessRoleUpdate) GetAWSIamRoleTrustPolicy() OptString {
+	return s.AWSIamRoleTrustPolicy
+}
+
+// GetAWSPartition returns the value of AWSPartition.
+func (s *OUCloudAccessRoleUpdate) GetAWSPartition() OptString {
+	return s.AWSPartition
+}
+
 // GetAWSSessionTags returns the value of AWSSessionTags.
 func (s *OUCloudAccessRoleUpdate) GetAWSSessionTags() OptNilAWSSessionTagArray {
 	return s.AWSSessionTags
+}
+
+// GetAWSTrustedAccountNumbers returns the value of AWSTrustedAccountNumbers.
+func (s *OUCloudAccessRoleUpdate) GetAWSTrustedAccountNumbers() OptNilStringArray {
+	return s.AWSTrustedAccountNumbers
+}
+
+// GetAWSTrustedServices returns the value of AWSTrustedServices.
+func (s *OUCloudAccessRoleUpdate) GetAWSTrustedServices() OptNilStringArray {
+	return s.AWSTrustedServices
 }
 
 // GetLongTermAccessKeys returns the value of LongTermAccessKeys.
@@ -31645,14 +31938,39 @@ func (s *OUCloudAccessRoleUpdate) GetWebAccess() OptNilBool {
 	return s.WebAccess
 }
 
+// SetAWSCreateInstanceProfile sets the value of AWSCreateInstanceProfile.
+func (s *OUCloudAccessRoleUpdate) SetAWSCreateInstanceProfile(val OptNilBool) {
+	s.AWSCreateInstanceProfile = val
+}
+
 // SetAWSIamPermissionsBoundary sets the value of AWSIamPermissionsBoundary.
 func (s *OUCloudAccessRoleUpdate) SetAWSIamPermissionsBoundary(val OptNilUint64) {
 	s.AWSIamPermissionsBoundary = val
 }
 
+// SetAWSIamRoleTrustPolicy sets the value of AWSIamRoleTrustPolicy.
+func (s *OUCloudAccessRoleUpdate) SetAWSIamRoleTrustPolicy(val OptString) {
+	s.AWSIamRoleTrustPolicy = val
+}
+
+// SetAWSPartition sets the value of AWSPartition.
+func (s *OUCloudAccessRoleUpdate) SetAWSPartition(val OptString) {
+	s.AWSPartition = val
+}
+
 // SetAWSSessionTags sets the value of AWSSessionTags.
 func (s *OUCloudAccessRoleUpdate) SetAWSSessionTags(val OptNilAWSSessionTagArray) {
 	s.AWSSessionTags = val
+}
+
+// SetAWSTrustedAccountNumbers sets the value of AWSTrustedAccountNumbers.
+func (s *OUCloudAccessRoleUpdate) SetAWSTrustedAccountNumbers(val OptNilStringArray) {
+	s.AWSTrustedAccountNumbers = val
+}
+
+// SetAWSTrustedServices sets the value of AWSTrustedServices.
+func (s *OUCloudAccessRoleUpdate) SetAWSTrustedServices(val OptNilStringArray) {
+	s.AWSTrustedServices = val
 }
 
 // SetLongTermAccessKeys sets the value of LongTermAccessKeys.
@@ -54694,12 +55012,33 @@ type ProjectCloudAccessRole struct {
 	// project.
 	// This will only be for accounts that match the given CSP type.
 	ApplyToAllAccounts OptNilBool `json:"apply_to_all_accounts"`
+	// Whether an instance profile is created for the role. Populated for
+	// non-User CARs (omitted for User CARs).
+	AWSCreateInstanceProfile OptNilBool `json:"aws_create_instance_profile"`
 	// Text of the IAM Path in AWS to be stored in AWS.
 	AWSIamPath OptString `json:"aws_iam_path"`
 	// AWS IAM role name corresponding to the cloud access role.
-	AWSIamRoleName OptString      `json:"aws_iam_role_name"`
-	CreatedAt      OptNullTime    `json:"created_at"`
-	DeletedAt      OptNilNullTime `json:"deleted_at"`
+	AWSIamRoleName OptString `json:"aws_iam_role_name"`
+	// Raw AWS IAM role trust policy JSON. Set for Custom Trust CARs (2) from the
+	// request and for Service CARs (4) from aws_trusted_services. Empty for User
+	// (1) and Account (3) CARs, whose policies awsiamsync builds without storing.
+	AWSIamRoleTrustPolicy OptString `json:"aws_iam_role_trust_policy"`
+	// AWS partition the role is synced to. Populated for non-User CARs.
+	AWSPartition OptString `json:"aws_partition"`
+	// For Account CARs (type 3), the list of AWS account IDs that are
+	// trusted to assume this role. Currently only a single entry is stored.
+	AWSTrustedAccountNumbers OptNilStringArray `json:"aws_trusted_account_numbers"`
+	// For Service CARs (type 4), the AWS service principals allowed to assume
+	// this role.
+	AWSTrustedServices OptNilStringArray `json:"aws_trusted_services"`
+	// Type of the cloud access role:
+	// 1 = User (default, multi-cloud, assumable by Kion users/groups)
+	// 2 = Custom Trust (AWS-only, custom trust policy)
+	// 3 = Account (AWS-only, trusts another AWS account)
+	// 4 = Service (AWS-only, trusts one or more AWS services).
+	CloudAccessRoleTypeID OptNilUint64   `json:"cloud_access_role_type_id"`
+	CreatedAt             OptNullTime    `json:"created_at"`
+	DeletedAt             OptNilNullTime `json:"deleted_at"`
 	// If future accounts is true, this cloud access role will be added to any account that is added to
 	// this project.
 	// This will only be for new accounts that match the given CSP type.
@@ -54726,6 +55065,11 @@ func (s *ProjectCloudAccessRole) GetApplyToAllAccounts() OptNilBool {
 	return s.ApplyToAllAccounts
 }
 
+// GetAWSCreateInstanceProfile returns the value of AWSCreateInstanceProfile.
+func (s *ProjectCloudAccessRole) GetAWSCreateInstanceProfile() OptNilBool {
+	return s.AWSCreateInstanceProfile
+}
+
 // GetAWSIamPath returns the value of AWSIamPath.
 func (s *ProjectCloudAccessRole) GetAWSIamPath() OptString {
 	return s.AWSIamPath
@@ -54734,6 +55078,31 @@ func (s *ProjectCloudAccessRole) GetAWSIamPath() OptString {
 // GetAWSIamRoleName returns the value of AWSIamRoleName.
 func (s *ProjectCloudAccessRole) GetAWSIamRoleName() OptString {
 	return s.AWSIamRoleName
+}
+
+// GetAWSIamRoleTrustPolicy returns the value of AWSIamRoleTrustPolicy.
+func (s *ProjectCloudAccessRole) GetAWSIamRoleTrustPolicy() OptString {
+	return s.AWSIamRoleTrustPolicy
+}
+
+// GetAWSPartition returns the value of AWSPartition.
+func (s *ProjectCloudAccessRole) GetAWSPartition() OptString {
+	return s.AWSPartition
+}
+
+// GetAWSTrustedAccountNumbers returns the value of AWSTrustedAccountNumbers.
+func (s *ProjectCloudAccessRole) GetAWSTrustedAccountNumbers() OptNilStringArray {
+	return s.AWSTrustedAccountNumbers
+}
+
+// GetAWSTrustedServices returns the value of AWSTrustedServices.
+func (s *ProjectCloudAccessRole) GetAWSTrustedServices() OptNilStringArray {
+	return s.AWSTrustedServices
+}
+
+// GetCloudAccessRoleTypeID returns the value of CloudAccessRoleTypeID.
+func (s *ProjectCloudAccessRole) GetCloudAccessRoleTypeID() OptNilUint64 {
+	return s.CloudAccessRoleTypeID
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -54791,6 +55160,11 @@ func (s *ProjectCloudAccessRole) SetApplyToAllAccounts(val OptNilBool) {
 	s.ApplyToAllAccounts = val
 }
 
+// SetAWSCreateInstanceProfile sets the value of AWSCreateInstanceProfile.
+func (s *ProjectCloudAccessRole) SetAWSCreateInstanceProfile(val OptNilBool) {
+	s.AWSCreateInstanceProfile = val
+}
+
 // SetAWSIamPath sets the value of AWSIamPath.
 func (s *ProjectCloudAccessRole) SetAWSIamPath(val OptString) {
 	s.AWSIamPath = val
@@ -54799,6 +55173,31 @@ func (s *ProjectCloudAccessRole) SetAWSIamPath(val OptString) {
 // SetAWSIamRoleName sets the value of AWSIamRoleName.
 func (s *ProjectCloudAccessRole) SetAWSIamRoleName(val OptString) {
 	s.AWSIamRoleName = val
+}
+
+// SetAWSIamRoleTrustPolicy sets the value of AWSIamRoleTrustPolicy.
+func (s *ProjectCloudAccessRole) SetAWSIamRoleTrustPolicy(val OptString) {
+	s.AWSIamRoleTrustPolicy = val
+}
+
+// SetAWSPartition sets the value of AWSPartition.
+func (s *ProjectCloudAccessRole) SetAWSPartition(val OptString) {
+	s.AWSPartition = val
+}
+
+// SetAWSTrustedAccountNumbers sets the value of AWSTrustedAccountNumbers.
+func (s *ProjectCloudAccessRole) SetAWSTrustedAccountNumbers(val OptNilStringArray) {
+	s.AWSTrustedAccountNumbers = val
+}
+
+// SetAWSTrustedServices sets the value of AWSTrustedServices.
+func (s *ProjectCloudAccessRole) SetAWSTrustedServices(val OptNilStringArray) {
+	s.AWSTrustedServices = val
+}
+
+// SetCloudAccessRoleTypeID sets the value of CloudAccessRoleTypeID.
+func (s *ProjectCloudAccessRole) SetCloudAccessRoleTypeID(val OptNilUint64) {
+	s.CloudAccessRoleTypeID = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
@@ -54954,6 +55353,10 @@ type ProjectCloudAccessRoleCreate struct {
 	// under the project.
 	// This will only be for accounts that match the given CSP type. Will default to false if not set.
 	ApplyToAllAccounts OptNilBool `json:"apply_to_all_accounts"`
+	// If true, an IAM instance profile is created for this role. Applies only
+	// to non-User CAR types (Custom Trust, Account, Service). Will default to
+	// false if not set.
+	AWSCreateInstanceProfile OptNilBool `json:"aws_create_instance_profile"`
 	// Text of the IAM Path in AWS to be stored in AWS.
 	AWSIamPath OptString `json:"aws_iam_path"`
 	// ID of the AWS IAM policy to be used as a permissions boundary for this role. Will be filtered if
@@ -54964,11 +55367,36 @@ type ProjectCloudAccessRoleCreate struct {
 	AWSIamPolicies OptNilUint64Array `json:"aws_iam_policies"`
 	// AWS IAM role name corresponding to the cloud access role.
 	AWSIamRoleName OptString `json:"aws_iam_role_name"`
+	// AWS IAM role trust policy JSON. Required when cloud_access_role_type_id = 2
+	// (Custom Trust). Rejected for other types.
+	AWSIamRoleTrustPolicy OptString `json:"aws_iam_role_trust_policy"`
+	// Optional AWS partition this role is synced to. Applies only to non-User
+	// CAR types (Custom Trust, Account, Service), which are AWS-only. Defaults
+	// to commercial ("aws") when omitted. Valid values are "aws", "aws-us-gov",
+	// "aws-iso", and "aws-iso-b". Callers in GovCloud or ISO partitions must set
+	// this explicitly.
+	AWSPartition OptString `json:"aws_partition"`
 	// AWS Session Tags used in this role when accessing the AWS console.
 	AWSSessionTags OptNilAWSSessionTagArray `json:"aws_session_tags"`
+	// AWS account IDs this role trusts. Required when
+	// cloud_access_role_type_id = 3 (Account). Currently supports exactly one
+	// 12-digit AWS account number.
+	AWSTrustedAccountNumbers OptNilStringArray `json:"aws_trusted_account_numbers"`
+	// AWS service principals this role trusts. Required when
+	// cloud_access_role_type_id = 4 (Service). Each entry must be a service
+	// principal hostname such as "lambda.amazonaws.com".
+	AWSTrustedServices OptNilStringArray `json:"aws_trusted_services"`
 	// IDs of the Azure Role Definitions attached to this role. Will be filtered if Azure Cloud Provider
 	// ID is not given.
 	AzureRoleDefinitions OptNilUint64Array `json:"azure_role_definitions"`
+	// Optional type of the cloud access role. Defaults to 1 (User CAR) when omitted
+	// so existing callers are unaffected. Non-User types are AWS-only and cannot
+	// be associated with Kion users/groups or Azure/GCP role definitions.
+	// 1 = User (default)
+	// 2 = Custom Trust  (requires aws_iam_role_trust_policy)
+	// 3 = Account        (requires aws_trusted_account_numbers)
+	// 4 = Service        (requires aws_trusted_services).
+	CloudAccessRoleTypeID OptNilUint64 `json:"cloud_access_role_type_id"`
 	// Cloud provider IDs that specify which CSPs this role will be used for. If none provided, assume
 	// all cloud providers.
 	// 1 for AWS, 2 for Azure, 3 for GCP.
@@ -55010,6 +55438,11 @@ func (s *ProjectCloudAccessRoleCreate) GetApplyToAllAccounts() OptNilBool {
 	return s.ApplyToAllAccounts
 }
 
+// GetAWSCreateInstanceProfile returns the value of AWSCreateInstanceProfile.
+func (s *ProjectCloudAccessRoleCreate) GetAWSCreateInstanceProfile() OptNilBool {
+	return s.AWSCreateInstanceProfile
+}
+
 // GetAWSIamPath returns the value of AWSIamPath.
 func (s *ProjectCloudAccessRoleCreate) GetAWSIamPath() OptString {
 	return s.AWSIamPath
@@ -55030,14 +55463,39 @@ func (s *ProjectCloudAccessRoleCreate) GetAWSIamRoleName() OptString {
 	return s.AWSIamRoleName
 }
 
+// GetAWSIamRoleTrustPolicy returns the value of AWSIamRoleTrustPolicy.
+func (s *ProjectCloudAccessRoleCreate) GetAWSIamRoleTrustPolicy() OptString {
+	return s.AWSIamRoleTrustPolicy
+}
+
+// GetAWSPartition returns the value of AWSPartition.
+func (s *ProjectCloudAccessRoleCreate) GetAWSPartition() OptString {
+	return s.AWSPartition
+}
+
 // GetAWSSessionTags returns the value of AWSSessionTags.
 func (s *ProjectCloudAccessRoleCreate) GetAWSSessionTags() OptNilAWSSessionTagArray {
 	return s.AWSSessionTags
 }
 
+// GetAWSTrustedAccountNumbers returns the value of AWSTrustedAccountNumbers.
+func (s *ProjectCloudAccessRoleCreate) GetAWSTrustedAccountNumbers() OptNilStringArray {
+	return s.AWSTrustedAccountNumbers
+}
+
+// GetAWSTrustedServices returns the value of AWSTrustedServices.
+func (s *ProjectCloudAccessRoleCreate) GetAWSTrustedServices() OptNilStringArray {
+	return s.AWSTrustedServices
+}
+
 // GetAzureRoleDefinitions returns the value of AzureRoleDefinitions.
 func (s *ProjectCloudAccessRoleCreate) GetAzureRoleDefinitions() OptNilUint64Array {
 	return s.AzureRoleDefinitions
+}
+
+// GetCloudAccessRoleTypeID returns the value of CloudAccessRoleTypeID.
+func (s *ProjectCloudAccessRoleCreate) GetCloudAccessRoleTypeID() OptNilUint64 {
+	return s.CloudAccessRoleTypeID
 }
 
 // GetCloudProviderIds returns the value of CloudProviderIds.
@@ -55100,6 +55558,11 @@ func (s *ProjectCloudAccessRoleCreate) SetApplyToAllAccounts(val OptNilBool) {
 	s.ApplyToAllAccounts = val
 }
 
+// SetAWSCreateInstanceProfile sets the value of AWSCreateInstanceProfile.
+func (s *ProjectCloudAccessRoleCreate) SetAWSCreateInstanceProfile(val OptNilBool) {
+	s.AWSCreateInstanceProfile = val
+}
+
 // SetAWSIamPath sets the value of AWSIamPath.
 func (s *ProjectCloudAccessRoleCreate) SetAWSIamPath(val OptString) {
 	s.AWSIamPath = val
@@ -55120,14 +55583,39 @@ func (s *ProjectCloudAccessRoleCreate) SetAWSIamRoleName(val OptString) {
 	s.AWSIamRoleName = val
 }
 
+// SetAWSIamRoleTrustPolicy sets the value of AWSIamRoleTrustPolicy.
+func (s *ProjectCloudAccessRoleCreate) SetAWSIamRoleTrustPolicy(val OptString) {
+	s.AWSIamRoleTrustPolicy = val
+}
+
+// SetAWSPartition sets the value of AWSPartition.
+func (s *ProjectCloudAccessRoleCreate) SetAWSPartition(val OptString) {
+	s.AWSPartition = val
+}
+
 // SetAWSSessionTags sets the value of AWSSessionTags.
 func (s *ProjectCloudAccessRoleCreate) SetAWSSessionTags(val OptNilAWSSessionTagArray) {
 	s.AWSSessionTags = val
 }
 
+// SetAWSTrustedAccountNumbers sets the value of AWSTrustedAccountNumbers.
+func (s *ProjectCloudAccessRoleCreate) SetAWSTrustedAccountNumbers(val OptNilStringArray) {
+	s.AWSTrustedAccountNumbers = val
+}
+
+// SetAWSTrustedServices sets the value of AWSTrustedServices.
+func (s *ProjectCloudAccessRoleCreate) SetAWSTrustedServices(val OptNilStringArray) {
+	s.AWSTrustedServices = val
+}
+
 // SetAzureRoleDefinitions sets the value of AzureRoleDefinitions.
 func (s *ProjectCloudAccessRoleCreate) SetAzureRoleDefinitions(val OptNilUint64Array) {
 	s.AzureRoleDefinitions = val
+}
+
+// SetCloudAccessRoleTypeID sets the value of CloudAccessRoleTypeID.
+func (s *ProjectCloudAccessRoleCreate) SetCloudAccessRoleTypeID(val OptNilUint64) {
+	s.CloudAccessRoleTypeID = val
 }
 
 // SetCloudProviderIds sets the value of CloudProviderIds.
@@ -55524,11 +56012,29 @@ type ProjectCloudAccessRoleUpdate struct {
 	// under the project.
 	// Will default to false if not set.
 	ApplyToAllAccounts OptNilBool `json:"apply_to_all_accounts"`
+	// Whether to create an instance profile for the role. Accepted only for
+	// non-User CARs (and only valid when the role trusts the ec2 service). When
+	// omitted the existing value is left unchanged.
+	AWSCreateInstanceProfile OptNilBool `json:"aws_create_instance_profile"`
 	// ID of the AWS IAM policy to be used as a permissions boundary for this role. Will be filtered if
 	// AWS Cloud Provider ID is not given.
 	AWSIamPermissionsBoundary OptNilUint64 `json:"aws_iam_permissions_boundary"`
+	// AWS IAM role trust policy JSON. Accepted only for Custom Trust CARs
+	// (cloud_access_role_type_id = 2). Rejected for other types.
+	AWSIamRoleTrustPolicy OptString `json:"aws_iam_role_trust_policy"`
+	// AWS partition for the role. Accepted only for non-User CARs. When omitted
+	// the existing partition is left unchanged. One of: aws, aws-us-gov, aws-iso,
+	// aws-iso-b.
+	AWSPartition OptString `json:"aws_partition"`
 	// AWS Session Tags used in this role when accessing the AWS console.
 	AWSSessionTags OptNilAWSSessionTagArray `json:"aws_session_tags"`
+	// AWS account IDs this role trusts. Accepted only for Account CARs
+	// (cloud_access_role_type_id = 3). Currently accepts at most one entry,
+	// a 12-digit AWS account number; supplying more is rejected.
+	AWSTrustedAccountNumbers OptNilStringArray `json:"aws_trusted_account_numbers"`
+	// AWS service principals this role trusts. Accepted only for Service CARs
+	// (cloud_access_role_type_id = 4). If provided, replaces the existing list.
+	AWSTrustedServices OptNilStringArray `json:"aws_trusted_services"`
 	// Cloud provider IDs that specify which CSPs this role will be used for. Default to existing Cloud
 	// Provider IDs if none provided.
 	// 1 for AWS, 2 for Azure, 3 for GCP. Can only be updated if all associations such as accounts and
@@ -55558,14 +56064,39 @@ func (s *ProjectCloudAccessRoleUpdate) GetApplyToAllAccounts() OptNilBool {
 	return s.ApplyToAllAccounts
 }
 
+// GetAWSCreateInstanceProfile returns the value of AWSCreateInstanceProfile.
+func (s *ProjectCloudAccessRoleUpdate) GetAWSCreateInstanceProfile() OptNilBool {
+	return s.AWSCreateInstanceProfile
+}
+
 // GetAWSIamPermissionsBoundary returns the value of AWSIamPermissionsBoundary.
 func (s *ProjectCloudAccessRoleUpdate) GetAWSIamPermissionsBoundary() OptNilUint64 {
 	return s.AWSIamPermissionsBoundary
 }
 
+// GetAWSIamRoleTrustPolicy returns the value of AWSIamRoleTrustPolicy.
+func (s *ProjectCloudAccessRoleUpdate) GetAWSIamRoleTrustPolicy() OptString {
+	return s.AWSIamRoleTrustPolicy
+}
+
+// GetAWSPartition returns the value of AWSPartition.
+func (s *ProjectCloudAccessRoleUpdate) GetAWSPartition() OptString {
+	return s.AWSPartition
+}
+
 // GetAWSSessionTags returns the value of AWSSessionTags.
 func (s *ProjectCloudAccessRoleUpdate) GetAWSSessionTags() OptNilAWSSessionTagArray {
 	return s.AWSSessionTags
+}
+
+// GetAWSTrustedAccountNumbers returns the value of AWSTrustedAccountNumbers.
+func (s *ProjectCloudAccessRoleUpdate) GetAWSTrustedAccountNumbers() OptNilStringArray {
+	return s.AWSTrustedAccountNumbers
+}
+
+// GetAWSTrustedServices returns the value of AWSTrustedServices.
+func (s *ProjectCloudAccessRoleUpdate) GetAWSTrustedServices() OptNilStringArray {
+	return s.AWSTrustedServices
 }
 
 // GetCloudProviderIds returns the value of CloudProviderIds.
@@ -55603,14 +56134,39 @@ func (s *ProjectCloudAccessRoleUpdate) SetApplyToAllAccounts(val OptNilBool) {
 	s.ApplyToAllAccounts = val
 }
 
+// SetAWSCreateInstanceProfile sets the value of AWSCreateInstanceProfile.
+func (s *ProjectCloudAccessRoleUpdate) SetAWSCreateInstanceProfile(val OptNilBool) {
+	s.AWSCreateInstanceProfile = val
+}
+
 // SetAWSIamPermissionsBoundary sets the value of AWSIamPermissionsBoundary.
 func (s *ProjectCloudAccessRoleUpdate) SetAWSIamPermissionsBoundary(val OptNilUint64) {
 	s.AWSIamPermissionsBoundary = val
 }
 
+// SetAWSIamRoleTrustPolicy sets the value of AWSIamRoleTrustPolicy.
+func (s *ProjectCloudAccessRoleUpdate) SetAWSIamRoleTrustPolicy(val OptString) {
+	s.AWSIamRoleTrustPolicy = val
+}
+
+// SetAWSPartition sets the value of AWSPartition.
+func (s *ProjectCloudAccessRoleUpdate) SetAWSPartition(val OptString) {
+	s.AWSPartition = val
+}
+
 // SetAWSSessionTags sets the value of AWSSessionTags.
 func (s *ProjectCloudAccessRoleUpdate) SetAWSSessionTags(val OptNilAWSSessionTagArray) {
 	s.AWSSessionTags = val
+}
+
+// SetAWSTrustedAccountNumbers sets the value of AWSTrustedAccountNumbers.
+func (s *ProjectCloudAccessRoleUpdate) SetAWSTrustedAccountNumbers(val OptNilStringArray) {
+	s.AWSTrustedAccountNumbers = val
+}
+
+// SetAWSTrustedServices sets the value of AWSTrustedServices.
+func (s *ProjectCloudAccessRoleUpdate) SetAWSTrustedServices(val OptNilStringArray) {
+	s.AWSTrustedServices = val
 }
 
 // SetCloudProviderIds sets the value of CloudProviderIds.

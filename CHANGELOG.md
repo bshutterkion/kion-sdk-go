@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-09-29
+
+### Added
+
+- **Additional Cloud Access Role types on `v3_17`**, regenerated from the Kion
+  3.17.1 release tag — the same change 0.11.0 brought to `v3_15` and `v3_16`. The
+  OU and Project cloud-access-role create/update bodies (`POST`/`PATCH`
+  `/v3/ou-cloud-access-role`, `/v3/project-cloud-access-role`) accept role types
+  other than User, via six optional fields: `cloud_access_role_type_id`
+  (1 User, 2 Custom Trust, 3 Account, 4 Service), `aws_iam_role_trust_policy`,
+  `aws_trusted_account_numbers`, `aws_trusted_services`, `aws_partition` and
+  `aws_create_instance_profile`. They also appear on every response carrying a
+  cloud access role (14 endpoints, including `/v3/me/cloud-access-role` and the
+  `/v4/*-cloud-access-role` lists). Additive only — `oasdiff breaking` reports
+  nothing. `v3_14` (3.14.14), `v3_15` (3.15.13) and `v3_16` (3.16.5) regenerate
+  byte-identically from their tags, so every supported version now reports a
+  real Kion release from `KionRelease`.
+
+- **`KionRelease` / `kion_release` / `kionRelease`** in every lane: the exact Kion
+  release a sub-package was generated from (`"v3_17"` → `"3.17.1"`), alongside the
+  existing `KionVersion` minor mapping. Also exported as the `KionReleases` /
+  `KION_RELEASES` map. A value that is not a bare `X.Y.Z` marks an unreleased
+  branch head; until the first tag-based refresh lands, every version reports the
+  support branch it was last generated from.
+
+### Changed
+
+- **Sub-packages are generated from Kion release tags, not support-branch heads.**
+  `v3_NN` now tracks the newest `3.NN.<patch>` portal tag. Support branches carry
+  API that has not shipped, so the SDK could expose endpoints a customer's Kion
+  does not have (`support-3.17.x` was ~400 commits and +7.5k lines of public API
+  past `3.17.1`). The first refresh after this change may therefore *remove*
+  operations or fields that were generated from unreleased code.
+- The scheduled refresh MR now lists, per sub-package, the Kion release it moves
+  from and to, and names them in its title. A refresh where only the release
+  moved (no API change) is labelled as metadata-only with a patch-bump suggestion.
+- `make check-versions` keys a new version on its first release tag rather than
+  the branch cut, and ignores support branches older than the tracked window. It
+  was permanently red on portal's never-deleted `support-3.12.x`/`support-3.13.x`.
+- python lane: `make lint`/`make fmt` use the ruff locked in `uv.lock` (as CI
+  does) instead of `uvx ruff` (newest release, so local lint drifted from CI), and
+  `lint` plus the `test:python` CI job now enforce `ruff format --check`.
+
+- **`master` is no longer published to the GitHub mirrors.** It tracks
+  portal/master — unreleased, internal/dev only — and now ships to the GitLab
+  mirrors alone. The GitHub jobs strip it (`scripts/strip-subpackage.sh`: the
+  sub-package, its `KionVersions`/`KionReleases` entries and the npm
+  `./master` export) before building and publishing, and `publish-lane.sh`
+  refuses to publish if `EXCLUDE_SUBPACKAGES` is still present. GitHub consumers
+  importing `…/master` will stop resolving it on the next release.
+
+### Fixed
+
+- **Local `make refresh-spec` typed every money field as an object.** go-swagger
+  renders `decimal.Decimal` as a string (which fixspec retypes to `number`) only
+  if its TextMarshaler check can import `encoding` through the GOROOT baked into
+  the swagger binary. `bin/swagger` is built once and kept, so after a Go upgrade
+  that removed the old install (Homebrew deletes old Cellar versions) the import
+  failed silently and ~60 decimal fields per version came out as `$ref: Decimal`
+  (an empty object). Valid OpenAPI, so nothing noticed; CI was unaffected because
+  it builds swagger fresh. `refresh-spec` now runs swagger with the scanning
+  toolchain's `GOROOT`, and fixspec refuses to generate if the struct-shaped
+  decimal ever appears (`checkDecimalsNotObjects`). Verified: the stale binary now
+  reproduces main's CI-generated `v3_16` spec byte for byte.
+
 ## [0.11.0] - 2026-09-16
 
 ### Added

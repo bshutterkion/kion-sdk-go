@@ -46,7 +46,7 @@ kion-sdk-go/
 └── bin/                             # gitignored: project-local swagger + fixspec binaries
 ```
 
-`master` is a development target inside the SDK — it tracks `portal/master` so we can validate unreleased Kion APIs and prepare the next support-branch snapshot. Master never ships to customers. Only `v3_14` through `v3_17` correspond to Kion versions customers actually run.
+`master` is a development target inside the SDK — it tracks `portal/master` so we can validate unreleased Kion APIs and prepare the next support-branch snapshot. Master never ships to customers, and it is published to the GitLab mirror only: the GitHub mirror is built without it (`scripts/strip-subpackage.sh`). Only `v3_14` through `v3_17` correspond to Kion versions customers actually run.
 
 ## Versioning model
 
@@ -282,11 +282,13 @@ This target:
 
 ### Adding a new Kion version
 
-When portal cuts `support-3.18.x`:
+When Kion releases 3.18 (portal tags `3.18.0` on `support-3.18.x`):
 
 1. Append `v3_18` to `SDK_VERSIONS` in the root Makefile. That is the only
-   place the version set is declared — the portal branch is derived by
-   `scripts/portal-branch.sh`, and CI reads the list via `make print-versions`.
+   place the version set is declared — the portal ref (the newest `3.18.*`
+   release tag) is resolved by `scripts/portal-ref.sh`, and CI reads the list
+   via `make print-versions`. Onboarding ahead of GA, before any tag exists,
+   needs an explicit `PORTAL_REF=support-3.18.x`.
 2. Run `make check-registries`. It fails and names every hand-maintained list
    still missing the version — the three lane registries (`go/version.go`,
    the python `_wrapper`, the ts wrapper) plus `ts/package.json`'s npm
