@@ -11515,7 +11515,7 @@ func (s *CFTWithStatus) SetStatus(val OptString) {
 	s.Status = val
 }
 
-// Category represents a custom category in the system.
+// Category defines a custom Category in the system.
 // Ref: #/components/schemas/Category
 type Category struct {
 	// Category description.
@@ -52530,24 +52530,16 @@ func (*PaginatedUserProjectAppRolesResponse) getUserProjectAppRolePaginatedRes()
 // PaginationQuery represents an account in the system.
 // Ref: #/components/schemas/PaginationQuery
 type PaginationQuery struct {
-	// Options are: true, false.
-	// in: query.
-	Augmented OptNilBool `json:"augmented"`
-	// Options are: 0-N.
+	// Number of results to return. Optional
 	// in: query.
 	Count OptInt64 `json:"count"`
-	// Options are: 0-N.
+	// Page number of results. Optional
 	// in: query.
 	Page OptInt64 `json:"page"`
-	// Options are: alphabetical, date.
+	// Specifies how to sort the data. Optional
 	// in: query.
 	SortMethod OptString    `json:"sort_method"`
 	SortOrder  OptSortOrder `json:"sort_order"`
-}
-
-// GetAugmented returns the value of Augmented.
-func (s *PaginationQuery) GetAugmented() OptNilBool {
-	return s.Augmented
 }
 
 // GetCount returns the value of Count.
@@ -52568,11 +52560,6 @@ func (s *PaginationQuery) GetSortMethod() OptString {
 // GetSortOrder returns the value of SortOrder.
 func (s *PaginationQuery) GetSortOrder() OptSortOrder {
 	return s.SortOrder
-}
-
-// SetAugmented sets the value of Augmented.
-func (s *PaginationQuery) SetAugmented(val OptNilBool) {
-	s.Augmented = val
 }
 
 // SetCount sets the value of Count.

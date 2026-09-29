@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-09-29
+
+### Fixed
+
+- **Spec generation is deterministic, and colliding portal types resolve to the
+  public v3 model.** Portal declares same-named types in several packages
+  (`PaginationQuery` in v3/model and beta/model; `Category` and
+  `ComplianceProgramStatus` in v3/model and the internal domain packages).
+  go-swagger resolved each clash by random map order and merged the two into a
+  hybrid, so regenerating the identical release tag gave different specs (1 run
+  in 4 on 3.17.1, which is what failed `spec:generate` on main for 0.12.0).
+  go-swagger is now built with `patches/go-swagger-v0.33.1-deterministic.patch`,
+  and the v3 models always win. Effect on the committed specs:
+  - **`v3_15`, `v3_16` — breaking for code that referenced it:**
+    `PaginationQuery.Augmented` is removed. Those two versions had picked up
+    beta's `PaginationQuery`; in v3 the field is `swagger:ignore`. Decoding is
+    unaffected: the Go client skips unknown fields and Python keeps them in
+    `additional_properties`.
+  - **All versions:** `Category` now carries the public model's description
+    rather than the internal domain type's. Documentation only.
+
 ## [0.12.0] - 2026-09-29
 
 ### Added

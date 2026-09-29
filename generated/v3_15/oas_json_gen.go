@@ -81500,12 +81500,6 @@ func (s *PaginationQuery) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *PaginationQuery) encodeFields(e *jx.Encoder) {
 	{
-		if s.Augmented.Set {
-			e.FieldStart("augmented")
-			s.Augmented.Encode(e)
-		}
-	}
-	{
 		if s.Count.Set {
 			e.FieldStart("count")
 			s.Count.Encode(e)
@@ -81531,12 +81525,11 @@ func (s *PaginationQuery) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfPaginationQuery = [5]string{
-	0: "augmented",
-	1: "count",
-	2: "page",
-	3: "sort_method",
-	4: "sort_order",
+var jsonFieldsNameOfPaginationQuery = [4]string{
+	0: "count",
+	1: "page",
+	2: "sort_method",
+	3: "sort_order",
 }
 
 // Decode decodes PaginationQuery from json.
@@ -81548,16 +81541,6 @@ func (s *PaginationQuery) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "augmented":
-			if err := func() error {
-				s.Augmented.Reset()
-				if err := s.Augmented.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"augmented\"")
-			}
 		case "count":
 			if err := func() error {
 				s.Count.Reset()

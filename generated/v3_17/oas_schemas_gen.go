@@ -12294,7 +12294,7 @@ func (s *CFTWithStatus) SetStatus(val OptString) {
 	s.Status = val
 }
 
-// Category represents a custom category in the system.
+// Category defines a custom Category in the system.
 // Ref: #/components/schemas/Category
 type Category struct {
 	// Category description.
