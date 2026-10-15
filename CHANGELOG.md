@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-15
+
+Regenerated from Kion **3.14.15**, **3.15.14**, **3.16.6** and **3.17.3**
+(previously 3.14.14, 3.15.13, 3.16.5 and 3.17.1).
+
+### Added
+
+- **OAuth2 client and grant management on `v3_17`**: `GetOAuthClients`,
+  `GetOAuthClient`, `PostOAuthClient`, `PutOAuthClient`, `DeleteOAuthClient`,
+  `PostOAuthClientRotateSecret` (`/v3/oauth2/clients…`), plus `GetOAuthGrants`
+  and `DeleteOAuthGrant` (`/v3/oauth2/grants…`).
+- **The Lux MCP endpoint on `v3_17`**: `GetAIMCP` / `PostAIMCP` (`/v3/ai/mcp`,
+  JSON-RPC) and `GetAIMCPProtectedResourceMetadata` (its OAuth
+  protected-resource metadata).
+- **`GET /beta/diagnostic/billing-report` (`v3_16`, `v3_17`)**: each item gains
+  `last_clickhouse_sync`, the time the payer month was last synced into
+  ClickHouse (null when ClickHouse is disabled or it never synced).
+
+### Changed
+
+- **BREAKING (`v3_16`, `v3_17`, beta endpoint)**: the `GET
+  /beta/diagnostic/billing-report` `Status` filter is now an enum: `queued`,
+  `in_progress`, `processed`, `sync_needed`, `synced`, `failed`, `deleted`. Code
+  that passed a free-form string must use one of these; `sync_needed` and
+  `synced` return 400 when ClickHouse is disabled.
+- **BREAKING (`v3_16`, `v3_17`, beta endpoint)**: each response item's `status`
+  is the same enum. In Go its type changes from `OptString` to
+  `OptDiagnosticBillingReportStatus`, and the client validates it: a value
+  outside the enum fails the whole call with a `validate` error. The previous
+  spec documented `pending` and `error`, which the enum no longer has, so a Kion
+  server older than 3.16.6 / 3.17.3 that returns them fails this call in Go.
+
+### Fixed
+
+- **Refresh MRs list the operations a refresh adds and removes.** The
+  "Operations added/removed" section of every scheduled refresh MR said
+  "(none reported)": `refresh-and-mr.sh` called `diff-ops.sh` with no arguments,
+  a usage error that `2>/dev/null || true` hid. `diff-ops.sh --base <ref>
+  [VERSION...]` now compares each version's committed client at a git ref with
+  the working tree, and the refresh calls it with `--base HEAD^`. If it fails,
+  the MR says so instead of reporting no changes.
+- **CI fails when it would test one client and publish another.** The test
+  jobs run on code regenerated from the committed spec; the publish jobs ship
+  the committed code. When the two differed, `generate:python`, `generate:ts`
+  and `spec:generate` only printed a note and passed. They now fail. For Go,
+  versions whose spec moved (a new Kion tag, or `master`) are still only
+  reported; the refresh MR picks those up.
+
 ## [0.13.0] - 2026-09-29
 
 ### Fixed

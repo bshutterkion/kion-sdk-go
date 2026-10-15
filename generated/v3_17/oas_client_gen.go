@@ -681,6 +681,20 @@ type Invoker interface {
 	//
 	// DELETE /v3/label
 	DeleteLabelKeyValue(ctx context.Context, params DeleteLabelKeyValueParams) (DeleteLabelKeyValueRes, error)
+	// DeleteOAuthClient invokes DeleteOAuthClient operation.
+	//
+	// A user with the "Manage Applications" permission can delete any client. A user
+	// with the "Manage Own Applications" permission can delete only their own clients.
+	//
+	// DELETE /v3/oauth2/clients/{id}
+	DeleteOAuthClient(ctx context.Context, params DeleteOAuthClientParams) (DeleteOAuthClientRes, error)
+	// DeleteOAuthGrant invokes DeleteOAuthGrant operation.
+	//
+	// Any authenticated user can revoke their own grants. This removes all access
+	// and refresh tokens for the specified client-user pair.
+	//
+	// DELETE /v3/oauth2/grants/{client_id}
+	DeleteOAuthGrant(ctx context.Context, params DeleteOAuthGrantParams) (DeleteOAuthGrantRes, error)
 	// DeleteOU invokes DeleteOU operation.
 	//
 	// Deletes the specified OU from the system. The OU cannot be deleted if it has child OUs, projects,
@@ -1002,6 +1016,18 @@ type Invoker interface {
 	//
 	// GET /v3/external-id/{account_number}
 	GenerateExternalIDs(ctx context.Context, params GenerateExternalIDsParams) (GenerateExternalIDsRes, error)
+	// GetAIMCP invokes GetAIMCP operation.
+	//
+	// Returns 405 because server-initiated SSE streams are not supported.
+	//
+	// GET /v3/ai/mcp
+	GetAIMCP(ctx context.Context, params GetAIMCPParams) (GetAIMCPRes, error)
+	// GetAIMCPProtectedResourceMetadata invokes GetAIMCPProtectedResourceMetadata operation.
+	//
+	// Returns OAuth protected resource metadata for the public MCP endpoint.
+	//
+	// GET /.well-known/oauth-protected-resource/{base}/v3/ai/mcp
+	GetAIMCPProtectedResourceMetadata(ctx context.Context, params GetAIMCPProtectedResourceMetadataParams) (GetAIMCPProtectedResourceMetadataRes, error)
 	// GetAMI invokes GetAMI operation.
 	//
 	// AMIs exist in AWS accounts that are attached to a project.
@@ -1940,6 +1966,29 @@ type Invoker interface {
 	//
 	// GET /v3/me/cloud-access-role
 	GetMyCARs(ctx context.Context, params GetMyCARsParams) (GetMyCARsRes, error)
+	// GetOAuthClient invokes GetOAuthClient operation.
+	//
+	// A user with the "Manage Applications" or "Browse Applications" permission can
+	// view any client. A user with the "Manage Own Applications" permission can view
+	// only their own clients.
+	//
+	// GET /v3/oauth2/clients/{id}
+	GetOAuthClient(ctx context.Context, params GetOAuthClientParams) (GetOAuthClientRes, error)
+	// GetOAuthClients invokes GetOAuthClients operation.
+	//
+	// A user with the "Manage Applications" or "Browse Applications" permission can
+	// view all clients. A user with the "Manage Own Applications" permission can view
+	// only their own clients.
+	//
+	// GET /v3/oauth2/clients
+	GetOAuthClients(ctx context.Context) (GetOAuthClientsRes, error)
+	// GetOAuthGrants invokes GetOAuthGrants operation.
+	//
+	// Any authenticated user can view their own grants. A grant represents an
+	// authorized client that has been given access to act on behalf of the user.
+	//
+	// GET /v3/oauth2/grants
+	GetOAuthGrants(ctx context.Context) (GetOAuthGrantsRes, error)
 	// GetOU invokes GetOU operation.
 	//
 	// Finds an OU by ID in the application.
@@ -2884,6 +2933,13 @@ type Invoker interface {
 	//
 	// DELETE /v3/service-catalog/{id}/owner
 	PortfolioRemoveOwners(ctx context.Context, request *AMIOwners, params PortfolioRemoveOwnersParams) (PortfolioRemoveOwnersRes, error)
+	// PostAIMCP invokes PostAIMCP operation.
+	//
+	// Handles MCP 2025-06-18 Streamable HTTP JSON-RPC messages. The endpoint is stateless and supports
+	// initialize, ping, tools/list, and tools/call.
+	//
+	// POST /v3/ai/mcp
+	PostAIMCP(ctx context.Context, request *MCPJSONRPCRequest, params PostAIMCPParams) (PostAIMCPRes, error)
 	// PostAMI invokes PostAMI operation.
 	//
 	// AMIs exist in AWS accounts that are attached to a project.
@@ -3442,6 +3498,21 @@ type Invoker interface {
 	//
 	// POST /v3/master-key/settings
 	PostMasterKeySettings(ctx context.Context, request *MasterKeySettings) (PostMasterKeySettingsRes, error)
+	// PostOAuthClient invokes PostOAuthClient operation.
+	//
+	// A user with the "Manage Applications" or "Manage Own Applications" permission
+	// can create a new client.
+	//
+	// POST /v3/oauth2/clients
+	PostOAuthClient(ctx context.Context, request OptOAuthClientCreateRequest) (PostOAuthClientRes, error)
+	// PostOAuthClientRotateSecret invokes PostOAuthClientRotateSecret operation.
+	//
+	// A user with the "Manage Applications" permission can rotate secrets for any client.
+	// A user with the "Manage Own Applications" permission can rotate secrets only for
+	// their own clients. Cannot rotate secrets for public clients.
+	//
+	// POST /v3/oauth2/clients/{id}/rotate-secret
+	PostOAuthClientRotateSecret(ctx context.Context, params PostOAuthClientRotateSecretParams) (PostOAuthClientRotateSecretRes, error)
 	// PostOCIAccount invokes PostOCIAccount operation.
 	//
 	// Attaches an existing OCI Tenancy to a project in the application.
@@ -3930,6 +4001,17 @@ type Invoker interface {
 	//
 	// PUT /v3/notification/setting/category/{category-id}/{notification-type}
 	PutNotificationCategorySetting(ctx context.Context, request *NotificationSetting, params PutNotificationCategorySettingParams) (PutNotificationCategorySettingRes, error)
+	// PutOAuthClient invokes PutOAuthClient operation.
+	//
+	// Manually updating a dynamically registered client through this endpoint
+	// permanently converts it to a manually managed client. It will no longer be
+	// considered managed by Dynamic Client Registration, and its registration
+	// access token will be revoked.
+	// A user with the "Manage Applications" permission can update any client. A user
+	// with the "Manage Own Applications" permission can update only their own clients.
+	//
+	// PUT /v3/oauth2/clients/{id}
+	PutOAuthClient(ctx context.Context, request OptOAuthClientUpdateRequest, params PutOAuthClientParams) (PutOAuthClientRes, error)
 	// PutOULabels invokes PutOULabels operation.
 	//
 	// This replaces labels on the given OU with the provided labels.
@@ -18371,6 +18453,258 @@ func (c *Client) sendDeleteLabelKeyValue(ctx context.Context, params DeleteLabel
 	return result, nil
 }
 
+// DeleteOAuthClient invokes DeleteOAuthClient operation.
+//
+// A user with the "Manage Applications" permission can delete any client. A user
+// with the "Manage Own Applications" permission can delete only their own clients.
+//
+// DELETE /v3/oauth2/clients/{id}
+func (c *Client) DeleteOAuthClient(ctx context.Context, params DeleteOAuthClientParams) (DeleteOAuthClientRes, error) {
+	res, err := c.sendDeleteOAuthClient(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendDeleteOAuthClient(ctx context.Context, params DeleteOAuthClientParams) (res DeleteOAuthClientRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("DeleteOAuthClient"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
+		semconv.URLTemplateKey.String("/v3/oauth2/clients/{id}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteOAuthClientOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/v3/oauth2/clients/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "DELETE", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, DeleteOAuthClientOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeDeleteOAuthClientResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// DeleteOAuthGrant invokes DeleteOAuthGrant operation.
+//
+// Any authenticated user can revoke their own grants. This removes all access
+// and refresh tokens for the specified client-user pair.
+//
+// DELETE /v3/oauth2/grants/{client_id}
+func (c *Client) DeleteOAuthGrant(ctx context.Context, params DeleteOAuthGrantParams) (DeleteOAuthGrantRes, error) {
+	res, err := c.sendDeleteOAuthGrant(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendDeleteOAuthGrant(ctx context.Context, params DeleteOAuthGrantParams) (res DeleteOAuthGrantRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("DeleteOAuthGrant"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
+		semconv.URLTemplateKey.String("/v3/oauth2/grants/{client_id}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteOAuthGrantOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/v3/oauth2/grants/"
+	{
+		// Encode "client_id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "client_id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.ClientID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "DELETE", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, DeleteOAuthGrantOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeDeleteOAuthGrantResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // DeleteOU invokes DeleteOU operation.
 //
 // Deletes the specified OU from the system. The OU cannot be deleted if it has child OUs, projects,
@@ -23470,7 +23804,7 @@ func (c *Client) sendDiagnosticBillingReportList(ctx context.Context, params Dia
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.Status.Get(); ok {
-				return e.EncodeValue(conv.StringToString(val))
+				return e.EncodeValue(conv.StringToString(string(val)))
 			}
 			return nil
 		}); err != nil {
@@ -25715,6 +26049,267 @@ func (c *Client) sendGenerateExternalIDs(ctx context.Context, params GenerateExt
 
 	stage = "DecodeResponse"
 	result, err := decodeGenerateExternalIDsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetAIMCP invokes GetAIMCP operation.
+//
+// Returns 405 because server-initiated SSE streams are not supported.
+//
+// GET /v3/ai/mcp
+func (c *Client) GetAIMCP(ctx context.Context, params GetAIMCPParams) (GetAIMCPRes, error) {
+	res, err := c.sendGetAIMCP(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetAIMCP(ctx context.Context, params GetAIMCPParams) (res GetAIMCPRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("GetAIMCP"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/v3/ai/mcp"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetAIMCPOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/v3/ai/mcp"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "EncodeHeaderParams"
+	h := uri.NewHeaderEncoder(r.Header)
+	{
+		cfg := uri.HeaderParameterEncodingConfig{
+			Name:    "Accept",
+			Explode: false,
+		}
+		if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.Accept))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode header")
+		}
+	}
+	{
+		cfg := uri.HeaderParameterEncodingConfig{
+			Name:    "MCP-Protocol-Version",
+			Explode: false,
+		}
+		if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.MCPProtocolVersion.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode header")
+		}
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, GetAIMCPOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetAIMCPResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetAIMCPProtectedResourceMetadata invokes GetAIMCPProtectedResourceMetadata operation.
+//
+// Returns OAuth protected resource metadata for the public MCP endpoint.
+//
+// GET /.well-known/oauth-protected-resource/{base}/v3/ai/mcp
+func (c *Client) GetAIMCPProtectedResourceMetadata(ctx context.Context, params GetAIMCPProtectedResourceMetadataParams) (GetAIMCPProtectedResourceMetadataRes, error) {
+	res, err := c.sendGetAIMCPProtectedResourceMetadata(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetAIMCPProtectedResourceMetadata(ctx context.Context, params GetAIMCPProtectedResourceMetadataParams) (res GetAIMCPProtectedResourceMetadataRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("GetAIMCPProtectedResourceMetadata"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/.well-known/oauth-protected-resource/{base}/v3/ai/mcp"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetAIMCPProtectedResourceMetadataOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [3]string
+	pathParts[0] = "/.well-known/oauth-protected-resource/"
+	{
+		// Encode "base" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "base",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Base))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/v3/ai/mcp"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, GetAIMCPProtectedResourceMetadataOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetAIMCPProtectedResourceMetadataResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -47203,6 +47798,350 @@ func (c *Client) sendGetMyCARs(ctx context.Context, params GetMyCARsParams) (res
 	return result, nil
 }
 
+// GetOAuthClient invokes GetOAuthClient operation.
+//
+// A user with the "Manage Applications" or "Browse Applications" permission can
+// view any client. A user with the "Manage Own Applications" permission can view
+// only their own clients.
+//
+// GET /v3/oauth2/clients/{id}
+func (c *Client) GetOAuthClient(ctx context.Context, params GetOAuthClientParams) (GetOAuthClientRes, error) {
+	res, err := c.sendGetOAuthClient(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetOAuthClient(ctx context.Context, params GetOAuthClientParams) (res GetOAuthClientRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("GetOAuthClient"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/v3/oauth2/clients/{id}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetOAuthClientOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/v3/oauth2/clients/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, GetOAuthClientOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetOAuthClientResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetOAuthClients invokes GetOAuthClients operation.
+//
+// A user with the "Manage Applications" or "Browse Applications" permission can
+// view all clients. A user with the "Manage Own Applications" permission can view
+// only their own clients.
+//
+// GET /v3/oauth2/clients
+func (c *Client) GetOAuthClients(ctx context.Context) (GetOAuthClientsRes, error) {
+	res, err := c.sendGetOAuthClients(ctx)
+	return res, err
+}
+
+func (c *Client) sendGetOAuthClients(ctx context.Context) (res GetOAuthClientsRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("GetOAuthClients"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/v3/oauth2/clients"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetOAuthClientsOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/v3/oauth2/clients"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, GetOAuthClientsOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetOAuthClientsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetOAuthGrants invokes GetOAuthGrants operation.
+//
+// Any authenticated user can view their own grants. A grant represents an
+// authorized client that has been given access to act on behalf of the user.
+//
+// GET /v3/oauth2/grants
+func (c *Client) GetOAuthGrants(ctx context.Context) (GetOAuthGrantsRes, error) {
+	res, err := c.sendGetOAuthGrants(ctx)
+	return res, err
+}
+
+func (c *Client) sendGetOAuthGrants(ctx context.Context) (res GetOAuthGrantsRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("GetOAuthGrants"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/v3/oauth2/grants"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetOAuthGrantsOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/v3/oauth2/grants"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, GetOAuthGrantsOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetOAuthGrantsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // GetOU invokes GetOU operation.
 //
 // Finds an OU by ID in the application.
@@ -67790,6 +68729,145 @@ func (c *Client) sendPortfolioRemoveOwners(ctx context.Context, request *AMIOwne
 	return result, nil
 }
 
+// PostAIMCP invokes PostAIMCP operation.
+//
+// Handles MCP 2025-06-18 Streamable HTTP JSON-RPC messages. The endpoint is stateless and supports
+// initialize, ping, tools/list, and tools/call.
+//
+// POST /v3/ai/mcp
+func (c *Client) PostAIMCP(ctx context.Context, request *MCPJSONRPCRequest, params PostAIMCPParams) (PostAIMCPRes, error) {
+	res, err := c.sendPostAIMCP(ctx, request, params)
+	return res, err
+}
+
+func (c *Client) sendPostAIMCP(ctx context.Context, request *MCPJSONRPCRequest, params PostAIMCPParams) (res PostAIMCPRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("PostAIMCP"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.URLTemplateKey.String("/v3/ai/mcp"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, PostAIMCPOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/v3/ai/mcp"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodePostAIMCPRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "EncodeHeaderParams"
+	h := uri.NewHeaderEncoder(r.Header)
+	{
+		cfg := uri.HeaderParameterEncodingConfig{
+			Name:    "Accept",
+			Explode: false,
+		}
+		if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.Accept))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode header")
+		}
+	}
+	{
+		cfg := uri.HeaderParameterEncodingConfig{
+			Name:    "MCP-Protocol-Version",
+			Explode: false,
+		}
+		if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.MCPProtocolVersion.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode header")
+		}
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, PostAIMCPOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodePostAIMCPResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // PostAMI invokes PostAMI operation.
 //
 // AMIs exist in AWS accounts that are attached to a project.
@@ -79065,6 +80143,245 @@ func (c *Client) sendPostMasterKeySettings(ctx context.Context, request *MasterK
 	return result, nil
 }
 
+// PostOAuthClient invokes PostOAuthClient operation.
+//
+// A user with the "Manage Applications" or "Manage Own Applications" permission
+// can create a new client.
+//
+// POST /v3/oauth2/clients
+func (c *Client) PostOAuthClient(ctx context.Context, request OptOAuthClientCreateRequest) (PostOAuthClientRes, error) {
+	res, err := c.sendPostOAuthClient(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendPostOAuthClient(ctx context.Context, request OptOAuthClientCreateRequest) (res PostOAuthClientRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("PostOAuthClient"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.URLTemplateKey.String("/v3/oauth2/clients"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, PostOAuthClientOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/v3/oauth2/clients"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodePostOAuthClientRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, PostOAuthClientOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodePostOAuthClientResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// PostOAuthClientRotateSecret invokes PostOAuthClientRotateSecret operation.
+//
+// A user with the "Manage Applications" permission can rotate secrets for any client.
+// A user with the "Manage Own Applications" permission can rotate secrets only for
+// their own clients. Cannot rotate secrets for public clients.
+//
+// POST /v3/oauth2/clients/{id}/rotate-secret
+func (c *Client) PostOAuthClientRotateSecret(ctx context.Context, params PostOAuthClientRotateSecretParams) (PostOAuthClientRotateSecretRes, error) {
+	res, err := c.sendPostOAuthClientRotateSecret(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendPostOAuthClientRotateSecret(ctx context.Context, params PostOAuthClientRotateSecretParams) (res PostOAuthClientRotateSecretRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("PostOAuthClientRotateSecret"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.URLTemplateKey.String("/v3/oauth2/clients/{id}/rotate-secret"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, PostOAuthClientRotateSecretOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [3]string
+	pathParts[0] = "/v3/oauth2/clients/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/rotate-secret"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, PostOAuthClientRotateSecretOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodePostOAuthClientRotateSecretResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // PostOCIAccount invokes PostOCIAccount operation.
 //
 // Attaches an existing OCI Tenancy to a project in the application.
@@ -88071,6 +89388,139 @@ func (c *Client) sendPutNotificationCategorySetting(ctx context.Context, request
 
 	stage = "DecodeResponse"
 	result, err := decodePutNotificationCategorySettingResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// PutOAuthClient invokes PutOAuthClient operation.
+//
+// Manually updating a dynamically registered client through this endpoint
+// permanently converts it to a manually managed client. It will no longer be
+// considered managed by Dynamic Client Registration, and its registration
+// access token will be revoked.
+// A user with the "Manage Applications" permission can update any client. A user
+// with the "Manage Own Applications" permission can update only their own clients.
+//
+// PUT /v3/oauth2/clients/{id}
+func (c *Client) PutOAuthClient(ctx context.Context, request OptOAuthClientUpdateRequest, params PutOAuthClientParams) (PutOAuthClientRes, error) {
+	res, err := c.sendPutOAuthClient(ctx, request, params)
+	return res, err
+}
+
+func (c *Client) sendPutOAuthClient(ctx context.Context, request OptOAuthClientUpdateRequest, params PutOAuthClientParams) (res PutOAuthClientRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("PutOAuthClient"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
+		semconv.URLTemplateKey.String("/v3/oauth2/clients/{id}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, PutOAuthClientOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/v3/oauth2/clients/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "PUT", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodePutOAuthClientRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:Token"
+			switch err := c.securityToken(ctx, PutOAuthClientOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"Token\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodePutOAuthClientResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

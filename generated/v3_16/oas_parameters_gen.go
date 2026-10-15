@@ -918,8 +918,9 @@ type DiagnosticBillingReportListParams struct {
 	Month OptUint64 `json:",omitempty,omitzero"`
 	// Billing source IDs as a comma-separated list.
 	BillingSourceIDs []uint64 `json:",omitempty"`
-	// Status filter.
-	Status OptString `json:",omitempty,omitzero"`
+	// Status filter. The sync_needed and synced values exist only while ClickHouse is enabled;
+	// filtering on either one with ClickHouse disabled is rejected with a 400.
+	Status OptDiagnosticBillingReportListStatus `json:",omitempty,omitzero"`
 	// Page number of results.
 	Page OptInt64 `json:",omitempty,omitzero"`
 	// Number of results to return.

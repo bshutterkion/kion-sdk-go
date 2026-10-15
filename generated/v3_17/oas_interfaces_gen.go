@@ -421,6 +421,14 @@ type DeleteLabelRes interface {
 	deleteLabelRes()
 }
 
+type DeleteOAuthClientRes interface {
+	deleteOAuthClientRes()
+}
+
+type DeleteOAuthGrantRes interface {
+	deleteOAuthGrantRes()
+}
+
 type DeleteOUCloudAccessRoleAssociationsRes interface {
 	deleteOUCloudAccessRoleAssociationsRes()
 }
@@ -627,6 +635,14 @@ type GcpIAMRoleValidatePermissionsAndDenialsRes interface {
 
 type GenerateExternalIDsRes interface {
 	generateExternalIDsRes()
+}
+
+type GetAIMCPProtectedResourceMetadataRes interface {
+	getAIMCPProtectedResourceMetadataRes()
+}
+
+type GetAIMCPRes interface {
+	getAIMCPRes()
 }
 
 type GetAMIIndexRes interface {
@@ -1241,6 +1257,18 @@ type GetMyCARsRes interface {
 	getMyCARsRes()
 }
 
+type GetOAuthClientRes interface {
+	getOAuthClientRes()
+}
+
+type GetOAuthClientsRes interface {
+	getOAuthClientsRes()
+}
+
+type GetOAuthGrantsRes interface {
+	getOAuthGrantsRes()
+}
+
 type GetOUCloudAccessRoleIndexRes interface {
 	getOUCloudAccessRoleIndexRes()
 }
@@ -1853,6 +1881,10 @@ type PortfolioRemoveOwnersRes interface {
 	portfolioRemoveOwnersRes()
 }
 
+type PostAIMCPRes interface {
+	postAIMCPRes()
+}
+
 type PostAMIRes interface {
 	postAMIRes()
 }
@@ -2217,6 +2249,14 @@ type PostMasterKeySettingsRes interface {
 	postMasterKeySettingsRes()
 }
 
+type PostOAuthClientRes interface {
+	postOAuthClientRes()
+}
+
+type PostOAuthClientRotateSecretRes interface {
+	postOAuthClientRotateSecretRes()
+}
+
 type PostOCIAccountRes interface {
 	postOCIAccountRes()
 }
@@ -2515,6 +2555,10 @@ type PutHideIntegrationsStatusRes interface {
 
 type PutNotificationCategorySettingRes interface {
 	putNotificationCategorySettingRes()
+}
+
+type PutOAuthClientRes interface {
+	putOAuthClientRes()
 }
 
 type PutOULabelsRes interface {

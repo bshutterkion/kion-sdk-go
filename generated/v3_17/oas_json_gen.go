@@ -44456,6 +44456,12 @@ func (s *DiagnosticBillingReport) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.LastClickhouseSync.Set {
+			e.FieldStart("last_clickhouse_sync")
+			s.LastClickhouseSync.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
 		if s.Month.Set {
 			e.FieldStart("month")
 			s.Month.Encode(e)
@@ -44493,7 +44499,7 @@ func (s *DiagnosticBillingReport) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfDiagnosticBillingReport = [14]string{
+var jsonFieldsNameOfDiagnosticBillingReport = [15]string{
 	0:  "attempt_counter",
 	1:  "billing_source_id",
 	2:  "created_at",
@@ -44502,12 +44508,13 @@ var jsonFieldsNameOfDiagnosticBillingReport = [14]string{
 	5:  "export_time",
 	6:  "id",
 	7:  "is_focus",
-	8:  "month",
-	9:  "processed_at",
-	10: "should_process",
-	11: "status",
-	12: "time_granularity_id",
-	13: "updated_at",
+	8:  "last_clickhouse_sync",
+	9:  "month",
+	10: "processed_at",
+	11: "should_process",
+	12: "status",
+	13: "time_granularity_id",
+	14: "updated_at",
 }
 
 // Decode decodes DiagnosticBillingReport from json.
@@ -44597,6 +44604,16 @@ func (s *DiagnosticBillingReport) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"is_focus\"")
+			}
+		case "last_clickhouse_sync":
+			if err := func() error {
+				s.LastClickhouseSync.Reset()
+				if err := s.LastClickhouseSync.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"last_clickhouse_sync\"")
 			}
 		case "month":
 			if err := func() error {
@@ -44855,6 +44872,56 @@ func (s *DiagnosticBillingReportPaginated) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *DiagnosticBillingReportPaginated) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes DiagnosticBillingReportStatus as json.
+func (s DiagnosticBillingReportStatus) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes DiagnosticBillingReportStatus from json.
+func (s *DiagnosticBillingReportStatus) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode DiagnosticBillingReportStatus to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch DiagnosticBillingReportStatus(v) {
+	case DiagnosticBillingReportStatusQueued:
+		*s = DiagnosticBillingReportStatusQueued
+	case DiagnosticBillingReportStatusInProgress:
+		*s = DiagnosticBillingReportStatusInProgress
+	case DiagnosticBillingReportStatusProcessed:
+		*s = DiagnosticBillingReportStatusProcessed
+	case DiagnosticBillingReportStatusSyncNeeded:
+		*s = DiagnosticBillingReportStatusSyncNeeded
+	case DiagnosticBillingReportStatusSynced:
+		*s = DiagnosticBillingReportStatusSynced
+	case DiagnosticBillingReportStatusFailed:
+		*s = DiagnosticBillingReportStatusFailed
+	case DiagnosticBillingReportStatusDeleted:
+		*s = DiagnosticBillingReportStatusDeleted
+	default:
+		*s = DiagnosticBillingReportStatus(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s DiagnosticBillingReportStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *DiagnosticBillingReportStatus) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -61007,6 +61074,575 @@ func (s *LogExport) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *MCPJSONRPCErrorObject) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *MCPJSONRPCErrorObject) encodeFields(e *jx.Encoder) {
+	{
+		if s.Code.Set {
+			e.FieldStart("code")
+			s.Code.Encode(e)
+		}
+	}
+	{
+		if len(s.Data) != 0 {
+			e.FieldStart("data")
+			e.Raw(s.Data)
+		}
+	}
+	{
+		if s.Message.Set {
+			e.FieldStart("message")
+			s.Message.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfMCPJSONRPCErrorObject = [3]string{
+	0: "code",
+	1: "data",
+	2: "message",
+}
+
+// Decode decodes MCPJSONRPCErrorObject from json.
+func (s *MCPJSONRPCErrorObject) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MCPJSONRPCErrorObject to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "code":
+			if err := func() error {
+				s.Code.Reset()
+				if err := s.Code.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"code\"")
+			}
+		case "data":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.Data = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"data\"")
+			}
+		case "message":
+			if err := func() error {
+				s.Message.Reset()
+				if err := s.Message.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"message\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode MCPJSONRPCErrorObject")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *MCPJSONRPCErrorObject) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MCPJSONRPCErrorObject) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *MCPJSONRPCErrorResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *MCPJSONRPCErrorResponse) encodeFields(e *jx.Encoder) {
+	{
+		if s.Error.Set {
+			e.FieldStart("error")
+			s.Error.Encode(e)
+		}
+	}
+	{
+		if len(s.ID) != 0 {
+			e.FieldStart("id")
+			e.Raw(s.ID)
+		}
+	}
+	{
+		if s.Jsonrpc.Set {
+			e.FieldStart("jsonrpc")
+			s.Jsonrpc.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfMCPJSONRPCErrorResponse = [3]string{
+	0: "error",
+	1: "id",
+	2: "jsonrpc",
+}
+
+// Decode decodes MCPJSONRPCErrorResponse from json.
+func (s *MCPJSONRPCErrorResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MCPJSONRPCErrorResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "error":
+			if err := func() error {
+				s.Error.Reset()
+				if err := s.Error.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"error\"")
+			}
+		case "id":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.ID = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "jsonrpc":
+			if err := func() error {
+				s.Jsonrpc.Reset()
+				if err := s.Jsonrpc.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"jsonrpc\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode MCPJSONRPCErrorResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *MCPJSONRPCErrorResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MCPJSONRPCErrorResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *MCPJSONRPCRequest) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *MCPJSONRPCRequest) encodeFields(e *jx.Encoder) {
+	{
+		if len(s.ID) != 0 {
+			e.FieldStart("id")
+			e.Raw(s.ID)
+		}
+	}
+	{
+		if s.Jsonrpc.Set {
+			e.FieldStart("jsonrpc")
+			s.Jsonrpc.Encode(e)
+		}
+	}
+	{
+		if s.Method.Set {
+			e.FieldStart("method")
+			s.Method.Encode(e)
+		}
+	}
+	{
+		if len(s.Params) != 0 {
+			e.FieldStart("params")
+			e.Raw(s.Params)
+		}
+	}
+}
+
+var jsonFieldsNameOfMCPJSONRPCRequest = [4]string{
+	0: "id",
+	1: "jsonrpc",
+	2: "method",
+	3: "params",
+}
+
+// Decode decodes MCPJSONRPCRequest from json.
+func (s *MCPJSONRPCRequest) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MCPJSONRPCRequest to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "id":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.ID = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "jsonrpc":
+			if err := func() error {
+				s.Jsonrpc.Reset()
+				if err := s.Jsonrpc.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"jsonrpc\"")
+			}
+		case "method":
+			if err := func() error {
+				s.Method.Reset()
+				if err := s.Method.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"method\"")
+			}
+		case "params":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.Params = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"params\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode MCPJSONRPCRequest")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *MCPJSONRPCRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MCPJSONRPCRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *MCPJSONRPCSuccessResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *MCPJSONRPCSuccessResponse) encodeFields(e *jx.Encoder) {
+	{
+		if len(s.ID) != 0 {
+			e.FieldStart("id")
+			e.Raw(s.ID)
+		}
+	}
+	{
+		if s.Jsonrpc.Set {
+			e.FieldStart("jsonrpc")
+			s.Jsonrpc.Encode(e)
+		}
+	}
+	{
+		if len(s.Result) != 0 {
+			e.FieldStart("result")
+			e.Raw(s.Result)
+		}
+	}
+}
+
+var jsonFieldsNameOfMCPJSONRPCSuccessResponse = [3]string{
+	0: "id",
+	1: "jsonrpc",
+	2: "result",
+}
+
+// Decode decodes MCPJSONRPCSuccessResponse from json.
+func (s *MCPJSONRPCSuccessResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MCPJSONRPCSuccessResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "id":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.ID = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "jsonrpc":
+			if err := func() error {
+				s.Jsonrpc.Reset()
+				if err := s.Jsonrpc.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"jsonrpc\"")
+			}
+		case "result":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.Result = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"result\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode MCPJSONRPCSuccessResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *MCPJSONRPCSuccessResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MCPJSONRPCSuccessResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *MCPMethodNotAllowedResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *MCPMethodNotAllowedResponse) encodeFields(e *jx.Encoder) {
+}
+
+var jsonFieldsNameOfMCPMethodNotAllowedResponse = [0]string{}
+
+// Decode decodes MCPMethodNotAllowedResponse from json.
+func (s *MCPMethodNotAllowedResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MCPMethodNotAllowedResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		default:
+			return d.Skip()
+		}
+	}); err != nil {
+		return errors.Wrap(err, "decode MCPMethodNotAllowedResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *MCPMethodNotAllowedResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MCPMethodNotAllowedResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *MCPProtectedResourceMetadata) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *MCPProtectedResourceMetadata) encodeFields(e *jx.Encoder) {
+	{
+		if s.AuthorizationServers.Set {
+			e.FieldStart("authorization_servers")
+			s.AuthorizationServers.Encode(e)
+		}
+	}
+	{
+		if s.BearerMethodsSupported.Set {
+			e.FieldStart("bearer_methods_supported")
+			s.BearerMethodsSupported.Encode(e)
+		}
+	}
+	{
+		if s.Resource.Set {
+			e.FieldStart("resource")
+			s.Resource.Encode(e)
+		}
+	}
+	{
+		if s.ScopesSupported.Set {
+			e.FieldStart("scopes_supported")
+			s.ScopesSupported.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfMCPProtectedResourceMetadata = [4]string{
+	0: "authorization_servers",
+	1: "bearer_methods_supported",
+	2: "resource",
+	3: "scopes_supported",
+}
+
+// Decode decodes MCPProtectedResourceMetadata from json.
+func (s *MCPProtectedResourceMetadata) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MCPProtectedResourceMetadata to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "authorization_servers":
+			if err := func() error {
+				s.AuthorizationServers.Reset()
+				if err := s.AuthorizationServers.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"authorization_servers\"")
+			}
+		case "bearer_methods_supported":
+			if err := func() error {
+				s.BearerMethodsSupported.Reset()
+				if err := s.BearerMethodsSupported.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"bearer_methods_supported\"")
+			}
+		case "resource":
+			if err := func() error {
+				s.Resource.Reset()
+				if err := s.Resource.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"resource\"")
+			}
+		case "scopes_supported":
+			if err := func() error {
+				s.ScopesSupported.Reset()
+				if err := s.ScopesSupported.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"scopes_supported\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode MCPProtectedResourceMetadata")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *MCPProtectedResourceMetadata) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MCPProtectedResourceMetadata) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *MasterKeySettings) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -62063,6 +62699,1678 @@ func (s *NullUint) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *NullUint) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClient) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClient) encodeFields(e *jx.Encoder) {
+	{
+		if s.AllowedScopes.Set {
+			e.FieldStart("allowed_scopes")
+			s.AllowedScopes.Encode(e)
+		}
+	}
+	{
+		if s.CreatedAt.Set {
+			e.FieldStart("created_at")
+			s.CreatedAt.Encode(e)
+		}
+	}
+	{
+		if s.CreatedBy.Set {
+			e.FieldStart("created_by")
+			s.CreatedBy.Encode(e)
+		}
+	}
+	{
+		if s.Description.Set {
+			e.FieldStart("description")
+			s.Description.Encode(e)
+		}
+	}
+	{
+		if s.GrantTypes.Set {
+			e.FieldStart("grant_types")
+			s.GrantTypes.Encode(e)
+		}
+	}
+	{
+		if s.ID.Set {
+			e.FieldStart("id")
+			s.ID.Encode(e)
+		}
+	}
+	{
+		if s.IsDynamicallyRegistered.Set {
+			e.FieldStart("is_dynamically_registered")
+			s.IsDynamicallyRegistered.Encode(e)
+		}
+	}
+	{
+		if s.IsPublic.Set {
+			e.FieldStart("is_public")
+			s.IsPublic.Encode(e)
+		}
+	}
+	{
+		if s.Name.Set {
+			e.FieldStart("name")
+			s.Name.Encode(e)
+		}
+	}
+	{
+		if s.OwnerUserID.Set {
+			e.FieldStart("owner_user_id")
+			s.OwnerUserID.Encode(e)
+		}
+	}
+	{
+		if s.RedirectUris.Set {
+			e.FieldStart("redirect_uris")
+			s.RedirectUris.Encode(e)
+		}
+	}
+	{
+		if s.ServiceAccountUserID.Set {
+			e.FieldStart("service_account_user_id")
+			s.ServiceAccountUserID.Encode(e)
+		}
+	}
+	{
+		if s.UpdatedAt.Set {
+			e.FieldStart("updated_at")
+			s.UpdatedAt.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClient = [13]string{
+	0:  "allowed_scopes",
+	1:  "created_at",
+	2:  "created_by",
+	3:  "description",
+	4:  "grant_types",
+	5:  "id",
+	6:  "is_dynamically_registered",
+	7:  "is_public",
+	8:  "name",
+	9:  "owner_user_id",
+	10: "redirect_uris",
+	11: "service_account_user_id",
+	12: "updated_at",
+}
+
+// Decode decodes OAuthClient from json.
+func (s *OAuthClient) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClient to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "allowed_scopes":
+			if err := func() error {
+				s.AllowedScopes.Reset()
+				if err := s.AllowedScopes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"allowed_scopes\"")
+			}
+		case "created_at":
+			if err := func() error {
+				s.CreatedAt.Reset()
+				if err := s.CreatedAt.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"created_at\"")
+			}
+		case "created_by":
+			if err := func() error {
+				s.CreatedBy.Reset()
+				if err := s.CreatedBy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"created_by\"")
+			}
+		case "description":
+			if err := func() error {
+				s.Description.Reset()
+				if err := s.Description.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"description\"")
+			}
+		case "grant_types":
+			if err := func() error {
+				s.GrantTypes.Reset()
+				if err := s.GrantTypes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"grant_types\"")
+			}
+		case "id":
+			if err := func() error {
+				s.ID.Reset()
+				if err := s.ID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "is_dynamically_registered":
+			if err := func() error {
+				s.IsDynamicallyRegistered.Reset()
+				if err := s.IsDynamicallyRegistered.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_dynamically_registered\"")
+			}
+		case "is_public":
+			if err := func() error {
+				s.IsPublic.Reset()
+				if err := s.IsPublic.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_public\"")
+			}
+		case "name":
+			if err := func() error {
+				s.Name.Reset()
+				if err := s.Name.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "owner_user_id":
+			if err := func() error {
+				s.OwnerUserID.Reset()
+				if err := s.OwnerUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"owner_user_id\"")
+			}
+		case "redirect_uris":
+			if err := func() error {
+				s.RedirectUris.Reset()
+				if err := s.RedirectUris.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"redirect_uris\"")
+			}
+		case "service_account_user_id":
+			if err := func() error {
+				s.ServiceAccountUserID.Reset()
+				if err := s.ServiceAccountUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"service_account_user_id\"")
+			}
+		case "updated_at":
+			if err := func() error {
+				s.UpdatedAt.Reset()
+				if err := s.UpdatedAt.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"updated_at\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClient")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClient) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClient) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientCreateRequest) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientCreateRequest) encodeFields(e *jx.Encoder) {
+	{
+		if s.AllowedScopes.Set {
+			e.FieldStart("allowed_scopes")
+			s.AllowedScopes.Encode(e)
+		}
+	}
+	{
+		if s.Description.Set {
+			e.FieldStart("description")
+			s.Description.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("grant_types")
+		if s.GrantTypes == nil {
+			e.Null()
+		} else {
+			e.ArrStart()
+			for _, elem := range s.GrantTypes {
+				e.Str(elem)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
+		if s.IsPublic.Set {
+			e.FieldStart("is_public")
+			s.IsPublic.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("name")
+		e.Str(s.Name)
+	}
+	{
+		if s.OwnerUserID.Set {
+			e.FieldStart("owner_user_id")
+			s.OwnerUserID.Encode(e)
+		}
+	}
+	{
+		if s.RedirectUris.Set {
+			e.FieldStart("redirect_uris")
+			s.RedirectUris.Encode(e)
+		}
+	}
+	{
+		if s.ServiceAccountUserID.Set {
+			e.FieldStart("service_account_user_id")
+			s.ServiceAccountUserID.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientCreateRequest = [8]string{
+	0: "allowed_scopes",
+	1: "description",
+	2: "grant_types",
+	3: "is_public",
+	4: "name",
+	5: "owner_user_id",
+	6: "redirect_uris",
+	7: "service_account_user_id",
+}
+
+// Decode decodes OAuthClientCreateRequest from json.
+func (s *OAuthClientCreateRequest) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientCreateRequest to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "allowed_scopes":
+			if err := func() error {
+				s.AllowedScopes.Reset()
+				if err := s.AllowedScopes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"allowed_scopes\"")
+			}
+		case "description":
+			if err := func() error {
+				s.Description.Reset()
+				if err := s.Description.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"description\"")
+			}
+		case "grant_types":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				switch tt := d.Next(); tt {
+				case jx.Null:
+					if err := d.Skip(); err != nil {
+						return err
+					}
+				default:
+					s.GrantTypes = make([]string, 0)
+					if err := d.Arr(func(d *jx.Decoder) error {
+						var elem string
+						v, err := d.Str()
+						elem = string(v)
+						if err != nil {
+							return err
+						}
+						s.GrantTypes = append(s.GrantTypes, elem)
+						return nil
+					}); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"grant_types\"")
+			}
+		case "is_public":
+			if err := func() error {
+				s.IsPublic.Reset()
+				if err := s.IsPublic.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_public\"")
+			}
+		case "name":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "owner_user_id":
+			if err := func() error {
+				s.OwnerUserID.Reset()
+				if err := s.OwnerUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"owner_user_id\"")
+			}
+		case "redirect_uris":
+			if err := func() error {
+				s.RedirectUris.Reset()
+				if err := s.RedirectUris.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"redirect_uris\"")
+			}
+		case "service_account_user_id":
+			if err := func() error {
+				s.ServiceAccountUserID.Reset()
+				if err := s.ServiceAccountUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"service_account_user_id\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientCreateRequest")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00010100,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfOAuthClientCreateRequest) {
+					name = jsonFieldsNameOfOAuthClientCreateRequest[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientCreateRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientCreateRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientCreated) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientCreated) encodeFields(e *jx.Encoder) {
+	{
+		if s.AllowedScopes.Set {
+			e.FieldStart("allowed_scopes")
+			s.AllowedScopes.Encode(e)
+		}
+	}
+	{
+		if s.CreatedAt.Set {
+			e.FieldStart("created_at")
+			s.CreatedAt.Encode(e)
+		}
+	}
+	{
+		if s.CreatedBy.Set {
+			e.FieldStart("created_by")
+			s.CreatedBy.Encode(e)
+		}
+	}
+	{
+		if s.Description.Set {
+			e.FieldStart("description")
+			s.Description.Encode(e)
+		}
+	}
+	{
+		if s.GrantTypes.Set {
+			e.FieldStart("grant_types")
+			s.GrantTypes.Encode(e)
+		}
+	}
+	{
+		if s.ID.Set {
+			e.FieldStart("id")
+			s.ID.Encode(e)
+		}
+	}
+	{
+		if s.IsDynamicallyRegistered.Set {
+			e.FieldStart("is_dynamically_registered")
+			s.IsDynamicallyRegistered.Encode(e)
+		}
+	}
+	{
+		if s.IsPublic.Set {
+			e.FieldStart("is_public")
+			s.IsPublic.Encode(e)
+		}
+	}
+	{
+		if s.Name.Set {
+			e.FieldStart("name")
+			s.Name.Encode(e)
+		}
+	}
+	{
+		if s.OwnerUserID.Set {
+			e.FieldStart("owner_user_id")
+			s.OwnerUserID.Encode(e)
+		}
+	}
+	{
+		if s.RedirectUris.Set {
+			e.FieldStart("redirect_uris")
+			s.RedirectUris.Encode(e)
+		}
+	}
+	{
+		if s.Secret.Set {
+			e.FieldStart("secret")
+			s.Secret.Encode(e)
+		}
+	}
+	{
+		if s.ServiceAccountUserID.Set {
+			e.FieldStart("service_account_user_id")
+			s.ServiceAccountUserID.Encode(e)
+		}
+	}
+	{
+		if s.UpdatedAt.Set {
+			e.FieldStart("updated_at")
+			s.UpdatedAt.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientCreated = [14]string{
+	0:  "allowed_scopes",
+	1:  "created_at",
+	2:  "created_by",
+	3:  "description",
+	4:  "grant_types",
+	5:  "id",
+	6:  "is_dynamically_registered",
+	7:  "is_public",
+	8:  "name",
+	9:  "owner_user_id",
+	10: "redirect_uris",
+	11: "secret",
+	12: "service_account_user_id",
+	13: "updated_at",
+}
+
+// Decode decodes OAuthClientCreated from json.
+func (s *OAuthClientCreated) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientCreated to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "allowed_scopes":
+			if err := func() error {
+				s.AllowedScopes.Reset()
+				if err := s.AllowedScopes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"allowed_scopes\"")
+			}
+		case "created_at":
+			if err := func() error {
+				s.CreatedAt.Reset()
+				if err := s.CreatedAt.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"created_at\"")
+			}
+		case "created_by":
+			if err := func() error {
+				s.CreatedBy.Reset()
+				if err := s.CreatedBy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"created_by\"")
+			}
+		case "description":
+			if err := func() error {
+				s.Description.Reset()
+				if err := s.Description.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"description\"")
+			}
+		case "grant_types":
+			if err := func() error {
+				s.GrantTypes.Reset()
+				if err := s.GrantTypes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"grant_types\"")
+			}
+		case "id":
+			if err := func() error {
+				s.ID.Reset()
+				if err := s.ID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "is_dynamically_registered":
+			if err := func() error {
+				s.IsDynamicallyRegistered.Reset()
+				if err := s.IsDynamicallyRegistered.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_dynamically_registered\"")
+			}
+		case "is_public":
+			if err := func() error {
+				s.IsPublic.Reset()
+				if err := s.IsPublic.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_public\"")
+			}
+		case "name":
+			if err := func() error {
+				s.Name.Reset()
+				if err := s.Name.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "owner_user_id":
+			if err := func() error {
+				s.OwnerUserID.Reset()
+				if err := s.OwnerUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"owner_user_id\"")
+			}
+		case "redirect_uris":
+			if err := func() error {
+				s.RedirectUris.Reset()
+				if err := s.RedirectUris.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"redirect_uris\"")
+			}
+		case "secret":
+			if err := func() error {
+				s.Secret.Reset()
+				if err := s.Secret.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"secret\"")
+			}
+		case "service_account_user_id":
+			if err := func() error {
+				s.ServiceAccountUserID.Reset()
+				if err := s.ServiceAccountUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"service_account_user_id\"")
+			}
+		case "updated_at":
+			if err := func() error {
+				s.UpdatedAt.Reset()
+				if err := s.UpdatedAt.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"updated_at\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientCreated")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientCreated) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientCreated) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientCreatedResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientCreatedResponse) encodeFields(e *jx.Encoder) {
+	{
+		if s.Data.Set {
+			e.FieldStart("data")
+			s.Data.Encode(e)
+		}
+	}
+	{
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientCreatedResponse = [2]string{
+	0: "data",
+	1: "status",
+}
+
+// Decode decodes OAuthClientCreatedResponse from json.
+func (s *OAuthClientCreatedResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientCreatedResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "data":
+			if err := func() error {
+				s.Data.Reset()
+				if err := s.Data.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"data\"")
+			}
+		case "status":
+			if err := func() error {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientCreatedResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientCreatedResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientCreatedResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientListResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientListResponse) encodeFields(e *jx.Encoder) {
+	{
+		if s.Data != nil {
+			e.FieldStart("data")
+			e.ArrStart()
+			for _, elem := range s.Data {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientListResponse = [2]string{
+	0: "data",
+	1: "status",
+}
+
+// Decode decodes OAuthClientListResponse from json.
+func (s *OAuthClientListResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientListResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "data":
+			if err := func() error {
+				s.Data = make([]OAuthClient, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem OAuthClient
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Data = append(s.Data, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"data\"")
+			}
+		case "status":
+			if err := func() error {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientListResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientListResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientListResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientResponse) encodeFields(e *jx.Encoder) {
+	{
+		if s.Data.Set {
+			e.FieldStart("data")
+			s.Data.Encode(e)
+		}
+	}
+	{
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientResponse = [2]string{
+	0: "data",
+	1: "status",
+}
+
+// Decode decodes OAuthClientResponse from json.
+func (s *OAuthClientResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "data":
+			if err := func() error {
+				s.Data.Reset()
+				if err := s.Data.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"data\"")
+			}
+		case "status":
+			if err := func() error {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientSecretResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientSecretResponse) encodeFields(e *jx.Encoder) {
+	{
+		if s.Data.Set {
+			e.FieldStart("data")
+			s.Data.Encode(e)
+		}
+	}
+	{
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientSecretResponse = [2]string{
+	0: "data",
+	1: "status",
+}
+
+// Decode decodes OAuthClientSecretResponse from json.
+func (s *OAuthClientSecretResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientSecretResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "data":
+			if err := func() error {
+				s.Data.Reset()
+				if err := s.Data.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"data\"")
+			}
+		case "status":
+			if err := func() error {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientSecretResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientSecretResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientSecretResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientSecretResponseData) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientSecretResponseData) encodeFields(e *jx.Encoder) {
+	{
+		if s.Secret.Set {
+			e.FieldStart("secret")
+			s.Secret.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientSecretResponseData = [1]string{
+	0: "secret",
+}
+
+// Decode decodes OAuthClientSecretResponseData from json.
+func (s *OAuthClientSecretResponseData) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientSecretResponseData to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "secret":
+			if err := func() error {
+				s.Secret.Reset()
+				if err := s.Secret.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"secret\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientSecretResponseData")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientSecretResponseData) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientSecretResponseData) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthClientUpdateRequest) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthClientUpdateRequest) encodeFields(e *jx.Encoder) {
+	{
+		if s.AllowedScopes.Set {
+			e.FieldStart("allowed_scopes")
+			s.AllowedScopes.Encode(e)
+		}
+	}
+	{
+		if s.Description.Set {
+			e.FieldStart("description")
+			s.Description.Encode(e)
+		}
+	}
+	{
+		if s.GrantTypes.Set {
+			e.FieldStart("grant_types")
+			s.GrantTypes.Encode(e)
+		}
+	}
+	{
+		if s.IsPublic.Set {
+			e.FieldStart("is_public")
+			s.IsPublic.Encode(e)
+		}
+	}
+	{
+		if s.Name.Set {
+			e.FieldStart("name")
+			s.Name.Encode(e)
+		}
+	}
+	{
+		if s.OwnerUserID.Set {
+			e.FieldStart("owner_user_id")
+			s.OwnerUserID.Encode(e)
+		}
+	}
+	{
+		if s.RedirectUris.Set {
+			e.FieldStart("redirect_uris")
+			s.RedirectUris.Encode(e)
+		}
+	}
+	{
+		if s.ServiceAccountUserID.Set {
+			e.FieldStart("service_account_user_id")
+			s.ServiceAccountUserID.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthClientUpdateRequest = [8]string{
+	0: "allowed_scopes",
+	1: "description",
+	2: "grant_types",
+	3: "is_public",
+	4: "name",
+	5: "owner_user_id",
+	6: "redirect_uris",
+	7: "service_account_user_id",
+}
+
+// Decode decodes OAuthClientUpdateRequest from json.
+func (s *OAuthClientUpdateRequest) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthClientUpdateRequest to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "allowed_scopes":
+			if err := func() error {
+				s.AllowedScopes.Reset()
+				if err := s.AllowedScopes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"allowed_scopes\"")
+			}
+		case "description":
+			if err := func() error {
+				s.Description.Reset()
+				if err := s.Description.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"description\"")
+			}
+		case "grant_types":
+			if err := func() error {
+				s.GrantTypes.Reset()
+				if err := s.GrantTypes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"grant_types\"")
+			}
+		case "is_public":
+			if err := func() error {
+				s.IsPublic.Reset()
+				if err := s.IsPublic.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_public\"")
+			}
+		case "name":
+			if err := func() error {
+				s.Name.Reset()
+				if err := s.Name.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "owner_user_id":
+			if err := func() error {
+				s.OwnerUserID.Reset()
+				if err := s.OwnerUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"owner_user_id\"")
+			}
+		case "redirect_uris":
+			if err := func() error {
+				s.RedirectUris.Reset()
+				if err := s.RedirectUris.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"redirect_uris\"")
+			}
+		case "service_account_user_id":
+			if err := func() error {
+				s.ServiceAccountUserID.Reset()
+				if err := s.ServiceAccountUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"service_account_user_id\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthClientUpdateRequest")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthClientUpdateRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthClientUpdateRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthGrant) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthGrant) encodeFields(e *jx.Encoder) {
+	{
+		if s.ClientID.Set {
+			e.FieldStart("client_id")
+			s.ClientID.Encode(e)
+		}
+	}
+	{
+		if s.ClientName.Set {
+			e.FieldStart("client_name")
+			s.ClientName.Encode(e)
+		}
+	}
+	{
+		if s.CreatedBy.Set {
+			e.FieldStart("created_by")
+			s.CreatedBy.Encode(e)
+		}
+	}
+	{
+		if s.Description.Set {
+			e.FieldStart("description")
+			s.Description.Encode(e)
+		}
+	}
+	{
+		if s.GrantTypes.Set {
+			e.FieldStart("grant_types")
+			s.GrantTypes.Encode(e)
+		}
+	}
+	{
+		if s.GrantedAt.Set {
+			e.FieldStart("granted_at")
+			s.GrantedAt.Encode(e)
+		}
+	}
+	{
+		if s.IsPublic.Set {
+			e.FieldStart("is_public")
+			s.IsPublic.Encode(e)
+		}
+	}
+	{
+		if s.LastUsed.Set {
+			e.FieldStart("last_used")
+			s.LastUsed.Encode(e)
+		}
+	}
+	{
+		if s.OwnerUserID.Set {
+			e.FieldStart("owner_user_id")
+			s.OwnerUserID.Encode(e)
+		}
+	}
+	{
+		if s.TokenCount.Set {
+			e.FieldStart("token_count")
+			s.TokenCount.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthGrant = [10]string{
+	0: "client_id",
+	1: "client_name",
+	2: "created_by",
+	3: "description",
+	4: "grant_types",
+	5: "granted_at",
+	6: "is_public",
+	7: "last_used",
+	8: "owner_user_id",
+	9: "token_count",
+}
+
+// Decode decodes OAuthGrant from json.
+func (s *OAuthGrant) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthGrant to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "client_id":
+			if err := func() error {
+				s.ClientID.Reset()
+				if err := s.ClientID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"client_id\"")
+			}
+		case "client_name":
+			if err := func() error {
+				s.ClientName.Reset()
+				if err := s.ClientName.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"client_name\"")
+			}
+		case "created_by":
+			if err := func() error {
+				s.CreatedBy.Reset()
+				if err := s.CreatedBy.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"created_by\"")
+			}
+		case "description":
+			if err := func() error {
+				s.Description.Reset()
+				if err := s.Description.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"description\"")
+			}
+		case "grant_types":
+			if err := func() error {
+				s.GrantTypes.Reset()
+				if err := s.GrantTypes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"grant_types\"")
+			}
+		case "granted_at":
+			if err := func() error {
+				s.GrantedAt.Reset()
+				if err := s.GrantedAt.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"granted_at\"")
+			}
+		case "is_public":
+			if err := func() error {
+				s.IsPublic.Reset()
+				if err := s.IsPublic.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_public\"")
+			}
+		case "last_used":
+			if err := func() error {
+				s.LastUsed.Reset()
+				if err := s.LastUsed.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"last_used\"")
+			}
+		case "owner_user_id":
+			if err := func() error {
+				s.OwnerUserID.Reset()
+				if err := s.OwnerUserID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"owner_user_id\"")
+			}
+		case "token_count":
+			if err := func() error {
+				s.TokenCount.Reset()
+				if err := s.TokenCount.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"token_count\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthGrant")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthGrant) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthGrant) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *OAuthGrantListResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *OAuthGrantListResponse) encodeFields(e *jx.Encoder) {
+	{
+		if s.Data != nil {
+			e.FieldStart("data")
+			e.ArrStart()
+			for _, elem := range s.Data {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfOAuthGrantListResponse = [2]string{
+	0: "data",
+	1: "status",
+}
+
+// Decode decodes OAuthGrantListResponse from json.
+func (s *OAuthGrantListResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode OAuthGrantListResponse to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "data":
+			if err := func() error {
+				s.Data = make([]OAuthGrant, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem OAuthGrant
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Data = append(s.Data, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"data\"")
+			}
+		case "status":
+			if err := func() error {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"status\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode OAuthGrantListResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *OAuthGrantListResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OAuthGrantListResponse) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -74691,6 +76999,39 @@ func (s *OptDiagnosticBillingReportPaginated) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes DiagnosticBillingReportStatus as json.
+func (o OptDiagnosticBillingReportStatus) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes DiagnosticBillingReportStatus from json.
+func (o *OptDiagnosticBillingReportStatus) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptDiagnosticBillingReportStatus to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptDiagnosticBillingReportStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptDiagnosticBillingReportStatus) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes ExternalIDs as json.
 func (o OptExternalIDs) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -76112,6 +78453,39 @@ func (s OptLabelListPaginated) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptLabelListPaginated) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes MCPJSONRPCErrorObject as json.
+func (o OptMCPJSONRPCErrorObject) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes MCPJSONRPCErrorObject from json.
+func (o *OptMCPJSONRPCErrorObject) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptMCPJSONRPCErrorObject to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptMCPJSONRPCErrorObject) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptMCPJSONRPCErrorObject) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -82071,6 +84445,171 @@ func (s OptNullUint) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptNullUint) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OAuthClient as json.
+func (o OptOAuthClient) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes OAuthClient from json.
+func (o *OptOAuthClient) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOAuthClient to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOAuthClient) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOAuthClient) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OAuthClientCreateRequest as json.
+func (o OptOAuthClientCreateRequest) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes OAuthClientCreateRequest from json.
+func (o *OptOAuthClientCreateRequest) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOAuthClientCreateRequest to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOAuthClientCreateRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOAuthClientCreateRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OAuthClientCreated as json.
+func (o OptOAuthClientCreated) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes OAuthClientCreated from json.
+func (o *OptOAuthClientCreated) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOAuthClientCreated to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOAuthClientCreated) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOAuthClientCreated) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OAuthClientSecretResponseData as json.
+func (o OptOAuthClientSecretResponseData) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes OAuthClientSecretResponseData from json.
+func (o *OptOAuthClientSecretResponseData) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOAuthClientSecretResponseData to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOAuthClientSecretResponseData) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOAuthClientSecretResponseData) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes OAuthClientUpdateRequest as json.
+func (o OptOAuthClientUpdateRequest) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes OAuthClientUpdateRequest from json.
+func (o *OptOAuthClientUpdateRequest) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptOAuthClientUpdateRequest to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptOAuthClientUpdateRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptOAuthClientUpdateRequest) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -88289,6 +90828,82 @@ func (s *PolicyOwners) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *PolicyOwners) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes PostAIMCPBadRequest as json.
+func (s *PostAIMCPBadRequest) Encode(e *jx.Encoder) {
+	unwrapped := (*MCPJSONRPCErrorResponse)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes PostAIMCPBadRequest from json.
+func (s *PostAIMCPBadRequest) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PostAIMCPBadRequest to nil")
+	}
+	var unwrapped MCPJSONRPCErrorResponse
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = PostAIMCPBadRequest(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *PostAIMCPBadRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PostAIMCPBadRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes PostAIMCPInternalServerError as json.
+func (s *PostAIMCPInternalServerError) Encode(e *jx.Encoder) {
+	unwrapped := (*MCPJSONRPCErrorResponse)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes PostAIMCPInternalServerError from json.
+func (s *PostAIMCPInternalServerError) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PostAIMCPInternalServerError to nil")
+	}
+	var unwrapped MCPJSONRPCErrorResponse
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = PostAIMCPInternalServerError(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *PostAIMCPInternalServerError) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PostAIMCPInternalServerError) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

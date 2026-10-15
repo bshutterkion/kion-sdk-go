@@ -19645,14 +19645,19 @@ type DiagnosticBillingReport struct {
 	ID OptUint64 `json:"id"`
 	// Indicates whether this report came from a FOCUS export.
 	IsFocus OptNilBool `json:"is_focus"`
+	// Time this payer month was last synced into ClickHouse. Null when ClickHouse is disabled or
+	// unreachable, or when the payer month has never been synced.
+	LastClickhouseSync OptDateTime `json:"last_clickhouse_sync"`
 	// Month for this billing report in YYYYMM format.
 	Month OptUint64 `json:"month"`
 	// Timestamp when this report was processed.
 	ProcessedAt OptDateTime `json:"processed_at"`
 	// Indicates whether this report should be processed.
 	ShouldProcess OptNilBool `json:"should_process"`
-	// Current processing status (processed, queued, pending, deleted, failed, error).
-	Status OptString `json:"status"`
+	// Current status covering both MySQL processing and ClickHouse sync. With ClickHouse
+	// disabled, a fully processed report stays "processed" and the sync_needed and synced values
+	// never occur.
+	Status OptDiagnosticBillingReportStatus `json:"status"`
 	// Time granularity identifier (1=monthly, 2=daily, 3=hourly).
 	TimeGranularityID OptNilUint64 `json:"time_granularity_id"`
 	// Timestamp when this diagnostic record was last updated.
@@ -19699,6 +19704,11 @@ func (s *DiagnosticBillingReport) GetIsFocus() OptNilBool {
 	return s.IsFocus
 }
 
+// GetLastClickhouseSync returns the value of LastClickhouseSync.
+func (s *DiagnosticBillingReport) GetLastClickhouseSync() OptDateTime {
+	return s.LastClickhouseSync
+}
+
 // GetMonth returns the value of Month.
 func (s *DiagnosticBillingReport) GetMonth() OptUint64 {
 	return s.Month
@@ -19715,7 +19725,7 @@ func (s *DiagnosticBillingReport) GetShouldProcess() OptNilBool {
 }
 
 // GetStatus returns the value of Status.
-func (s *DiagnosticBillingReport) GetStatus() OptString {
+func (s *DiagnosticBillingReport) GetStatus() OptDiagnosticBillingReportStatus {
 	return s.Status
 }
 
@@ -19769,6 +19779,11 @@ func (s *DiagnosticBillingReport) SetIsFocus(val OptNilBool) {
 	s.IsFocus = val
 }
 
+// SetLastClickhouseSync sets the value of LastClickhouseSync.
+func (s *DiagnosticBillingReport) SetLastClickhouseSync(val OptDateTime) {
+	s.LastClickhouseSync = val
+}
+
 // SetMonth sets the value of Month.
 func (s *DiagnosticBillingReport) SetMonth(val OptUint64) {
 	s.Month = val
@@ -19785,7 +19800,7 @@ func (s *DiagnosticBillingReport) SetShouldProcess(val OptNilBool) {
 }
 
 // SetStatus sets the value of Status.
-func (s *DiagnosticBillingReport) SetStatus(val OptString) {
+func (s *DiagnosticBillingReport) SetStatus(val OptDiagnosticBillingReportStatus) {
 	s.Status = val
 }
 
@@ -19827,6 +19842,82 @@ func (s *DiagnosticBillingReportListResponse) SetStatus(val OptInt64) {
 
 func (*DiagnosticBillingReportListResponse) diagnosticBillingReportListRes() {}
 
+type DiagnosticBillingReportListStatus string
+
+const (
+	DiagnosticBillingReportListStatusQueued     DiagnosticBillingReportListStatus = "queued"
+	DiagnosticBillingReportListStatusInProgress DiagnosticBillingReportListStatus = "in_progress"
+	DiagnosticBillingReportListStatusProcessed  DiagnosticBillingReportListStatus = "processed"
+	DiagnosticBillingReportListStatusSyncNeeded DiagnosticBillingReportListStatus = "sync_needed"
+	DiagnosticBillingReportListStatusSynced     DiagnosticBillingReportListStatus = "synced"
+	DiagnosticBillingReportListStatusFailed     DiagnosticBillingReportListStatus = "failed"
+	DiagnosticBillingReportListStatusDeleted    DiagnosticBillingReportListStatus = "deleted"
+)
+
+// AllValues returns all DiagnosticBillingReportListStatus values.
+func (DiagnosticBillingReportListStatus) AllValues() []DiagnosticBillingReportListStatus {
+	return []DiagnosticBillingReportListStatus{
+		DiagnosticBillingReportListStatusQueued,
+		DiagnosticBillingReportListStatusInProgress,
+		DiagnosticBillingReportListStatusProcessed,
+		DiagnosticBillingReportListStatusSyncNeeded,
+		DiagnosticBillingReportListStatusSynced,
+		DiagnosticBillingReportListStatusFailed,
+		DiagnosticBillingReportListStatusDeleted,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s DiagnosticBillingReportListStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case DiagnosticBillingReportListStatusQueued:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusInProgress:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusProcessed:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusSyncNeeded:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusSynced:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusFailed:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusDeleted:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *DiagnosticBillingReportListStatus) UnmarshalText(data []byte) error {
+	switch DiagnosticBillingReportListStatus(data) {
+	case DiagnosticBillingReportListStatusQueued:
+		*s = DiagnosticBillingReportListStatusQueued
+		return nil
+	case DiagnosticBillingReportListStatusInProgress:
+		*s = DiagnosticBillingReportListStatusInProgress
+		return nil
+	case DiagnosticBillingReportListStatusProcessed:
+		*s = DiagnosticBillingReportListStatusProcessed
+		return nil
+	case DiagnosticBillingReportListStatusSyncNeeded:
+		*s = DiagnosticBillingReportListStatusSyncNeeded
+		return nil
+	case DiagnosticBillingReportListStatusSynced:
+		*s = DiagnosticBillingReportListStatusSynced
+		return nil
+	case DiagnosticBillingReportListStatusFailed:
+		*s = DiagnosticBillingReportListStatusFailed
+		return nil
+	case DiagnosticBillingReportListStatusDeleted:
+		*s = DiagnosticBillingReportListStatusDeleted
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // DiagnosticBillingReportPaginated defines a paginated list of diagnostic billing reports.
 // Ref: #/components/schemas/DiagnosticBillingReportPaginated
 type DiagnosticBillingReportPaginated struct {
@@ -19863,6 +19954,85 @@ func (s *DiagnosticBillingReportPaginated) SetPagination(val OptNilPaginationQue
 // SetTotal sets the value of Total.
 func (s *DiagnosticBillingReportPaginated) SetTotal(val OptInt64) {
 	s.Total = val
+}
+
+// Current status covering both MySQL processing and ClickHouse sync. With ClickHouse
+// disabled, a fully processed report stays "processed" and the sync_needed and synced values
+// never occur.
+type DiagnosticBillingReportStatus string
+
+const (
+	DiagnosticBillingReportStatusQueued     DiagnosticBillingReportStatus = "queued"
+	DiagnosticBillingReportStatusInProgress DiagnosticBillingReportStatus = "in_progress"
+	DiagnosticBillingReportStatusProcessed  DiagnosticBillingReportStatus = "processed"
+	DiagnosticBillingReportStatusSyncNeeded DiagnosticBillingReportStatus = "sync_needed"
+	DiagnosticBillingReportStatusSynced     DiagnosticBillingReportStatus = "synced"
+	DiagnosticBillingReportStatusFailed     DiagnosticBillingReportStatus = "failed"
+	DiagnosticBillingReportStatusDeleted    DiagnosticBillingReportStatus = "deleted"
+)
+
+// AllValues returns all DiagnosticBillingReportStatus values.
+func (DiagnosticBillingReportStatus) AllValues() []DiagnosticBillingReportStatus {
+	return []DiagnosticBillingReportStatus{
+		DiagnosticBillingReportStatusQueued,
+		DiagnosticBillingReportStatusInProgress,
+		DiagnosticBillingReportStatusProcessed,
+		DiagnosticBillingReportStatusSyncNeeded,
+		DiagnosticBillingReportStatusSynced,
+		DiagnosticBillingReportStatusFailed,
+		DiagnosticBillingReportStatusDeleted,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s DiagnosticBillingReportStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case DiagnosticBillingReportStatusQueued:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusInProgress:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusProcessed:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusSyncNeeded:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusSynced:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusFailed:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusDeleted:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *DiagnosticBillingReportStatus) UnmarshalText(data []byte) error {
+	switch DiagnosticBillingReportStatus(data) {
+	case DiagnosticBillingReportStatusQueued:
+		*s = DiagnosticBillingReportStatusQueued
+		return nil
+	case DiagnosticBillingReportStatusInProgress:
+		*s = DiagnosticBillingReportStatusInProgress
+		return nil
+	case DiagnosticBillingReportStatusProcessed:
+		*s = DiagnosticBillingReportStatusProcessed
+		return nil
+	case DiagnosticBillingReportStatusSyncNeeded:
+		*s = DiagnosticBillingReportStatusSyncNeeded
+		return nil
+	case DiagnosticBillingReportStatusSynced:
+		*s = DiagnosticBillingReportStatusSynced
+		return nil
+	case DiagnosticBillingReportStatusFailed:
+		*s = DiagnosticBillingReportStatusFailed
+		return nil
+	case DiagnosticBillingReportStatusDeleted:
+		*s = DiagnosticBillingReportStatusDeleted
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // ErroredCustomLineItem is an errored custom line item.
@@ -38919,6 +39089,52 @@ func (o OptDateTime) Or(d time.Time) time.Time {
 	return d
 }
 
+// NewOptDiagnosticBillingReportListStatus returns new OptDiagnosticBillingReportListStatus with value set to v.
+func NewOptDiagnosticBillingReportListStatus(v DiagnosticBillingReportListStatus) OptDiagnosticBillingReportListStatus {
+	return OptDiagnosticBillingReportListStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDiagnosticBillingReportListStatus is optional DiagnosticBillingReportListStatus.
+type OptDiagnosticBillingReportListStatus struct {
+	Value DiagnosticBillingReportListStatus
+	Set   bool
+}
+
+// IsSet returns true if OptDiagnosticBillingReportListStatus was set.
+func (o OptDiagnosticBillingReportListStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDiagnosticBillingReportListStatus) Reset() {
+	var v DiagnosticBillingReportListStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDiagnosticBillingReportListStatus) SetTo(v DiagnosticBillingReportListStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDiagnosticBillingReportListStatus) Get() (v DiagnosticBillingReportListStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDiagnosticBillingReportListStatus) Or(d DiagnosticBillingReportListStatus) DiagnosticBillingReportListStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptDiagnosticBillingReportPaginated returns new OptDiagnosticBillingReportPaginated with value set to v.
 func NewOptDiagnosticBillingReportPaginated(v DiagnosticBillingReportPaginated) OptDiagnosticBillingReportPaginated {
 	return OptDiagnosticBillingReportPaginated{
@@ -38959,6 +39175,52 @@ func (o OptDiagnosticBillingReportPaginated) Get() (v DiagnosticBillingReportPag
 
 // Or returns value if set, or given parameter if does not.
 func (o OptDiagnosticBillingReportPaginated) Or(d DiagnosticBillingReportPaginated) DiagnosticBillingReportPaginated {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDiagnosticBillingReportStatus returns new OptDiagnosticBillingReportStatus with value set to v.
+func NewOptDiagnosticBillingReportStatus(v DiagnosticBillingReportStatus) OptDiagnosticBillingReportStatus {
+	return OptDiagnosticBillingReportStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDiagnosticBillingReportStatus is optional DiagnosticBillingReportStatus.
+type OptDiagnosticBillingReportStatus struct {
+	Value DiagnosticBillingReportStatus
+	Set   bool
+}
+
+// IsSet returns true if OptDiagnosticBillingReportStatus was set.
+func (o OptDiagnosticBillingReportStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDiagnosticBillingReportStatus) Reset() {
+	var v DiagnosticBillingReportStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDiagnosticBillingReportStatus) SetTo(v DiagnosticBillingReportStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDiagnosticBillingReportStatus) Get() (v DiagnosticBillingReportStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDiagnosticBillingReportStatus) Or(d DiagnosticBillingReportStatus) DiagnosticBillingReportStatus {
 	if v, ok := o.Get(); ok {
 		return v
 	}

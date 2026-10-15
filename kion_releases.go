@@ -9,8 +9,8 @@ package kion
 // it does. A value that is not a bare X.Y.Z ("master", "support-3.NN.x") means
 // the sub-package was generated from an unreleased branch head.
 var KionReleases = map[string]string{
-	"v3_14": "3.14.14",
-	"v3_15": "3.15.13",
-	"v3_16": "3.16.5",
-	"v3_17": "3.17.1",
+	"v3_14": "3.14.15",
+	"v3_15": "3.15.14",
+	"v3_16": "3.16.6",
+	"v3_17": "3.17.3",
 }

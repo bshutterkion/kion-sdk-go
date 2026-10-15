@@ -672,6 +672,18 @@ type DeleteLabelKeyValueParams struct {
 	Value string
 }
 
+// DeleteOAuthClientParams is parameters of DeleteOAuthClient operation.
+type DeleteOAuthClientParams struct {
+	// OAuth Client ID.
+	ID string
+}
+
+// DeleteOAuthGrantParams is parameters of DeleteOAuthGrant operation.
+type DeleteOAuthGrantParams struct {
+	// OAuth Client ID for the grant to revoke.
+	ClientID string
+}
+
 // DeleteOUParams is parameters of DeleteOU operation.
 type DeleteOUParams struct {
 	// OU ID to delete.
@@ -932,8 +944,9 @@ type DiagnosticBillingReportListParams struct {
 	Month OptUint64 `json:",omitempty,omitzero"`
 	// Billing source IDs as a comma-separated list.
 	BillingSourceIDs []uint64 `json:",omitempty"`
-	// Status filter.
-	Status OptString `json:",omitempty,omitzero"`
+	// Status filter. The sync_needed and synced values exist only while ClickHouse is enabled;
+	// filtering on either one with ClickHouse disabled is rejected with a 400.
+	Status OptDiagnosticBillingReportListStatus `json:",omitempty,omitzero"`
 	// Page number of results.
 	Page OptInt64 `json:",omitempty,omitzero"`
 	// Number of results to return.
@@ -1079,6 +1092,20 @@ type GcpIAMRoleRemoveOwnersParams struct {
 type GenerateExternalIDsParams struct {
 	// Account Number.
 	AccountNumber string
+}
+
+// GetAIMCPParams is parameters of GetAIMCP operation.
+type GetAIMCPParams struct {
+	// Content types accepted by the client. Must include text/event-stream.
+	Accept string
+	// MCP protocol version. If omitted, the server follows MCP fallback behavior.
+	MCPProtocolVersion OptString `json:",omitempty,omitzero"`
+}
+
+// GetAIMCPProtectedResourceMetadataParams is parameters of GetAIMCPProtectedResourceMetadata operation.
+type GetAIMCPProtectedResourceMetadataParams struct {
+	// Base API path before /v3/ai/mcp.
+	Base string
 }
 
 // GetAMIParams is parameters of GetAMI operation.
@@ -2139,6 +2166,12 @@ type GetMyCARsParams struct {
 	AccountAlias OptString `json:",omitempty,omitzero"`
 }
 
+// GetOAuthClientParams is parameters of GetOAuthClient operation.
+type GetOAuthClientParams struct {
+	// OAuth Client ID.
+	ID string
+}
+
 // GetOUParams is parameters of GetOU operation.
 type GetOUParams struct {
 	// OU ID.
@@ -3176,6 +3209,14 @@ type PortfolioRemoveOwnersParams struct {
 	ID int64
 }
 
+// PostAIMCPParams is parameters of PostAIMCP operation.
+type PostAIMCPParams struct {
+	// Content types accepted by the client. Must include application/json and text/event-stream.
+	Accept string
+	// MCP protocol version. If omitted, the server follows MCP fallback behavior.
+	MCPProtocolVersion OptString `json:",omitempty,omitzero"`
+}
+
 // PostAccountCacheConvertParams is parameters of PostAccountCacheConvert operation.
 type PostAccountCacheConvertParams struct {
 	// AccountCache ID.
@@ -3495,6 +3536,12 @@ type PostLinkProjectAccountParams struct {
 	AccountType OptString `json:",omitempty,omitzero"`
 }
 
+// PostOAuthClientRotateSecretParams is parameters of PostOAuthClientRotateSecret operation.
+type PostOAuthClientRotateSecretParams struct {
+	// OAuth Client ID.
+	ID string
+}
+
 // PostOCIAccountParams is parameters of PostOCIAccount operation.
 type PostOCIAccountParams struct {
 	// Type of account to attach.
@@ -3688,6 +3735,12 @@ type PutNotificationCategorySettingParams struct {
 	CategoryID int64
 	// Notification type ("email" or "in-app").
 	NotificationType string
+}
+
+// PutOAuthClientParams is parameters of PutOAuthClient operation.
+type PutOAuthClientParams struct {
+	// OAuth Client ID.
+	ID string
 }
 
 // PutOULabelsParams is parameters of PutOULabels operation.

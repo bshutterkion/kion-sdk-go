@@ -42040,6 +42040,12 @@ func (s *DiagnosticBillingReport) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.LastClickhouseSync.Set {
+			e.FieldStart("last_clickhouse_sync")
+			s.LastClickhouseSync.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
 		if s.Month.Set {
 			e.FieldStart("month")
 			s.Month.Encode(e)
@@ -42077,7 +42083,7 @@ func (s *DiagnosticBillingReport) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfDiagnosticBillingReport = [14]string{
+var jsonFieldsNameOfDiagnosticBillingReport = [15]string{
 	0:  "attempt_counter",
 	1:  "billing_source_id",
 	2:  "created_at",
@@ -42086,12 +42092,13 @@ var jsonFieldsNameOfDiagnosticBillingReport = [14]string{
 	5:  "export_time",
 	6:  "id",
 	7:  "is_focus",
-	8:  "month",
-	9:  "processed_at",
-	10: "should_process",
-	11: "status",
-	12: "time_granularity_id",
-	13: "updated_at",
+	8:  "last_clickhouse_sync",
+	9:  "month",
+	10: "processed_at",
+	11: "should_process",
+	12: "status",
+	13: "time_granularity_id",
+	14: "updated_at",
 }
 
 // Decode decodes DiagnosticBillingReport from json.
@@ -42181,6 +42188,16 @@ func (s *DiagnosticBillingReport) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"is_focus\"")
+			}
+		case "last_clickhouse_sync":
+			if err := func() error {
+				s.LastClickhouseSync.Reset()
+				if err := s.LastClickhouseSync.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"last_clickhouse_sync\"")
 			}
 		case "month":
 			if err := func() error {
@@ -42439,6 +42456,56 @@ func (s *DiagnosticBillingReportPaginated) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *DiagnosticBillingReportPaginated) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes DiagnosticBillingReportStatus as json.
+func (s DiagnosticBillingReportStatus) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes DiagnosticBillingReportStatus from json.
+func (s *DiagnosticBillingReportStatus) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode DiagnosticBillingReportStatus to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch DiagnosticBillingReportStatus(v) {
+	case DiagnosticBillingReportStatusQueued:
+		*s = DiagnosticBillingReportStatusQueued
+	case DiagnosticBillingReportStatusInProgress:
+		*s = DiagnosticBillingReportStatusInProgress
+	case DiagnosticBillingReportStatusProcessed:
+		*s = DiagnosticBillingReportStatusProcessed
+	case DiagnosticBillingReportStatusSyncNeeded:
+		*s = DiagnosticBillingReportStatusSyncNeeded
+	case DiagnosticBillingReportStatusSynced:
+		*s = DiagnosticBillingReportStatusSynced
+	case DiagnosticBillingReportStatusFailed:
+		*s = DiagnosticBillingReportStatusFailed
+	case DiagnosticBillingReportStatusDeleted:
+		*s = DiagnosticBillingReportStatusDeleted
+	default:
+		*s = DiagnosticBillingReportStatus(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s DiagnosticBillingReportStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *DiagnosticBillingReportStatus) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -71861,6 +71928,39 @@ func (s OptDiagnosticBillingReportPaginated) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptDiagnosticBillingReportPaginated) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes DiagnosticBillingReportStatus as json.
+func (o OptDiagnosticBillingReportStatus) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes DiagnosticBillingReportStatus from json.
+func (o *OptDiagnosticBillingReportStatus) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptDiagnosticBillingReportStatus to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptDiagnosticBillingReportStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptDiagnosticBillingReportStatus) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

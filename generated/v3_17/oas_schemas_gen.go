@@ -2591,6 +2591,7 @@ func (s *AcceptedResponse) SetStatus(val OptInt64) {
 	s.Status = val
 }
 
+func (*AcceptedResponse) postAIMCPRes()          {}
 func (*AcceptedResponse) startGCProleImportRes() {}
 
 type AccessType string
@@ -9296,6 +9297,7 @@ func (*BadRequestResponse) deleteIDMSGroupAssociationRes()                      
 func (*BadRequestResponse) deleteIDMSRes()                                        {}
 func (*BadRequestResponse) deleteLabelKeyValueRes()                               {}
 func (*BadRequestResponse) deleteLabelRes()                                       {}
+func (*BadRequestResponse) deleteOAuthGrantRes()                                  {}
 func (*BadRequestResponse) deleteOUCloudAccessRoleAssociationsRes()               {}
 func (*BadRequestResponse) deleteOUCloudAccessRoleExemptionRes()                  {}
 func (*BadRequestResponse) deleteOUCloudAccessRoleRes()                           {}
@@ -9342,6 +9344,7 @@ func (*BadRequestResponse) gcpIAMRoleRemoveCARRestrictedEntitiesRes()           
 func (*BadRequestResponse) gcpIAMRoleRemoveOwnersRes()                            {}
 func (*BadRequestResponse) gcpIAMRoleValidatePermissionsAndDenialsRes()           {}
 func (*BadRequestResponse) generateExternalIDsRes()                               {}
+func (*BadRequestResponse) getAIMCPRes()                                          {}
 func (*BadRequestResponse) getAMIIndexRes()                                       {}
 func (*BadRequestResponse) getAWSResourceTagIndexRes()                            {}
 func (*BadRequestResponse) getAccountByAccountNumberRes()                         {}
@@ -9603,6 +9606,8 @@ func (*BadRequestResponse) postLinkAccountRes()                                 
 func (*BadRequestResponse) postLinkAllPayerAccountsRes()                          {}
 func (*BadRequestResponse) postLinkProjectAccountRes()                            {}
 func (*BadRequestResponse) postMasterKeySettingsRes()                             {}
+func (*BadRequestResponse) postOAuthClientRes()                                   {}
+func (*BadRequestResponse) postOAuthClientRotateSecretRes()                       {}
 func (*BadRequestResponse) postOCIAccountRes()                                    {}
 func (*BadRequestResponse) postOCIBillingSourceRes()                              {}
 func (*BadRequestResponse) postOUAddOwnersRes()                                   {}
@@ -9660,6 +9665,7 @@ func (*BadRequestResponse) putCloudRuleLabelsRes()                              
 func (*BadRequestResponse) putFeatureFlagRes()                                    {}
 func (*BadRequestResponse) putFundingSourceLabelsRes()                            {}
 func (*BadRequestResponse) putNotificationCategorySettingRes()                    {}
+func (*BadRequestResponse) putOAuthClientRes()                                    {}
 func (*BadRequestResponse) putOULabelsRes()                                       {}
 func (*BadRequestResponse) putProjectLabelsRes()                                  {}
 func (*BadRequestResponse) putScopeReprioritizeRes()                              {}
@@ -20601,14 +20607,19 @@ type DiagnosticBillingReport struct {
 	ID OptUint64 `json:"id"`
 	// Indicates whether this report came from a FOCUS export.
 	IsFocus OptNilBool `json:"is_focus"`
+	// Time this payer month was last synced into ClickHouse. Null when ClickHouse is disabled or
+	// unreachable, or when the payer month has never been synced.
+	LastClickhouseSync OptDateTime `json:"last_clickhouse_sync"`
 	// Month for this billing report in YYYYMM format.
 	Month OptUint64 `json:"month"`
 	// Timestamp when this report was processed.
 	ProcessedAt OptDateTime `json:"processed_at"`
 	// Indicates whether this report should be processed.
 	ShouldProcess OptNilBool `json:"should_process"`
-	// Current processing status (processed, queued, pending, deleted, failed, error).
-	Status OptString `json:"status"`
+	// Current status covering both MySQL processing and ClickHouse sync. With ClickHouse
+	// disabled, a fully processed report stays "processed" and the sync_needed and synced values
+	// never occur.
+	Status OptDiagnosticBillingReportStatus `json:"status"`
 	// Time granularity identifier (1=monthly, 2=daily, 3=hourly).
 	TimeGranularityID OptNilUint64 `json:"time_granularity_id"`
 	// Timestamp when this diagnostic record was last updated.
@@ -20655,6 +20666,11 @@ func (s *DiagnosticBillingReport) GetIsFocus() OptNilBool {
 	return s.IsFocus
 }
 
+// GetLastClickhouseSync returns the value of LastClickhouseSync.
+func (s *DiagnosticBillingReport) GetLastClickhouseSync() OptDateTime {
+	return s.LastClickhouseSync
+}
+
 // GetMonth returns the value of Month.
 func (s *DiagnosticBillingReport) GetMonth() OptUint64 {
 	return s.Month
@@ -20671,7 +20687,7 @@ func (s *DiagnosticBillingReport) GetShouldProcess() OptNilBool {
 }
 
 // GetStatus returns the value of Status.
-func (s *DiagnosticBillingReport) GetStatus() OptString {
+func (s *DiagnosticBillingReport) GetStatus() OptDiagnosticBillingReportStatus {
 	return s.Status
 }
 
@@ -20725,6 +20741,11 @@ func (s *DiagnosticBillingReport) SetIsFocus(val OptNilBool) {
 	s.IsFocus = val
 }
 
+// SetLastClickhouseSync sets the value of LastClickhouseSync.
+func (s *DiagnosticBillingReport) SetLastClickhouseSync(val OptDateTime) {
+	s.LastClickhouseSync = val
+}
+
 // SetMonth sets the value of Month.
 func (s *DiagnosticBillingReport) SetMonth(val OptUint64) {
 	s.Month = val
@@ -20741,7 +20762,7 @@ func (s *DiagnosticBillingReport) SetShouldProcess(val OptNilBool) {
 }
 
 // SetStatus sets the value of Status.
-func (s *DiagnosticBillingReport) SetStatus(val OptString) {
+func (s *DiagnosticBillingReport) SetStatus(val OptDiagnosticBillingReportStatus) {
 	s.Status = val
 }
 
@@ -20783,6 +20804,82 @@ func (s *DiagnosticBillingReportListResponse) SetStatus(val OptInt64) {
 
 func (*DiagnosticBillingReportListResponse) diagnosticBillingReportListRes() {}
 
+type DiagnosticBillingReportListStatus string
+
+const (
+	DiagnosticBillingReportListStatusQueued     DiagnosticBillingReportListStatus = "queued"
+	DiagnosticBillingReportListStatusInProgress DiagnosticBillingReportListStatus = "in_progress"
+	DiagnosticBillingReportListStatusProcessed  DiagnosticBillingReportListStatus = "processed"
+	DiagnosticBillingReportListStatusSyncNeeded DiagnosticBillingReportListStatus = "sync_needed"
+	DiagnosticBillingReportListStatusSynced     DiagnosticBillingReportListStatus = "synced"
+	DiagnosticBillingReportListStatusFailed     DiagnosticBillingReportListStatus = "failed"
+	DiagnosticBillingReportListStatusDeleted    DiagnosticBillingReportListStatus = "deleted"
+)
+
+// AllValues returns all DiagnosticBillingReportListStatus values.
+func (DiagnosticBillingReportListStatus) AllValues() []DiagnosticBillingReportListStatus {
+	return []DiagnosticBillingReportListStatus{
+		DiagnosticBillingReportListStatusQueued,
+		DiagnosticBillingReportListStatusInProgress,
+		DiagnosticBillingReportListStatusProcessed,
+		DiagnosticBillingReportListStatusSyncNeeded,
+		DiagnosticBillingReportListStatusSynced,
+		DiagnosticBillingReportListStatusFailed,
+		DiagnosticBillingReportListStatusDeleted,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s DiagnosticBillingReportListStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case DiagnosticBillingReportListStatusQueued:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusInProgress:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusProcessed:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusSyncNeeded:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusSynced:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusFailed:
+		return []byte(s), nil
+	case DiagnosticBillingReportListStatusDeleted:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *DiagnosticBillingReportListStatus) UnmarshalText(data []byte) error {
+	switch DiagnosticBillingReportListStatus(data) {
+	case DiagnosticBillingReportListStatusQueued:
+		*s = DiagnosticBillingReportListStatusQueued
+		return nil
+	case DiagnosticBillingReportListStatusInProgress:
+		*s = DiagnosticBillingReportListStatusInProgress
+		return nil
+	case DiagnosticBillingReportListStatusProcessed:
+		*s = DiagnosticBillingReportListStatusProcessed
+		return nil
+	case DiagnosticBillingReportListStatusSyncNeeded:
+		*s = DiagnosticBillingReportListStatusSyncNeeded
+		return nil
+	case DiagnosticBillingReportListStatusSynced:
+		*s = DiagnosticBillingReportListStatusSynced
+		return nil
+	case DiagnosticBillingReportListStatusFailed:
+		*s = DiagnosticBillingReportListStatusFailed
+		return nil
+	case DiagnosticBillingReportListStatusDeleted:
+		*s = DiagnosticBillingReportListStatusDeleted
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // DiagnosticBillingReportPaginated defines a paginated list of diagnostic billing reports.
 // Ref: #/components/schemas/DiagnosticBillingReportPaginated
 type DiagnosticBillingReportPaginated struct {
@@ -20819,6 +20916,85 @@ func (s *DiagnosticBillingReportPaginated) SetPagination(val OptNilPaginationQue
 // SetTotal sets the value of Total.
 func (s *DiagnosticBillingReportPaginated) SetTotal(val OptInt64) {
 	s.Total = val
+}
+
+// Current status covering both MySQL processing and ClickHouse sync. With ClickHouse
+// disabled, a fully processed report stays "processed" and the sync_needed and synced values
+// never occur.
+type DiagnosticBillingReportStatus string
+
+const (
+	DiagnosticBillingReportStatusQueued     DiagnosticBillingReportStatus = "queued"
+	DiagnosticBillingReportStatusInProgress DiagnosticBillingReportStatus = "in_progress"
+	DiagnosticBillingReportStatusProcessed  DiagnosticBillingReportStatus = "processed"
+	DiagnosticBillingReportStatusSyncNeeded DiagnosticBillingReportStatus = "sync_needed"
+	DiagnosticBillingReportStatusSynced     DiagnosticBillingReportStatus = "synced"
+	DiagnosticBillingReportStatusFailed     DiagnosticBillingReportStatus = "failed"
+	DiagnosticBillingReportStatusDeleted    DiagnosticBillingReportStatus = "deleted"
+)
+
+// AllValues returns all DiagnosticBillingReportStatus values.
+func (DiagnosticBillingReportStatus) AllValues() []DiagnosticBillingReportStatus {
+	return []DiagnosticBillingReportStatus{
+		DiagnosticBillingReportStatusQueued,
+		DiagnosticBillingReportStatusInProgress,
+		DiagnosticBillingReportStatusProcessed,
+		DiagnosticBillingReportStatusSyncNeeded,
+		DiagnosticBillingReportStatusSynced,
+		DiagnosticBillingReportStatusFailed,
+		DiagnosticBillingReportStatusDeleted,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s DiagnosticBillingReportStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case DiagnosticBillingReportStatusQueued:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusInProgress:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusProcessed:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusSyncNeeded:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusSynced:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusFailed:
+		return []byte(s), nil
+	case DiagnosticBillingReportStatusDeleted:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *DiagnosticBillingReportStatus) UnmarshalText(data []byte) error {
+	switch DiagnosticBillingReportStatus(data) {
+	case DiagnosticBillingReportStatusQueued:
+		*s = DiagnosticBillingReportStatusQueued
+		return nil
+	case DiagnosticBillingReportStatusInProgress:
+		*s = DiagnosticBillingReportStatusInProgress
+		return nil
+	case DiagnosticBillingReportStatusProcessed:
+		*s = DiagnosticBillingReportStatusProcessed
+		return nil
+	case DiagnosticBillingReportStatusSyncNeeded:
+		*s = DiagnosticBillingReportStatusSyncNeeded
+		return nil
+	case DiagnosticBillingReportStatusSynced:
+		*s = DiagnosticBillingReportStatusSynced
+		return nil
+	case DiagnosticBillingReportStatusFailed:
+		*s = DiagnosticBillingReportStatusFailed
+		return nil
+	case DiagnosticBillingReportStatusDeleted:
+		*s = DiagnosticBillingReportStatusDeleted
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // ErroredCustomLineItem is an errored custom line item.
@@ -21390,6 +21566,7 @@ func (*ForbiddenResponse) deleteIDMSGroupAssociationRes()                       
 func (*ForbiddenResponse) deleteIDMSRes()                                                  {}
 func (*ForbiddenResponse) deleteLabelKeyValueRes()                                         {}
 func (*ForbiddenResponse) deleteLabelRes()                                                 {}
+func (*ForbiddenResponse) deleteOAuthClientRes()                                           {}
 func (*ForbiddenResponse) deleteOUCloudAccessRoleAssociationsRes()                         {}
 func (*ForbiddenResponse) deleteOUCloudAccessRoleExemptionRes()                            {}
 func (*ForbiddenResponse) deleteOUCloudAccessRoleRes()                                     {}
@@ -21433,6 +21610,7 @@ func (*ForbiddenResponse) gcpIAMRoleAddOwnersRes()                              
 func (*ForbiddenResponse) gcpIAMRoleRemoveCARRestrictedEntitiesRes()                       {}
 func (*ForbiddenResponse) gcpIAMRoleRemoveOwnersRes()                                      {}
 func (*ForbiddenResponse) generateExternalIDsRes()                                         {}
+func (*ForbiddenResponse) getAIMCPRes()                                                    {}
 func (*ForbiddenResponse) getAMIRes()                                                      {}
 func (*ForbiddenResponse) getAWSAccessConfigRes()                                          {}
 func (*ForbiddenResponse) getAWSAccountCreationConfigRes()                                 {}
@@ -21550,6 +21728,8 @@ func (*ForbiddenResponse) getIDMSGroupAssociationRes()                          
 func (*ForbiddenResponse) getIDMSGroupAssociationsRes()                                    {}
 func (*ForbiddenResponse) getLastBillsLoadedAtRes()                                        {}
 func (*ForbiddenResponse) getMasterKeySettingsRes()                                        {}
+func (*ForbiddenResponse) getOAuthClientRes()                                              {}
+func (*ForbiddenResponse) getOAuthClientsRes()                                             {}
 func (*ForbiddenResponse) getOUCloudAccessRoleIndexRes()                                   {}
 func (*ForbiddenResponse) getOUCloudAccessRoleRes()                                        {}
 func (*ForbiddenResponse) getOUCloudAccessRolesByOUIDAssociationsRes()                     {}
@@ -21686,6 +21866,7 @@ func (*ForbiddenResponse) patchUserRes()                                        
 func (*ForbiddenResponse) patchWebhookRes()                                                {}
 func (*ForbiddenResponse) portfolioAddOwnersRes()                                          {}
 func (*ForbiddenResponse) portfolioRemoveOwnersRes()                                       {}
+func (*ForbiddenResponse) postAIMCPRes()                                                   {}
 func (*ForbiddenResponse) postAMIRes()                                                     {}
 func (*ForbiddenResponse) postARMTemplateRes()                                             {}
 func (*ForbiddenResponse) postAWSBillingSourceRes()                                        {}
@@ -21769,6 +21950,8 @@ func (*ForbiddenResponse) postLinkAccountRes()                                  
 func (*ForbiddenResponse) postLinkAllPayerAccountsRes()                                    {}
 func (*ForbiddenResponse) postLinkProjectAccountRes()                                      {}
 func (*ForbiddenResponse) postMasterKeySettingsRes()                                       {}
+func (*ForbiddenResponse) postOAuthClientRes()                                             {}
+func (*ForbiddenResponse) postOAuthClientRotateSecretRes()                                 {}
 func (*ForbiddenResponse) postOCIAccountRes()                                              {}
 func (*ForbiddenResponse) postOCIBillingSourceRes()                                        {}
 func (*ForbiddenResponse) postOUAddOwnersRes()                                             {}
@@ -21835,6 +22018,7 @@ func (*ForbiddenResponse) putFederatedLoginConfigRes()                          
 func (*ForbiddenResponse) putForgotPasswordConfigRes()                                     {}
 func (*ForbiddenResponse) putHideIntegrationsStatusRes()                                   {}
 func (*ForbiddenResponse) putNotificationCategorySettingRes()                              {}
+func (*ForbiddenResponse) putOAuthClientRes()                                              {}
 func (*ForbiddenResponse) putSAMLDebugStatusRes()                                          {}
 func (*ForbiddenResponse) putScopeReprioritizeRes()                                        {}
 func (*ForbiddenResponse) putSpendPlanRes()                                                {}
@@ -27936,6 +28120,8 @@ func (*InternalServerErrorResponse) deleteIDMSGroupAssociationRes()             
 func (*InternalServerErrorResponse) deleteIDMSRes()                                             {}
 func (*InternalServerErrorResponse) deleteLabelKeyValueRes()                                    {}
 func (*InternalServerErrorResponse) deleteLabelRes()                                            {}
+func (*InternalServerErrorResponse) deleteOAuthClientRes()                                      {}
+func (*InternalServerErrorResponse) deleteOAuthGrantRes()                                       {}
 func (*InternalServerErrorResponse) deleteOUCloudAccessRoleAssociationsRes()                    {}
 func (*InternalServerErrorResponse) deleteOUCloudAccessRoleExemptionRes()                       {}
 func (*InternalServerErrorResponse) deleteOUCloudAccessRoleRes()                                {}
@@ -28141,6 +28327,9 @@ func (*InternalServerErrorResponse) getLabelRes()                               
 func (*InternalServerErrorResponse) getLastBillsLoadedAtRes()                                   {}
 func (*InternalServerErrorResponse) getMasterKeySettingsRes()                                   {}
 func (*InternalServerErrorResponse) getMyCARsRes()                                              {}
+func (*InternalServerErrorResponse) getOAuthClientRes()                                         {}
+func (*InternalServerErrorResponse) getOAuthClientsRes()                                        {}
+func (*InternalServerErrorResponse) getOAuthGrantsRes()                                         {}
 func (*InternalServerErrorResponse) getOUCloudAccessRoleIndexRes()                              {}
 func (*InternalServerErrorResponse) getOUCloudAccessRoleRes()                                   {}
 func (*InternalServerErrorResponse) getOUCloudAccessRolesByOUIDAssociationsRes()                {}
@@ -28385,6 +28574,8 @@ func (*InternalServerErrorResponse) postLinkAccountRes()                        
 func (*InternalServerErrorResponse) postLinkAllPayerAccountsRes()                               {}
 func (*InternalServerErrorResponse) postLinkProjectAccountRes()                                 {}
 func (*InternalServerErrorResponse) postMasterKeySettingsRes()                                  {}
+func (*InternalServerErrorResponse) postOAuthClientRes()                                        {}
+func (*InternalServerErrorResponse) postOAuthClientRotateSecretRes()                            {}
 func (*InternalServerErrorResponse) postOCIAccountRes()                                         {}
 func (*InternalServerErrorResponse) postOCIBillingSourceRes()                                   {}
 func (*InternalServerErrorResponse) postOUAddOwnersRes()                                        {}
@@ -28459,6 +28650,7 @@ func (*InternalServerErrorResponse) putForgotPasswordConfigRes()                
 func (*InternalServerErrorResponse) putFundingSourceLabelsRes()                                 {}
 func (*InternalServerErrorResponse) putHideIntegrationsStatusRes()                              {}
 func (*InternalServerErrorResponse) putNotificationCategorySettingRes()                         {}
+func (*InternalServerErrorResponse) putOAuthClientRes()                                         {}
 func (*InternalServerErrorResponse) putOULabelsRes()                                            {}
 func (*InternalServerErrorResponse) putProjectLabelsRes()                                       {}
 func (*InternalServerErrorResponse) putSAMLDebugStatusRes()                                     {}
@@ -29028,6 +29220,246 @@ func (s *LogExport) SetFrom(val string) {
 	s.From = val
 }
 
+// MCPJSONRPCErrorObject is a JSON-RPC 2.0 error object.
+// Ref: #/components/schemas/MCPJSONRPCErrorObject
+type MCPJSONRPCErrorObject struct {
+	// JSON-RPC error code.
+	Code OptInt64 `json:"code"`
+	// Optional additional error data.
+	Data jx.Raw `json:"data"`
+	// JSON-RPC error message.
+	Message OptString `json:"message"`
+}
+
+// GetCode returns the value of Code.
+func (s *MCPJSONRPCErrorObject) GetCode() OptInt64 {
+	return s.Code
+}
+
+// GetData returns the value of Data.
+func (s *MCPJSONRPCErrorObject) GetData() jx.Raw {
+	return s.Data
+}
+
+// GetMessage returns the value of Message.
+func (s *MCPJSONRPCErrorObject) GetMessage() OptString {
+	return s.Message
+}
+
+// SetCode sets the value of Code.
+func (s *MCPJSONRPCErrorObject) SetCode(val OptInt64) {
+	s.Code = val
+}
+
+// SetData sets the value of Data.
+func (s *MCPJSONRPCErrorObject) SetData(val jx.Raw) {
+	s.Data = val
+}
+
+// SetMessage sets the value of Message.
+func (s *MCPJSONRPCErrorObject) SetMessage(val OptString) {
+	s.Message = val
+}
+
+// MCPJSONRPCErrorResponse is a JSON-RPC 2.0 error response.
+// Ref: #/components/schemas/MCPJSONRPCErrorResponse
+type MCPJSONRPCErrorResponse struct {
+	Error OptMCPJSONRPCErrorObject `json:"error"`
+	// Request id copied from the request, omitted when the error answers no
+	// identifiable request such as a malformed body or rejected header: MCP
+	// types this as a string or number and forbids null.
+	// omitzero, not omitempty: both drop a nil id, but omitempty would also drop
+	// the legal ids "" and 0, which a response must echo.
+	ID jx.Raw `json:"id"`
+	// JSON-RPC version.
+	Jsonrpc OptString `json:"jsonrpc"`
+}
+
+// GetError returns the value of Error.
+func (s *MCPJSONRPCErrorResponse) GetError() OptMCPJSONRPCErrorObject {
+	return s.Error
+}
+
+// GetID returns the value of ID.
+func (s *MCPJSONRPCErrorResponse) GetID() jx.Raw {
+	return s.ID
+}
+
+// GetJsonrpc returns the value of Jsonrpc.
+func (s *MCPJSONRPCErrorResponse) GetJsonrpc() OptString {
+	return s.Jsonrpc
+}
+
+// SetError sets the value of Error.
+func (s *MCPJSONRPCErrorResponse) SetError(val OptMCPJSONRPCErrorObject) {
+	s.Error = val
+}
+
+// SetID sets the value of ID.
+func (s *MCPJSONRPCErrorResponse) SetID(val jx.Raw) {
+	s.ID = val
+}
+
+// SetJsonrpc sets the value of Jsonrpc.
+func (s *MCPJSONRPCErrorResponse) SetJsonrpc(val OptString) {
+	s.Jsonrpc = val
+}
+
+// MCPJSONRPCRequest is a JSON-RPC 2.0 message accepted by the public MCP endpoint.
+// Ref: #/components/schemas/MCPJSONRPCRequest
+type MCPJSONRPCRequest struct {
+	// Request id. Omit this field for notifications.
+	ID jx.Raw `json:"id"`
+	// JSON-RPC version. Must be "2.0".
+	Jsonrpc OptString `json:"jsonrpc"`
+	// MCP method name.
+	Method OptString `json:"method"`
+	// MCP method params.
+	Params jx.Raw `json:"params"`
+}
+
+// GetID returns the value of ID.
+func (s *MCPJSONRPCRequest) GetID() jx.Raw {
+	return s.ID
+}
+
+// GetJsonrpc returns the value of Jsonrpc.
+func (s *MCPJSONRPCRequest) GetJsonrpc() OptString {
+	return s.Jsonrpc
+}
+
+// GetMethod returns the value of Method.
+func (s *MCPJSONRPCRequest) GetMethod() OptString {
+	return s.Method
+}
+
+// GetParams returns the value of Params.
+func (s *MCPJSONRPCRequest) GetParams() jx.Raw {
+	return s.Params
+}
+
+// SetID sets the value of ID.
+func (s *MCPJSONRPCRequest) SetID(val jx.Raw) {
+	s.ID = val
+}
+
+// SetJsonrpc sets the value of Jsonrpc.
+func (s *MCPJSONRPCRequest) SetJsonrpc(val OptString) {
+	s.Jsonrpc = val
+}
+
+// SetMethod sets the value of Method.
+func (s *MCPJSONRPCRequest) SetMethod(val OptString) {
+	s.Method = val
+}
+
+// SetParams sets the value of Params.
+func (s *MCPJSONRPCRequest) SetParams(val jx.Raw) {
+	s.Params = val
+}
+
+// MCPJSONRPCSuccessResponse is a JSON-RPC 2.0 success response.
+// Ref: #/components/schemas/MCPJSONRPCSuccessResponse
+type MCPJSONRPCSuccessResponse struct {
+	// Request id copied from the request.
+	ID jx.Raw `json:"id"`
+	// JSON-RPC version.
+	Jsonrpc OptString `json:"jsonrpc"`
+	// Method result.
+	Result jx.Raw `json:"result"`
+}
+
+// GetID returns the value of ID.
+func (s *MCPJSONRPCSuccessResponse) GetID() jx.Raw {
+	return s.ID
+}
+
+// GetJsonrpc returns the value of Jsonrpc.
+func (s *MCPJSONRPCSuccessResponse) GetJsonrpc() OptString {
+	return s.Jsonrpc
+}
+
+// GetResult returns the value of Result.
+func (s *MCPJSONRPCSuccessResponse) GetResult() jx.Raw {
+	return s.Result
+}
+
+// SetID sets the value of ID.
+func (s *MCPJSONRPCSuccessResponse) SetID(val jx.Raw) {
+	s.ID = val
+}
+
+// SetJsonrpc sets the value of Jsonrpc.
+func (s *MCPJSONRPCSuccessResponse) SetJsonrpc(val OptString) {
+	s.Jsonrpc = val
+}
+
+// SetResult sets the value of Result.
+func (s *MCPJSONRPCSuccessResponse) SetResult(val jx.Raw) {
+	s.Result = val
+}
+
+func (*MCPJSONRPCSuccessResponse) postAIMCPRes() {}
+
+type MCPMethodNotAllowedResponse struct{}
+
+func (*MCPMethodNotAllowedResponse) getAIMCPRes() {}
+
+// MCPProtectedResourceMetadata is OAuth protected resource metadata for the MCP endpoint.
+// Ref: #/components/schemas/MCPProtectedResourceMetadata
+type MCPProtectedResourceMetadata struct {
+	// OAuth authorization server issuer URLs.
+	AuthorizationServers OptNilStringArray `json:"authorization_servers"`
+	// Supported bearer token presentation methods.
+	BearerMethodsSupported OptNilStringArray `json:"bearer_methods_supported"`
+	// Canonical protected resource URL.
+	Resource OptString `json:"resource"`
+	// OAuth scopes the client may request when accessing this resource.
+	ScopesSupported OptNilStringArray `json:"scopes_supported"`
+}
+
+// GetAuthorizationServers returns the value of AuthorizationServers.
+func (s *MCPProtectedResourceMetadata) GetAuthorizationServers() OptNilStringArray {
+	return s.AuthorizationServers
+}
+
+// GetBearerMethodsSupported returns the value of BearerMethodsSupported.
+func (s *MCPProtectedResourceMetadata) GetBearerMethodsSupported() OptNilStringArray {
+	return s.BearerMethodsSupported
+}
+
+// GetResource returns the value of Resource.
+func (s *MCPProtectedResourceMetadata) GetResource() OptString {
+	return s.Resource
+}
+
+// GetScopesSupported returns the value of ScopesSupported.
+func (s *MCPProtectedResourceMetadata) GetScopesSupported() OptNilStringArray {
+	return s.ScopesSupported
+}
+
+// SetAuthorizationServers sets the value of AuthorizationServers.
+func (s *MCPProtectedResourceMetadata) SetAuthorizationServers(val OptNilStringArray) {
+	s.AuthorizationServers = val
+}
+
+// SetBearerMethodsSupported sets the value of BearerMethodsSupported.
+func (s *MCPProtectedResourceMetadata) SetBearerMethodsSupported(val OptNilStringArray) {
+	s.BearerMethodsSupported = val
+}
+
+// SetResource sets the value of Resource.
+func (s *MCPProtectedResourceMetadata) SetResource(val OptString) {
+	s.Resource = val
+}
+
+// SetScopesSupported sets the value of ScopesSupported.
+func (s *MCPProtectedResourceMetadata) SetScopesSupported(val OptNilStringArray) {
+	s.ScopesSupported = val
+}
+
+func (*MCPProtectedResourceMetadata) getAIMCPProtectedResourceMetadataRes() {}
+
 // MasterKeySettings represents master key configurations.
 // Ref: #/components/schemas/MasterKeySettings
 type MasterKeySettings struct {
@@ -29422,6 +29854,7 @@ func (*NotFoundResponse) deleteIDMSGroupAssociationRes()                        
 func (*NotFoundResponse) deleteIDMSRes()                                                  {}
 func (*NotFoundResponse) deleteLabelKeyValueRes()                                         {}
 func (*NotFoundResponse) deleteLabelRes()                                                 {}
+func (*NotFoundResponse) deleteOAuthClientRes()                                           {}
 func (*NotFoundResponse) deleteOUCloudAccessRoleAssociationsRes()                         {}
 func (*NotFoundResponse) deleteOUCloudAccessRoleExemptionRes()                            {}
 func (*NotFoundResponse) deleteOUCloudAccessRoleRes()                                     {}
@@ -29463,6 +29896,8 @@ func (*NotFoundResponse) gcpIAMRoleAddCARRestrictedEntitiesRes()                
 func (*NotFoundResponse) gcpIAMRoleAddOwnersRes()                                         {}
 func (*NotFoundResponse) gcpIAMRoleRemoveCARRestrictedEntitiesRes()                       {}
 func (*NotFoundResponse) gcpIAMRoleRemoveOwnersRes()                                      {}
+func (*NotFoundResponse) getAIMCPProtectedResourceMetadataRes()                           {}
+func (*NotFoundResponse) getAIMCPRes()                                                    {}
 func (*NotFoundResponse) getAMIRes()                                                      {}
 func (*NotFoundResponse) getAccountByAccountNumberRes()                                   {}
 func (*NotFoundResponse) getAccountCacheAugmentedRes()                                    {}
@@ -29524,6 +29959,7 @@ func (*NotFoundResponse) getIDMSGroupAssociationRes()                           
 func (*NotFoundResponse) getIDMSGroupAssociationsRes()                                    {}
 func (*NotFoundResponse) getIDMSRes()                                                     {}
 func (*NotFoundResponse) getLabelRes()                                                    {}
+func (*NotFoundResponse) getOAuthClientRes()                                              {}
 func (*NotFoundResponse) getOUCloudAccessRoleRes()                                        {}
 func (*NotFoundResponse) getOUCloudAccessRolesByOUIDAssociationsRes()                     {}
 func (*NotFoundResponse) getOUCustomVariableRes()                                         {}
@@ -29630,6 +30066,7 @@ func (*NotFoundResponse) patchUserRes()                                         
 func (*NotFoundResponse) patchWebhookRes()                                                {}
 func (*NotFoundResponse) portfolioAddOwnersRes()                                          {}
 func (*NotFoundResponse) portfolioRemoveOwnersRes()                                       {}
+func (*NotFoundResponse) postAIMCPRes()                                                   {}
 func (*NotFoundResponse) postAccountLabelRes()                                            {}
 func (*NotFoundResponse) postBillingSourceCreateGovcloudInfoRes()                         {}
 func (*NotFoundResponse) postCloudRuleAssociationsRes()                                   {}
@@ -29655,6 +30092,7 @@ func (*NotFoundResponse) postFundingSourceEnforcementRes()                      
 func (*NotFoundResponse) postFundingSourceEnforcementUsersRes()                           {}
 func (*NotFoundResponse) postFundingSourceLabelRes()                                      {}
 func (*NotFoundResponse) postFundingSourceReportRes()                                     {}
+func (*NotFoundResponse) postOAuthClientRotateSecretRes()                                 {}
 func (*NotFoundResponse) postOUAddOwnersRes()                                             {}
 func (*NotFoundResponse) postOUCloudAccessRoleAssociationsRes()                           {}
 func (*NotFoundResponse) postOUExemptionRequestRes()                                      {}
@@ -29678,6 +30116,7 @@ func (*NotFoundResponse) putCloudRuleLabelsRes()                                
 func (*NotFoundResponse) putFeatureFlagRes()                                              {}
 func (*NotFoundResponse) putFundingSourceLabelsRes()                                      {}
 func (*NotFoundResponse) putNotificationCategorySettingRes()                              {}
+func (*NotFoundResponse) putOAuthClientRes()                                              {}
 func (*NotFoundResponse) putOULabelsRes()                                                 {}
 func (*NotFoundResponse) putProjectLabelsRes()                                            {}
 func (*NotFoundResponse) putSpendPlanRes()                                                {}
@@ -29863,6 +30302,801 @@ func (s *NullUint) SetInt(val OptUint64) {
 func (s *NullUint) SetValid(val OptNilBool) {
 	s.Valid = val
 }
+
+// OAuthClient is the V3 API response model.
+// Ref: #/components/schemas/OAuthClient
+type OAuthClient struct {
+	AllowedScopes OptNilStringArray `json:"allowed_scopes"`
+	CreatedAt     OptString         `json:"created_at"`
+	CreatedBy     OptUint64         `json:"created_by"`
+	Description   OptString         `json:"description"`
+	GrantTypes    OptNilStringArray `json:"grant_types"`
+	ID            OptString         `json:"id"`
+	// IsDynamicallyRegistered indicates that the client is managed with an RFC 7592 registration access
+	// token.
+	IsDynamicallyRegistered OptNilBool        `json:"is_dynamically_registered"`
+	IsPublic                OptNilBool        `json:"is_public"`
+	Name                    OptString         `json:"name"`
+	OwnerUserID             OptNilUint64      `json:"owner_user_id"`
+	RedirectUris            OptNilStringArray `json:"redirect_uris"`
+	ServiceAccountUserID    OptNilUint64      `json:"service_account_user_id"`
+	UpdatedAt               OptNilString      `json:"updated_at"`
+}
+
+// GetAllowedScopes returns the value of AllowedScopes.
+func (s *OAuthClient) GetAllowedScopes() OptNilStringArray {
+	return s.AllowedScopes
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *OAuthClient) GetCreatedAt() OptString {
+	return s.CreatedAt
+}
+
+// GetCreatedBy returns the value of CreatedBy.
+func (s *OAuthClient) GetCreatedBy() OptUint64 {
+	return s.CreatedBy
+}
+
+// GetDescription returns the value of Description.
+func (s *OAuthClient) GetDescription() OptString {
+	return s.Description
+}
+
+// GetGrantTypes returns the value of GrantTypes.
+func (s *OAuthClient) GetGrantTypes() OptNilStringArray {
+	return s.GrantTypes
+}
+
+// GetID returns the value of ID.
+func (s *OAuthClient) GetID() OptString {
+	return s.ID
+}
+
+// GetIsDynamicallyRegistered returns the value of IsDynamicallyRegistered.
+func (s *OAuthClient) GetIsDynamicallyRegistered() OptNilBool {
+	return s.IsDynamicallyRegistered
+}
+
+// GetIsPublic returns the value of IsPublic.
+func (s *OAuthClient) GetIsPublic() OptNilBool {
+	return s.IsPublic
+}
+
+// GetName returns the value of Name.
+func (s *OAuthClient) GetName() OptString {
+	return s.Name
+}
+
+// GetOwnerUserID returns the value of OwnerUserID.
+func (s *OAuthClient) GetOwnerUserID() OptNilUint64 {
+	return s.OwnerUserID
+}
+
+// GetRedirectUris returns the value of RedirectUris.
+func (s *OAuthClient) GetRedirectUris() OptNilStringArray {
+	return s.RedirectUris
+}
+
+// GetServiceAccountUserID returns the value of ServiceAccountUserID.
+func (s *OAuthClient) GetServiceAccountUserID() OptNilUint64 {
+	return s.ServiceAccountUserID
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *OAuthClient) GetUpdatedAt() OptNilString {
+	return s.UpdatedAt
+}
+
+// SetAllowedScopes sets the value of AllowedScopes.
+func (s *OAuthClient) SetAllowedScopes(val OptNilStringArray) {
+	s.AllowedScopes = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *OAuthClient) SetCreatedAt(val OptString) {
+	s.CreatedAt = val
+}
+
+// SetCreatedBy sets the value of CreatedBy.
+func (s *OAuthClient) SetCreatedBy(val OptUint64) {
+	s.CreatedBy = val
+}
+
+// SetDescription sets the value of Description.
+func (s *OAuthClient) SetDescription(val OptString) {
+	s.Description = val
+}
+
+// SetGrantTypes sets the value of GrantTypes.
+func (s *OAuthClient) SetGrantTypes(val OptNilStringArray) {
+	s.GrantTypes = val
+}
+
+// SetID sets the value of ID.
+func (s *OAuthClient) SetID(val OptString) {
+	s.ID = val
+}
+
+// SetIsDynamicallyRegistered sets the value of IsDynamicallyRegistered.
+func (s *OAuthClient) SetIsDynamicallyRegistered(val OptNilBool) {
+	s.IsDynamicallyRegistered = val
+}
+
+// SetIsPublic sets the value of IsPublic.
+func (s *OAuthClient) SetIsPublic(val OptNilBool) {
+	s.IsPublic = val
+}
+
+// SetName sets the value of Name.
+func (s *OAuthClient) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetOwnerUserID sets the value of OwnerUserID.
+func (s *OAuthClient) SetOwnerUserID(val OptNilUint64) {
+	s.OwnerUserID = val
+}
+
+// SetRedirectUris sets the value of RedirectUris.
+func (s *OAuthClient) SetRedirectUris(val OptNilStringArray) {
+	s.RedirectUris = val
+}
+
+// SetServiceAccountUserID sets the value of ServiceAccountUserID.
+func (s *OAuthClient) SetServiceAccountUserID(val OptNilUint64) {
+	s.ServiceAccountUserID = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *OAuthClient) SetUpdatedAt(val OptNilString) {
+	s.UpdatedAt = val
+}
+
+// OAuthClientCreateRequest defines the body for creating an OAuth client.
+// Ref: #/components/schemas/OAuthClientCreateRequest
+type OAuthClientCreateRequest struct {
+	// Kion product scopes this client may request. Supported values are "mcp" and "api".
+	// An empty list grants no Kion product access.
+	AllowedScopes OptNilStringArray `json:"allowed_scopes"`
+	// Description of the OAuth client.
+	Description OptString `json:"description"`
+	// Allowed grant types.
+	GrantTypes []string `json:"grant_types"`
+	// Whether the client is public (no secret).
+	IsPublic OptNilBool `json:"is_public"`
+	// Name of the OAuth client.
+	Name string `json:"name"`
+	// Owner of the client. If omitted (and the caller has Manage OAuth Clients
+	// permission), the client is created as a global, unowned application.
+	// Callers with only Manage Own OAuth Clients permission may only set this
+	// to their own user ID.
+	OwnerUserID OptNilUint64 `json:"owner_user_id"`
+	// Allowed redirect URIs.
+	RedirectUris OptNilStringArray `json:"redirect_uris"`
+	// Service account user ID for client_credentials grant.
+	ServiceAccountUserID OptNilUint64 `json:"service_account_user_id"`
+}
+
+// GetAllowedScopes returns the value of AllowedScopes.
+func (s *OAuthClientCreateRequest) GetAllowedScopes() OptNilStringArray {
+	return s.AllowedScopes
+}
+
+// GetDescription returns the value of Description.
+func (s *OAuthClientCreateRequest) GetDescription() OptString {
+	return s.Description
+}
+
+// GetGrantTypes returns the value of GrantTypes.
+func (s *OAuthClientCreateRequest) GetGrantTypes() []string {
+	return s.GrantTypes
+}
+
+// GetIsPublic returns the value of IsPublic.
+func (s *OAuthClientCreateRequest) GetIsPublic() OptNilBool {
+	return s.IsPublic
+}
+
+// GetName returns the value of Name.
+func (s *OAuthClientCreateRequest) GetName() string {
+	return s.Name
+}
+
+// GetOwnerUserID returns the value of OwnerUserID.
+func (s *OAuthClientCreateRequest) GetOwnerUserID() OptNilUint64 {
+	return s.OwnerUserID
+}
+
+// GetRedirectUris returns the value of RedirectUris.
+func (s *OAuthClientCreateRequest) GetRedirectUris() OptNilStringArray {
+	return s.RedirectUris
+}
+
+// GetServiceAccountUserID returns the value of ServiceAccountUserID.
+func (s *OAuthClientCreateRequest) GetServiceAccountUserID() OptNilUint64 {
+	return s.ServiceAccountUserID
+}
+
+// SetAllowedScopes sets the value of AllowedScopes.
+func (s *OAuthClientCreateRequest) SetAllowedScopes(val OptNilStringArray) {
+	s.AllowedScopes = val
+}
+
+// SetDescription sets the value of Description.
+func (s *OAuthClientCreateRequest) SetDescription(val OptString) {
+	s.Description = val
+}
+
+// SetGrantTypes sets the value of GrantTypes.
+func (s *OAuthClientCreateRequest) SetGrantTypes(val []string) {
+	s.GrantTypes = val
+}
+
+// SetIsPublic sets the value of IsPublic.
+func (s *OAuthClientCreateRequest) SetIsPublic(val OptNilBool) {
+	s.IsPublic = val
+}
+
+// SetName sets the value of Name.
+func (s *OAuthClientCreateRequest) SetName(val string) {
+	s.Name = val
+}
+
+// SetOwnerUserID sets the value of OwnerUserID.
+func (s *OAuthClientCreateRequest) SetOwnerUserID(val OptNilUint64) {
+	s.OwnerUserID = val
+}
+
+// SetRedirectUris sets the value of RedirectUris.
+func (s *OAuthClientCreateRequest) SetRedirectUris(val OptNilStringArray) {
+	s.RedirectUris = val
+}
+
+// SetServiceAccountUserID sets the value of ServiceAccountUserID.
+func (s *OAuthClientCreateRequest) SetServiceAccountUserID(val OptNilUint64) {
+	s.ServiceAccountUserID = val
+}
+
+// OAuthClientCreated is the response for a newly created OAuth client, including the plaintext
+// secret.
+// Ref: #/components/schemas/OAuthClientCreated
+type OAuthClientCreated struct {
+	AllowedScopes OptNilStringArray `json:"allowed_scopes"`
+	CreatedAt     OptString         `json:"created_at"`
+	CreatedBy     OptUint64         `json:"created_by"`
+	Description   OptString         `json:"description"`
+	GrantTypes    OptNilStringArray `json:"grant_types"`
+	ID            OptString         `json:"id"`
+	// IsDynamicallyRegistered indicates that the client is managed with an RFC 7592 registration access
+	// token.
+	IsDynamicallyRegistered OptNilBool        `json:"is_dynamically_registered"`
+	IsPublic                OptNilBool        `json:"is_public"`
+	Name                    OptString         `json:"name"`
+	OwnerUserID             OptNilUint64      `json:"owner_user_id"`
+	RedirectUris            OptNilStringArray `json:"redirect_uris"`
+	Secret                  OptString         `json:"secret"`
+	ServiceAccountUserID    OptNilUint64      `json:"service_account_user_id"`
+	UpdatedAt               OptNilString      `json:"updated_at"`
+}
+
+// GetAllowedScopes returns the value of AllowedScopes.
+func (s *OAuthClientCreated) GetAllowedScopes() OptNilStringArray {
+	return s.AllowedScopes
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *OAuthClientCreated) GetCreatedAt() OptString {
+	return s.CreatedAt
+}
+
+// GetCreatedBy returns the value of CreatedBy.
+func (s *OAuthClientCreated) GetCreatedBy() OptUint64 {
+	return s.CreatedBy
+}
+
+// GetDescription returns the value of Description.
+func (s *OAuthClientCreated) GetDescription() OptString {
+	return s.Description
+}
+
+// GetGrantTypes returns the value of GrantTypes.
+func (s *OAuthClientCreated) GetGrantTypes() OptNilStringArray {
+	return s.GrantTypes
+}
+
+// GetID returns the value of ID.
+func (s *OAuthClientCreated) GetID() OptString {
+	return s.ID
+}
+
+// GetIsDynamicallyRegistered returns the value of IsDynamicallyRegistered.
+func (s *OAuthClientCreated) GetIsDynamicallyRegistered() OptNilBool {
+	return s.IsDynamicallyRegistered
+}
+
+// GetIsPublic returns the value of IsPublic.
+func (s *OAuthClientCreated) GetIsPublic() OptNilBool {
+	return s.IsPublic
+}
+
+// GetName returns the value of Name.
+func (s *OAuthClientCreated) GetName() OptString {
+	return s.Name
+}
+
+// GetOwnerUserID returns the value of OwnerUserID.
+func (s *OAuthClientCreated) GetOwnerUserID() OptNilUint64 {
+	return s.OwnerUserID
+}
+
+// GetRedirectUris returns the value of RedirectUris.
+func (s *OAuthClientCreated) GetRedirectUris() OptNilStringArray {
+	return s.RedirectUris
+}
+
+// GetSecret returns the value of Secret.
+func (s *OAuthClientCreated) GetSecret() OptString {
+	return s.Secret
+}
+
+// GetServiceAccountUserID returns the value of ServiceAccountUserID.
+func (s *OAuthClientCreated) GetServiceAccountUserID() OptNilUint64 {
+	return s.ServiceAccountUserID
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *OAuthClientCreated) GetUpdatedAt() OptNilString {
+	return s.UpdatedAt
+}
+
+// SetAllowedScopes sets the value of AllowedScopes.
+func (s *OAuthClientCreated) SetAllowedScopes(val OptNilStringArray) {
+	s.AllowedScopes = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *OAuthClientCreated) SetCreatedAt(val OptString) {
+	s.CreatedAt = val
+}
+
+// SetCreatedBy sets the value of CreatedBy.
+func (s *OAuthClientCreated) SetCreatedBy(val OptUint64) {
+	s.CreatedBy = val
+}
+
+// SetDescription sets the value of Description.
+func (s *OAuthClientCreated) SetDescription(val OptString) {
+	s.Description = val
+}
+
+// SetGrantTypes sets the value of GrantTypes.
+func (s *OAuthClientCreated) SetGrantTypes(val OptNilStringArray) {
+	s.GrantTypes = val
+}
+
+// SetID sets the value of ID.
+func (s *OAuthClientCreated) SetID(val OptString) {
+	s.ID = val
+}
+
+// SetIsDynamicallyRegistered sets the value of IsDynamicallyRegistered.
+func (s *OAuthClientCreated) SetIsDynamicallyRegistered(val OptNilBool) {
+	s.IsDynamicallyRegistered = val
+}
+
+// SetIsPublic sets the value of IsPublic.
+func (s *OAuthClientCreated) SetIsPublic(val OptNilBool) {
+	s.IsPublic = val
+}
+
+// SetName sets the value of Name.
+func (s *OAuthClientCreated) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetOwnerUserID sets the value of OwnerUserID.
+func (s *OAuthClientCreated) SetOwnerUserID(val OptNilUint64) {
+	s.OwnerUserID = val
+}
+
+// SetRedirectUris sets the value of RedirectUris.
+func (s *OAuthClientCreated) SetRedirectUris(val OptNilStringArray) {
+	s.RedirectUris = val
+}
+
+// SetSecret sets the value of Secret.
+func (s *OAuthClientCreated) SetSecret(val OptString) {
+	s.Secret = val
+}
+
+// SetServiceAccountUserID sets the value of ServiceAccountUserID.
+func (s *OAuthClientCreated) SetServiceAccountUserID(val OptNilUint64) {
+	s.ServiceAccountUserID = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *OAuthClientCreated) SetUpdatedAt(val OptNilString) {
+	s.UpdatedAt = val
+}
+
+type OAuthClientCreatedResponse struct {
+	Data OptOAuthClientCreated `json:"data"`
+	// HTTP status code.
+	Status OptInt64 `json:"status"`
+}
+
+// GetData returns the value of Data.
+func (s *OAuthClientCreatedResponse) GetData() OptOAuthClientCreated {
+	return s.Data
+}
+
+// GetStatus returns the value of Status.
+func (s *OAuthClientCreatedResponse) GetStatus() OptInt64 {
+	return s.Status
+}
+
+// SetData sets the value of Data.
+func (s *OAuthClientCreatedResponse) SetData(val OptOAuthClientCreated) {
+	s.Data = val
+}
+
+// SetStatus sets the value of Status.
+func (s *OAuthClientCreatedResponse) SetStatus(val OptInt64) {
+	s.Status = val
+}
+
+func (*OAuthClientCreatedResponse) postOAuthClientRes() {}
+
+type OAuthClientListResponse struct {
+	// List of OAuth clients.
+	Data []OAuthClient `json:"data"`
+	// HTTP status code.
+	Status OptInt64 `json:"status"`
+}
+
+// GetData returns the value of Data.
+func (s *OAuthClientListResponse) GetData() []OAuthClient {
+	return s.Data
+}
+
+// GetStatus returns the value of Status.
+func (s *OAuthClientListResponse) GetStatus() OptInt64 {
+	return s.Status
+}
+
+// SetData sets the value of Data.
+func (s *OAuthClientListResponse) SetData(val []OAuthClient) {
+	s.Data = val
+}
+
+// SetStatus sets the value of Status.
+func (s *OAuthClientListResponse) SetStatus(val OptInt64) {
+	s.Status = val
+}
+
+func (*OAuthClientListResponse) getOAuthClientsRes() {}
+
+type OAuthClientResponse struct {
+	Data OptOAuthClient `json:"data"`
+	// HTTP status code.
+	Status OptInt64 `json:"status"`
+}
+
+// GetData returns the value of Data.
+func (s *OAuthClientResponse) GetData() OptOAuthClient {
+	return s.Data
+}
+
+// GetStatus returns the value of Status.
+func (s *OAuthClientResponse) GetStatus() OptInt64 {
+	return s.Status
+}
+
+// SetData sets the value of Data.
+func (s *OAuthClientResponse) SetData(val OptOAuthClient) {
+	s.Data = val
+}
+
+// SetStatus sets the value of Status.
+func (s *OAuthClientResponse) SetStatus(val OptInt64) {
+	s.Status = val
+}
+
+func (*OAuthClientResponse) getOAuthClientRes() {}
+
+type OAuthClientSecretResponse struct {
+	// The new client secret.
+	Data OptOAuthClientSecretResponseData `json:"data"`
+	// HTTP status code.
+	Status OptInt64 `json:"status"`
+}
+
+// GetData returns the value of Data.
+func (s *OAuthClientSecretResponse) GetData() OptOAuthClientSecretResponseData {
+	return s.Data
+}
+
+// GetStatus returns the value of Status.
+func (s *OAuthClientSecretResponse) GetStatus() OptInt64 {
+	return s.Status
+}
+
+// SetData sets the value of Data.
+func (s *OAuthClientSecretResponse) SetData(val OptOAuthClientSecretResponseData) {
+	s.Data = val
+}
+
+// SetStatus sets the value of Status.
+func (s *OAuthClientSecretResponse) SetStatus(val OptInt64) {
+	s.Status = val
+}
+
+func (*OAuthClientSecretResponse) postOAuthClientRotateSecretRes() {}
+
+// The new client secret.
+type OAuthClientSecretResponseData struct {
+	Secret OptString `json:"secret"`
+}
+
+// GetSecret returns the value of Secret.
+func (s *OAuthClientSecretResponseData) GetSecret() OptString {
+	return s.Secret
+}
+
+// SetSecret sets the value of Secret.
+func (s *OAuthClientSecretResponseData) SetSecret(val OptString) {
+	s.Secret = val
+}
+
+// OAuthClientUpdateRequest defines the body for updating an OAuth client.
+// Ref: #/components/schemas/OAuthClientUpdateRequest
+type OAuthClientUpdateRequest struct {
+	// Kion product scopes this client may request. Supported values are "mcp" and "api".
+	// Omit this field to retain the current scopes. An empty list grants no Kion product access.
+	AllowedScopes OptNilStringArray `json:"allowed_scopes"`
+	// Description of the OAuth client.
+	Description OptString `json:"description"`
+	// Allowed grant types.
+	GrantTypes OptNilStringArray `json:"grant_types"`
+	// Whether the client is public (no secret).
+	IsPublic OptNilBool `json:"is_public"`
+	// Name of the OAuth client.
+	Name OptString `json:"name"`
+	// Owner of the client. If omitted (and the caller has Manage OAuth Clients
+	// permission), the client becomes a global, unowned application. Callers
+	// with only Manage Own OAuth Clients permission may only set this to their
+	// own user ID.
+	OwnerUserID OptNilUint64 `json:"owner_user_id"`
+	// Allowed redirect URIs.
+	RedirectUris OptNilStringArray `json:"redirect_uris"`
+	// Service account user ID for client_credentials grant.
+	ServiceAccountUserID OptNilUint64 `json:"service_account_user_id"`
+}
+
+// GetAllowedScopes returns the value of AllowedScopes.
+func (s *OAuthClientUpdateRequest) GetAllowedScopes() OptNilStringArray {
+	return s.AllowedScopes
+}
+
+// GetDescription returns the value of Description.
+func (s *OAuthClientUpdateRequest) GetDescription() OptString {
+	return s.Description
+}
+
+// GetGrantTypes returns the value of GrantTypes.
+func (s *OAuthClientUpdateRequest) GetGrantTypes() OptNilStringArray {
+	return s.GrantTypes
+}
+
+// GetIsPublic returns the value of IsPublic.
+func (s *OAuthClientUpdateRequest) GetIsPublic() OptNilBool {
+	return s.IsPublic
+}
+
+// GetName returns the value of Name.
+func (s *OAuthClientUpdateRequest) GetName() OptString {
+	return s.Name
+}
+
+// GetOwnerUserID returns the value of OwnerUserID.
+func (s *OAuthClientUpdateRequest) GetOwnerUserID() OptNilUint64 {
+	return s.OwnerUserID
+}
+
+// GetRedirectUris returns the value of RedirectUris.
+func (s *OAuthClientUpdateRequest) GetRedirectUris() OptNilStringArray {
+	return s.RedirectUris
+}
+
+// GetServiceAccountUserID returns the value of ServiceAccountUserID.
+func (s *OAuthClientUpdateRequest) GetServiceAccountUserID() OptNilUint64 {
+	return s.ServiceAccountUserID
+}
+
+// SetAllowedScopes sets the value of AllowedScopes.
+func (s *OAuthClientUpdateRequest) SetAllowedScopes(val OptNilStringArray) {
+	s.AllowedScopes = val
+}
+
+// SetDescription sets the value of Description.
+func (s *OAuthClientUpdateRequest) SetDescription(val OptString) {
+	s.Description = val
+}
+
+// SetGrantTypes sets the value of GrantTypes.
+func (s *OAuthClientUpdateRequest) SetGrantTypes(val OptNilStringArray) {
+	s.GrantTypes = val
+}
+
+// SetIsPublic sets the value of IsPublic.
+func (s *OAuthClientUpdateRequest) SetIsPublic(val OptNilBool) {
+	s.IsPublic = val
+}
+
+// SetName sets the value of Name.
+func (s *OAuthClientUpdateRequest) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetOwnerUserID sets the value of OwnerUserID.
+func (s *OAuthClientUpdateRequest) SetOwnerUserID(val OptNilUint64) {
+	s.OwnerUserID = val
+}
+
+// SetRedirectUris sets the value of RedirectUris.
+func (s *OAuthClientUpdateRequest) SetRedirectUris(val OptNilStringArray) {
+	s.RedirectUris = val
+}
+
+// SetServiceAccountUserID sets the value of ServiceAccountUserID.
+func (s *OAuthClientUpdateRequest) SetServiceAccountUserID(val OptNilUint64) {
+	s.ServiceAccountUserID = val
+}
+
+// OAuthGrant is the V3 API response model for an authorized grant.
+// Ref: #/components/schemas/OAuthGrant
+type OAuthGrant struct {
+	ClientID    OptString         `json:"client_id"`
+	ClientName  OptString         `json:"client_name"`
+	CreatedBy   OptUint64         `json:"created_by"`
+	Description OptString         `json:"description"`
+	GrantTypes  OptNilStringArray `json:"grant_types"`
+	GrantedAt   OptString         `json:"granted_at"`
+	IsPublic    OptNilBool        `json:"is_public"`
+	LastUsed    OptString         `json:"last_used"`
+	OwnerUserID OptNilUint64      `json:"owner_user_id"`
+	TokenCount  OptInt64          `json:"token_count"`
+}
+
+// GetClientID returns the value of ClientID.
+func (s *OAuthGrant) GetClientID() OptString {
+	return s.ClientID
+}
+
+// GetClientName returns the value of ClientName.
+func (s *OAuthGrant) GetClientName() OptString {
+	return s.ClientName
+}
+
+// GetCreatedBy returns the value of CreatedBy.
+func (s *OAuthGrant) GetCreatedBy() OptUint64 {
+	return s.CreatedBy
+}
+
+// GetDescription returns the value of Description.
+func (s *OAuthGrant) GetDescription() OptString {
+	return s.Description
+}
+
+// GetGrantTypes returns the value of GrantTypes.
+func (s *OAuthGrant) GetGrantTypes() OptNilStringArray {
+	return s.GrantTypes
+}
+
+// GetGrantedAt returns the value of GrantedAt.
+func (s *OAuthGrant) GetGrantedAt() OptString {
+	return s.GrantedAt
+}
+
+// GetIsPublic returns the value of IsPublic.
+func (s *OAuthGrant) GetIsPublic() OptNilBool {
+	return s.IsPublic
+}
+
+// GetLastUsed returns the value of LastUsed.
+func (s *OAuthGrant) GetLastUsed() OptString {
+	return s.LastUsed
+}
+
+// GetOwnerUserID returns the value of OwnerUserID.
+func (s *OAuthGrant) GetOwnerUserID() OptNilUint64 {
+	return s.OwnerUserID
+}
+
+// GetTokenCount returns the value of TokenCount.
+func (s *OAuthGrant) GetTokenCount() OptInt64 {
+	return s.TokenCount
+}
+
+// SetClientID sets the value of ClientID.
+func (s *OAuthGrant) SetClientID(val OptString) {
+	s.ClientID = val
+}
+
+// SetClientName sets the value of ClientName.
+func (s *OAuthGrant) SetClientName(val OptString) {
+	s.ClientName = val
+}
+
+// SetCreatedBy sets the value of CreatedBy.
+func (s *OAuthGrant) SetCreatedBy(val OptUint64) {
+	s.CreatedBy = val
+}
+
+// SetDescription sets the value of Description.
+func (s *OAuthGrant) SetDescription(val OptString) {
+	s.Description = val
+}
+
+// SetGrantTypes sets the value of GrantTypes.
+func (s *OAuthGrant) SetGrantTypes(val OptNilStringArray) {
+	s.GrantTypes = val
+}
+
+// SetGrantedAt sets the value of GrantedAt.
+func (s *OAuthGrant) SetGrantedAt(val OptString) {
+	s.GrantedAt = val
+}
+
+// SetIsPublic sets the value of IsPublic.
+func (s *OAuthGrant) SetIsPublic(val OptNilBool) {
+	s.IsPublic = val
+}
+
+// SetLastUsed sets the value of LastUsed.
+func (s *OAuthGrant) SetLastUsed(val OptString) {
+	s.LastUsed = val
+}
+
+// SetOwnerUserID sets the value of OwnerUserID.
+func (s *OAuthGrant) SetOwnerUserID(val OptNilUint64) {
+	s.OwnerUserID = val
+}
+
+// SetTokenCount sets the value of TokenCount.
+func (s *OAuthGrant) SetTokenCount(val OptInt64) {
+	s.TokenCount = val
+}
+
+type OAuthGrantListResponse struct {
+	// List of OAuth grants.
+	Data []OAuthGrant `json:"data"`
+	// HTTP status code.
+	Status OptInt64 `json:"status"`
+}
+
+// GetData returns the value of Data.
+func (s *OAuthGrantListResponse) GetData() []OAuthGrant {
+	return s.Data
+}
+
+// GetStatus returns the value of Status.
+func (s *OAuthGrantListResponse) GetStatus() OptInt64 {
+	return s.Status
+}
+
+// SetData sets the value of Data.
+func (s *OAuthGrantListResponse) SetData(val []OAuthGrant) {
+	s.Data = val
+}
+
+// SetStatus sets the value of Status.
+func (s *OAuthGrantListResponse) SetStatus(val OptInt64) {
+	s.Status = val
+}
+
+func (*OAuthGrantListResponse) getOAuthGrantsRes() {}
 
 // OCIAccountCacheCreate defines a payload for a cached OCI account.
 // Ref: #/components/schemas/OCIAccountCacheCreate
@@ -30693,6 +31927,8 @@ func (*OKResponse) deleteIDMSGroupAssociationRes()                              
 func (*OKResponse) deleteIDMSRes()                                                  {}
 func (*OKResponse) deleteLabelKeyValueRes()                                         {}
 func (*OKResponse) deleteLabelRes()                                                 {}
+func (*OKResponse) deleteOAuthClientRes()                                           {}
+func (*OKResponse) deleteOAuthGrantRes()                                            {}
 func (*OKResponse) deleteOUCloudAccessRoleAssociationsRes()                         {}
 func (*OKResponse) deleteOUCloudAccessRoleExemptionRes()                            {}
 func (*OKResponse) deleteOUCloudAccessRoleRes()                                     {}
@@ -30855,6 +32091,7 @@ func (*OKResponse) putFederatedLoginConfigRes()                                 
 func (*OKResponse) putForgotPasswordConfigRes()                                     {}
 func (*OKResponse) putFundingSourceLabelsRes()                                      {}
 func (*OKResponse) putHideIntegrationsStatusRes()                                   {}
+func (*OKResponse) putOAuthClientRes()                                              {}
 func (*OKResponse) putOULabelsRes()                                                 {}
 func (*OKResponse) putProjectLabelsRes()                                            {}
 func (*OKResponse) putSAMLDebugStatusRes()                                          {}
@@ -40391,6 +41628,52 @@ func (o OptDateTime) Or(d time.Time) time.Time {
 	return d
 }
 
+// NewOptDiagnosticBillingReportListStatus returns new OptDiagnosticBillingReportListStatus with value set to v.
+func NewOptDiagnosticBillingReportListStatus(v DiagnosticBillingReportListStatus) OptDiagnosticBillingReportListStatus {
+	return OptDiagnosticBillingReportListStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDiagnosticBillingReportListStatus is optional DiagnosticBillingReportListStatus.
+type OptDiagnosticBillingReportListStatus struct {
+	Value DiagnosticBillingReportListStatus
+	Set   bool
+}
+
+// IsSet returns true if OptDiagnosticBillingReportListStatus was set.
+func (o OptDiagnosticBillingReportListStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDiagnosticBillingReportListStatus) Reset() {
+	var v DiagnosticBillingReportListStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDiagnosticBillingReportListStatus) SetTo(v DiagnosticBillingReportListStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDiagnosticBillingReportListStatus) Get() (v DiagnosticBillingReportListStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDiagnosticBillingReportListStatus) Or(d DiagnosticBillingReportListStatus) DiagnosticBillingReportListStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptDiagnosticBillingReportPaginated returns new OptDiagnosticBillingReportPaginated with value set to v.
 func NewOptDiagnosticBillingReportPaginated(v DiagnosticBillingReportPaginated) OptDiagnosticBillingReportPaginated {
 	return OptDiagnosticBillingReportPaginated{
@@ -40431,6 +41714,52 @@ func (o OptDiagnosticBillingReportPaginated) Get() (v DiagnosticBillingReportPag
 
 // Or returns value if set, or given parameter if does not.
 func (o OptDiagnosticBillingReportPaginated) Or(d DiagnosticBillingReportPaginated) DiagnosticBillingReportPaginated {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDiagnosticBillingReportStatus returns new OptDiagnosticBillingReportStatus with value set to v.
+func NewOptDiagnosticBillingReportStatus(v DiagnosticBillingReportStatus) OptDiagnosticBillingReportStatus {
+	return OptDiagnosticBillingReportStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDiagnosticBillingReportStatus is optional DiagnosticBillingReportStatus.
+type OptDiagnosticBillingReportStatus struct {
+	Value DiagnosticBillingReportStatus
+	Set   bool
+}
+
+// IsSet returns true if OptDiagnosticBillingReportStatus was set.
+func (o OptDiagnosticBillingReportStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDiagnosticBillingReportStatus) Reset() {
+	var v DiagnosticBillingReportStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDiagnosticBillingReportStatus) SetTo(v DiagnosticBillingReportStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDiagnosticBillingReportStatus) Get() (v DiagnosticBillingReportStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDiagnosticBillingReportStatus) Or(d DiagnosticBillingReportStatus) DiagnosticBillingReportStatus {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -42501,6 +43830,52 @@ func (o OptLabelListPaginated) Get() (v LabelListPaginated, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptLabelListPaginated) Or(d LabelListPaginated) LabelListPaginated {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptMCPJSONRPCErrorObject returns new OptMCPJSONRPCErrorObject with value set to v.
+func NewOptMCPJSONRPCErrorObject(v MCPJSONRPCErrorObject) OptMCPJSONRPCErrorObject {
+	return OptMCPJSONRPCErrorObject{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptMCPJSONRPCErrorObject is optional MCPJSONRPCErrorObject.
+type OptMCPJSONRPCErrorObject struct {
+	Value MCPJSONRPCErrorObject
+	Set   bool
+}
+
+// IsSet returns true if OptMCPJSONRPCErrorObject was set.
+func (o OptMCPJSONRPCErrorObject) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptMCPJSONRPCErrorObject) Reset() {
+	var v MCPJSONRPCErrorObject
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptMCPJSONRPCErrorObject) SetTo(v MCPJSONRPCErrorObject) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptMCPJSONRPCErrorObject) Get() (v MCPJSONRPCErrorObject, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptMCPJSONRPCErrorObject) Or(d MCPJSONRPCErrorObject) MCPJSONRPCErrorObject {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -48877,6 +50252,236 @@ func (o OptNullUint) Or(d NullUint) NullUint {
 	return d
 }
 
+// NewOptOAuthClient returns new OptOAuthClient with value set to v.
+func NewOptOAuthClient(v OAuthClient) OptOAuthClient {
+	return OptOAuthClient{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOAuthClient is optional OAuthClient.
+type OptOAuthClient struct {
+	Value OAuthClient
+	Set   bool
+}
+
+// IsSet returns true if OptOAuthClient was set.
+func (o OptOAuthClient) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOAuthClient) Reset() {
+	var v OAuthClient
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOAuthClient) SetTo(v OAuthClient) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOAuthClient) Get() (v OAuthClient, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOAuthClient) Or(d OAuthClient) OAuthClient {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptOAuthClientCreateRequest returns new OptOAuthClientCreateRequest with value set to v.
+func NewOptOAuthClientCreateRequest(v OAuthClientCreateRequest) OptOAuthClientCreateRequest {
+	return OptOAuthClientCreateRequest{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOAuthClientCreateRequest is optional OAuthClientCreateRequest.
+type OptOAuthClientCreateRequest struct {
+	Value OAuthClientCreateRequest
+	Set   bool
+}
+
+// IsSet returns true if OptOAuthClientCreateRequest was set.
+func (o OptOAuthClientCreateRequest) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOAuthClientCreateRequest) Reset() {
+	var v OAuthClientCreateRequest
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOAuthClientCreateRequest) SetTo(v OAuthClientCreateRequest) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOAuthClientCreateRequest) Get() (v OAuthClientCreateRequest, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOAuthClientCreateRequest) Or(d OAuthClientCreateRequest) OAuthClientCreateRequest {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptOAuthClientCreated returns new OptOAuthClientCreated with value set to v.
+func NewOptOAuthClientCreated(v OAuthClientCreated) OptOAuthClientCreated {
+	return OptOAuthClientCreated{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOAuthClientCreated is optional OAuthClientCreated.
+type OptOAuthClientCreated struct {
+	Value OAuthClientCreated
+	Set   bool
+}
+
+// IsSet returns true if OptOAuthClientCreated was set.
+func (o OptOAuthClientCreated) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOAuthClientCreated) Reset() {
+	var v OAuthClientCreated
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOAuthClientCreated) SetTo(v OAuthClientCreated) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOAuthClientCreated) Get() (v OAuthClientCreated, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOAuthClientCreated) Or(d OAuthClientCreated) OAuthClientCreated {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptOAuthClientSecretResponseData returns new OptOAuthClientSecretResponseData with value set to v.
+func NewOptOAuthClientSecretResponseData(v OAuthClientSecretResponseData) OptOAuthClientSecretResponseData {
+	return OptOAuthClientSecretResponseData{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOAuthClientSecretResponseData is optional OAuthClientSecretResponseData.
+type OptOAuthClientSecretResponseData struct {
+	Value OAuthClientSecretResponseData
+	Set   bool
+}
+
+// IsSet returns true if OptOAuthClientSecretResponseData was set.
+func (o OptOAuthClientSecretResponseData) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOAuthClientSecretResponseData) Reset() {
+	var v OAuthClientSecretResponseData
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOAuthClientSecretResponseData) SetTo(v OAuthClientSecretResponseData) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOAuthClientSecretResponseData) Get() (v OAuthClientSecretResponseData, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOAuthClientSecretResponseData) Or(d OAuthClientSecretResponseData) OAuthClientSecretResponseData {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptOAuthClientUpdateRequest returns new OptOAuthClientUpdateRequest with value set to v.
+func NewOptOAuthClientUpdateRequest(v OAuthClientUpdateRequest) OptOAuthClientUpdateRequest {
+	return OptOAuthClientUpdateRequest{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOAuthClientUpdateRequest is optional OAuthClientUpdateRequest.
+type OptOAuthClientUpdateRequest struct {
+	Value OAuthClientUpdateRequest
+	Set   bool
+}
+
+// IsSet returns true if OptOAuthClientUpdateRequest was set.
+func (o OptOAuthClientUpdateRequest) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOAuthClientUpdateRequest) Reset() {
+	var v OAuthClientUpdateRequest
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOAuthClientUpdateRequest) SetTo(v OAuthClientUpdateRequest) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOAuthClientUpdateRequest) Get() (v OAuthClientUpdateRequest, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOAuthClientUpdateRequest) Or(d OAuthClientUpdateRequest) OAuthClientUpdateRequest {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptOCIBillingSource returns new OptOCIBillingSource with value set to v.
 func NewOptOCIBillingSource(v OCIBillingSource) OptOCIBillingSource {
 	return OptOCIBillingSource{
@@ -54807,6 +56412,14 @@ func (s *PolicyOwners) SetOwnerUserGroupIds(val OptNilUint64Array) {
 func (s *PolicyOwners) SetOwnerUserIds(val OptNilUint64Array) {
 	s.OwnerUserIds = val
 }
+
+type PostAIMCPBadRequest MCPJSONRPCErrorResponse
+
+func (*PostAIMCPBadRequest) postAIMCPRes() {}
+
+type PostAIMCPInternalServerError MCPJSONRPCErrorResponse
+
+func (*PostAIMCPInternalServerError) postAIMCPRes() {}
 
 type PostServiceAccountJSONReq struct {
 	// Description is a brief description of the service account.
@@ -63076,6 +64689,8 @@ func (*UnauthorizedResponse) deleteIDMSGroupAssociationRes()                    
 func (*UnauthorizedResponse) deleteIDMSRes()                                                  {}
 func (*UnauthorizedResponse) deleteLabelKeyValueRes()                                         {}
 func (*UnauthorizedResponse) deleteLabelRes()                                                 {}
+func (*UnauthorizedResponse) deleteOAuthClientRes()                                           {}
+func (*UnauthorizedResponse) deleteOAuthGrantRes()                                            {}
 func (*UnauthorizedResponse) deleteOUCloudAccessRoleAssociationsRes()                         {}
 func (*UnauthorizedResponse) deleteOUCloudAccessRoleExemptionRes()                            {}
 func (*UnauthorizedResponse) deleteOUCloudAccessRoleRes()                                     {}
@@ -63128,6 +64743,7 @@ func (*UnauthorizedResponse) gcpIAMRoleRemoveCARRestrictedEntitiesRes()         
 func (*UnauthorizedResponse) gcpIAMRoleRemoveOwnersRes()                                      {}
 func (*UnauthorizedResponse) gcpIAMRoleValidatePermissionsAndDenialsRes()                     {}
 func (*UnauthorizedResponse) generateExternalIDsRes()                                         {}
+func (*UnauthorizedResponse) getAIMCPRes()                                                    {}
 func (*UnauthorizedResponse) getAMIIndexRes()                                                 {}
 func (*UnauthorizedResponse) getAMIRes()                                                      {}
 func (*UnauthorizedResponse) getAWSAccessConfigRes()                                          {}
@@ -63280,6 +64896,9 @@ func (*UnauthorizedResponse) getLabelIndexRes()                                 
 func (*UnauthorizedResponse) getLabelRes()                                                    {}
 func (*UnauthorizedResponse) getLastBillsLoadedAtRes()                                        {}
 func (*UnauthorizedResponse) getMyCARsRes()                                                   {}
+func (*UnauthorizedResponse) getOAuthClientRes()                                              {}
+func (*UnauthorizedResponse) getOAuthClientsRes()                                             {}
+func (*UnauthorizedResponse) getOAuthGrantsRes()                                              {}
 func (*UnauthorizedResponse) getOUCloudAccessRoleIndexRes()                                   {}
 func (*UnauthorizedResponse) getOUCloudAccessRoleRes()                                        {}
 func (*UnauthorizedResponse) getOUCloudAccessRolesByOUIDAssociationsRes()                     {}
@@ -63431,6 +65050,7 @@ func (*UnauthorizedResponse) patchUserRes()                                     
 func (*UnauthorizedResponse) patchWebhookRes()                                                {}
 func (*UnauthorizedResponse) portfolioAddOwnersRes()                                          {}
 func (*UnauthorizedResponse) portfolioRemoveOwnersRes()                                       {}
+func (*UnauthorizedResponse) postAIMCPRes()                                                   {}
 func (*UnauthorizedResponse) postAMIRes()                                                     {}
 func (*UnauthorizedResponse) postARMTemplateRes()                                             {}
 func (*UnauthorizedResponse) postAWSBillingSourceRes()                                        {}
@@ -63521,6 +65141,8 @@ func (*UnauthorizedResponse) postLabelRes()                                     
 func (*UnauthorizedResponse) postLinkAccountRes()                                             {}
 func (*UnauthorizedResponse) postLinkAllPayerAccountsRes()                                    {}
 func (*UnauthorizedResponse) postLinkProjectAccountRes()                                      {}
+func (*UnauthorizedResponse) postOAuthClientRes()                                             {}
+func (*UnauthorizedResponse) postOAuthClientRotateSecretRes()                                 {}
 func (*UnauthorizedResponse) postOCIAccountRes()                                              {}
 func (*UnauthorizedResponse) postOCIBillingSourceRes()                                        {}
 func (*UnauthorizedResponse) postOUAddOwnersRes()                                             {}
@@ -63594,6 +65216,7 @@ func (*UnauthorizedResponse) putFederatedLoginConfigRes()                       
 func (*UnauthorizedResponse) putForgotPasswordConfigRes()                                     {}
 func (*UnauthorizedResponse) putFundingSourceLabelsRes()                                      {}
 func (*UnauthorizedResponse) putHideIntegrationsStatusRes()                                   {}
+func (*UnauthorizedResponse) putOAuthClientRes()                                              {}
 func (*UnauthorizedResponse) putOULabelsRes()                                                 {}
 func (*UnauthorizedResponse) putProjectLabelsRes()                                            {}
 func (*UnauthorizedResponse) putSAMLDebugStatusRes()                                          {}
@@ -63954,6 +65577,7 @@ func (*UnprocessableEntityResponse) postLinkAccountRes()                        
 func (*UnprocessableEntityResponse) postLinkAllPayerAccountsRes()                       {}
 func (*UnprocessableEntityResponse) postLinkProjectAccountRes()                         {}
 func (*UnprocessableEntityResponse) postMasterKeySettingsRes()                          {}
+func (*UnprocessableEntityResponse) postOAuthClientRes()                                {}
 func (*UnprocessableEntityResponse) postOCIAccountRes()                                 {}
 func (*UnprocessableEntityResponse) postOCIBillingSourceRes()                           {}
 func (*UnprocessableEntityResponse) postOUAddOwnersRes()                                {}
@@ -64005,6 +65629,7 @@ func (*UnprocessableEntityResponse) putCloudRuleLabelsRes()                     
 func (*UnprocessableEntityResponse) putFeatureFlagRes()                                 {}
 func (*UnprocessableEntityResponse) putFundingSourceLabelsRes()                         {}
 func (*UnprocessableEntityResponse) putNotificationCategorySettingRes()                 {}
+func (*UnprocessableEntityResponse) putOAuthClientRes()                                 {}
 func (*UnprocessableEntityResponse) putOULabelsRes()                                    {}
 func (*UnprocessableEntityResponse) putProjectLabelsRes()                               {}
 func (*UnprocessableEntityResponse) putScopeReprioritizeRes()                           {}
